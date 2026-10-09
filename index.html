@@ -423,7 +423,37 @@ const WINTERPREF=['holz','schilf','koehler','saege','erzgrube','stein','schmiede
 const CATS=[tr`Wohnen & Dorf`,tr`Nahrung`,tr`Rohstoffe`,tr`Handwerk`];
 const ORDER=Object.keys(DEF);
 const JOBCOL={bader:'#3f6f88',spital:'#efe6cf',markt:'#b5533a',lehmgrube:'#9a7a52',ziegelei:'#a8452e',bauhuette:'#c49256',rathaus:'#6d5a4a',huehner:'#e8d9b0',schweine:'#d99a8a',schlacht:'#9a3a2a',holz:'#8a5a2b',foerster:'#557d3c',stein:'#8d8a82',jaeger:'#5e4632',fischer:'#3f7fa0',feld:'#cdb24c',flachs:'#8fa6d8',erdaepfel:'#6f7f3a',baecker:'#e0cfa6',stall:'#b07a4a',wagner:'#7a5a3a',handel:'#6d4f7a',dach:'#b5533a',brauerei:'#c98f2a',schmiede:'#555c63',weberei:'#d8cde6',wirtshaus:'#8a3f2c',saege:'#b08a5a',sammler:'#9a4e6e',teich:'#2f6f9a',imker:'#e0b83a',schilf:'#a8a15a',koehler:'#3a3634',erzgrube:'#8a5a3c'};
-const CARRYCOL={dach:'#c8b56a',lehm:'#9a7a52',ziegel:'#b5533a',holz:'#a8733d',bretter:'#d0ad72',stein:'#a8a397',naegel:'#6d7178',stroh:'#e6d27a',schilf:'#c8b56a',schilfnass:'#7f9a55',nahrung:'#c97a3e',getreide:'#e2c35e',gulden:'#f0d77a',wagen:'#7a5634',bier:'#c98f2a',werkzeug:'#8e9aa6',eisen:'#8a5a3c',kohle:'#2b2826',flachs:'#b9c27a',leinen:'#f1ead6'};
+/*carry*/const CARRYCOL={dach:'#c8b56a',lehm:'#9a7a52',ziegel:'#b5533a',holz:'#a8733d',bretter:'#d0ad72',stein:'#a8a397',naegel:'#6d7178',stroh:'#e6d27a',schilf:'#c8b56a',schilfnass:'#7f9a55',nahrung:'#c97a3e',getreide:'#e2c35e',gulden:'#f0d77a',wagen:'#7a5634',bier:'#c98f2a',werkzeug:'#8e9aa6',eisen:'#8a5a3c',kohle:'#2b2826',flachs:'#b9c27a',leinen:'#f1ead6'};
+// ---- Tragegut als kleine Pixelbilder (16x14) ----
+const CICO={};
+function carryIcon(r){if(CICO[r])return CICO[r];const c=document.createElement('canvas');c.width=16;c.height=14;const x=c.getContext('2d');
+  const P=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};const O='#2a2018';
+  const log=(y,l)=>{P(O,1,y,14,4);P('#8a5a30',2,y+1,12,2);P('#a8733d',2,y+1,12,1);P('#d9b07a',l?12:1,y+1,2,2);P('#7a4a26',l?13:2,y+1,1,1);};
+  const sack=(c1,c2)=>{P(O,3,2,10,12);P(c1,4,4,8,9);P(c2,4,4,8,2);P(O,6,1,4,2);P(c2,6,2,4,1);P('rgba(0,0,0,.18)',9,5,3,8);};
+  const bundle=(c1,c2,band)=>{for(let i=0;i<6;i++){P(O,2+i*2,1,2,13);P(i%2?c1:c2,3+i*2,2,1,11);}P(band,1,7,14,2);};
+  switch(r){
+    case 'holz':log(9,0);log(5,1);log(1,0);break;
+    case 'bretter':for(let i=0;i<3;i++){P(O,0,2+i*4,16,4);P(i%2?'#c79c62':'#d8b47c',1,3+i*4,14,2);P('#a8804c',1,4+i*4,14,1);}break;
+    case 'stein':P(O,2,4,12,9);P('#8e8a80',3,5,10,7);P('#b2ae9f',4,5,6,2);P('#6f6b62',9,8,3,3);P(O,5,2,6,3);P('#a29e90',6,3,4,2);break;
+    case 'naegel':P(O,2,5,12,8);P('#8a6238',3,6,10,6);for(let i=0;i<4;i++){P('#4e535a',4+i*2,1,1,6);P('#7b8088',3+i*2,1,3,1);}break;
+    case 'stroh':bundle('#e6d27a','#d4bc5c','#8a6a30');break;
+    case 'schilf':case 'dach':bundle('#c8b56a','#a8954e','#6d5530');break;
+    case 'schilfnass':bundle('#7f9a55','#66803f','#4e3a22');break;
+    case 'flachs':bundle('#b9c27a','#a1aa60','#6d5530');P('#86a6e6',4,1,2,1);P('#86a6e6',9,1,2,1);break;
+    case 'getreide':sack('#d8c08a','#ead9a8');P('#c79c3a',7,0,1,2);P('#c79c3a',9,0,1,2);break;
+    case 'nahrung':P(O,1,6,14,8);P('#8a6a3a',2,7,12,6);P('#a8844a',2,9,12,1);P(O,3,2,6,5);P('#c98a4a',4,3,4,3);P('#e2b06a',4,3,3,1);P(O,8,3,6,4);P('#d9c9a8',9,4,4,2);break;
+    case 'bier':P(O,3,1,10,13);P('#9a6a34',4,2,8,11);P('#b8844a',5,2,2,11);P('#5a5f66',3,4,10,1);P('#5a5f66',3,10,10,1);break;
+    case 'werkzeug':P(O,7,1,2,13);P('#8a5a30',7,5,2,8);P(O,2,1,12,4);P('#8e9aa6',3,2,10,2);P('#c3ccd4',3,2,10,1);break;
+    case 'eisen':case 'roheisen':for(let i=0;i<2;i++){P(O,1,4+i*5,14,4);P(r==='eisen'?'#6f747c':'#8a5a3c',2,5+i*5,12,2);P(r==='eisen'?'#a8aeb6':'#b0703f',2,5+i*5,12,1);}break;
+    case 'kohle':P(O,2,4,12,9);P('#2b2826',3,5,10,7);P('#4a4642',4,6,3,2);P('#4a4642',9,9,2,2);P(O,4,2,5,3);P('#3a3634',5,3,3,1);break;
+    case 'lehm':P(O,2,4,12,9);P('#9a7a52',3,5,10,7);P('#b8966a',4,5,6,2);P('#7a5e3c',8,9,4,2);break;
+    case 'ziegel':for(let i=0;i<3;i++){P(O,1,2+i*4,14,4);P('#b5533a',2,3+i*4,12,2);P('#d07050',2,3+i*4,12,1);P(O,8,3+i*4,1,2);}break;
+    case 'wolle':P(O,2,3,12,10);P('#ece6d6',3,4,10,8);P('#fff8ea',4,4,4,2);P('#d6ccb6',9,8,3,3);P('#ece6d6',1,6,2,4);P('#ece6d6',13,6,2,4);break;
+    case 'leinen':case 'wollstoff':case 'kleidS':case 'kleidW':{const c1={leinen:'#efe7d2',wollstoff:'#8a6a52',kleidS:'#c9b98a',kleidW:'#6a5a7a'}[r];P(O,1,3,14,9);P(c1,2,4,12,7);P('rgba(255,255,255,.3)',2,4,12,2);P('rgba(0,0,0,.2)',2,8,12,1);P(O,12,3,3,9);P('rgba(0,0,0,.25)',12,4,2,7);break;}
+    default:P(O,2,3,12,10);P(CARRYCOL[r]||'#ccc',3,4,10,8);}
+  CICO[r]=c;return c;}
+function drawCarry(r,x,y){const ic=carryIcon(r);const s=ctx.imageSmoothingEnabled;ctx.imageSmoothingEnabled=false;ctx.drawImage(ic,x-4,y-7,8,7);ctx.imageSmoothingEnabled=s;}
+
 const VIL={
   krems:{n:tr`Krems`,edge:'S',d:tr`Handelsstadt an der Donau. Zahlt gut für Bauholz, Bretter, Stein und Leinen, verkauft Wagen und günstiges Erz.`,mod:{holz:1.5,bretter:1.4,stein:1.3,getreide:0.9,nahrung:0.8,leinen:1.4,eisen:0.8}},
   zwettl:{n:tr`Zwettl`,edge:'W',d:tr`Stiftsstadt im Westen. Braucht Getreide, Nahrung und Bier, hat billig Holz, Bretter und Schilf.`,mod:{holz:0.8,bretter:0.8,schilf:0.8,stein:0.8,getreide:1.4,nahrung:1.3,bier:1.3,eisen:1.2}},
@@ -2690,7 +2720,7 @@ function drawCitizen(c,now){
   if(old){ctx.fillStyle='#efefea';ctx.fillRect(px-1.6,py-9.4-bob,3.2,1);}
   if(r){ctx.fillStyle=CARRYCOL[r]||'#ccc';
     if(r==='gulden'){ctx.beginPath();ctx.arc(px+3.5,py-10-bob,2.2,0,6.283);ctx.fill();ctx.stroke();}
-    else{ctx.fillRect(px+1.5,py-12-bob,4,4);ctx.strokeRect(px+1.5,py-12-bob,4,4);}}
+    else drawCarry(r,px+3.5,py-8-bob);}
   if(c.fightId&&c.work){ctx.fillStyle='rgba(120,180,230,.7)';ctx.beginPath();ctx.arc(px+4,py-10-bob,1.6,0,6.283);ctx.fill();}
   if(c.hunger>=2){ctx.fillStyle='#e0714f';ctx.fillRect(px-.6,py-16-bob,1.2,3);ctx.fillRect(px-.6,py-12.2-bob,1.2,1.2);}
 }
@@ -2715,7 +2745,7 @@ function drawFigure(c,now){
   ctx.restore();ctx.filter='none';
   if(r){ctx.fillStyle=CARRYCOL[r]||'#ccc';ctx.strokeStyle='#1d1a14';ctx.lineWidth=.6;
     if(r==='gulden'){ctx.beginPath();ctx.arc(px+w*0.35,py-h-1-bob,2,0,6.283);ctx.fill();ctx.stroke();}
-    else{ctx.fillRect(px-2.5,py-h-4.5-bob,5,4);ctx.strokeRect(px-2.5,py-h-4.5-bob,5,4);}}
+    else drawCarry(r,px,py-h+1.3-bob);}
   if(c.fightId&&c.work){ctx.fillStyle='rgba(120,180,230,.8)';ctx.beginPath();ctx.arc(px+w*0.4,py-h*0.6-bob,1.8,0,6.283);ctx.fill();}
   if(c.hunger>=2){ctx.fillStyle='#e0714f';ctx.fillRect(px-.7,py-h-9-bob,1.4,3.4);ctx.fillRect(px-.7,py-h-4.8-bob,1.4,1.4);}
 }
