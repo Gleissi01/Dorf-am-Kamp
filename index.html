@@ -240,7 +240,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 41</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 41.1</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -2733,7 +2733,7 @@ function drawBuilding(b,winter,now){
   }
   }
   if(b.fire>0)drawFlames(px,py,pw,ph,now,b.fire);
-  if(cam.z>=1.05){
+  if(ruin&&cam.z>=1.05){
     ctx.font='700 6.5px "Alegreya Sans",sans-serif';const tw=ctx.measureText(d.n).width;
     ctx.fillStyle=ruin?'rgba(90,30,20,.85)':'rgba(28,34,22,.78)';ctx.fillRect(px+pw/2-tw/2-2.5,py+ph-1,tw+5,8.5);
     ctx.fillStyle='#efe6cf';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(d.n,px+pw/2,py+ph);
