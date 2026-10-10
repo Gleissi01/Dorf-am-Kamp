@@ -17,6 +17,8 @@ Läuft auch offline, Spielstände bleiben auf dem Gerät.
 - Jede Person antippbar: Beruf, Haus, Ehe und Stammbaum über drei Geschlechter
 - Geldkreislauf ab dem Dorf: Die Haushalte kaufen Nahrung, Brennholz, Gewand und Bier am Marktstand
 - Zierde fürs Dorf: Wegkreuz, Marterl, Maibaum, Blumenbeet, Obstbaum und Zaun
+- 18 Aufträge als Einstieg, danach 18 Meilensteine über Jahrzehnte
+- Ereignisse mit Entscheidung: Hochwasser, Brand, Ruhr, Wölfe, Franzosen, Glockenguss
 - Jahreszeiten nach Kalender: Saat, Ernte, harte Winter
 - Wald pflanzen und schlagen, Bergwerk, Kohlenmeiler, Wagen für den Transport
 - Hungerkrisen, Ruhr und Wölfe – leicht ist es nicht
