@@ -40,7 +40,7 @@ HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "index.htm
 BREITE_BAU = 256
 BREITE_TRAGE = 48
 BREITE_NATUR = 96
-NATUR_NEU = {"schaf", "schwein", "huhn", "ziege", "gans"}
+NATUR_NEU = {"schaf", "widder", "schwein", "eber", "huhn", "hahn", "stier", "ziege", "gans"}
 QUALITAET = 88
 
 
