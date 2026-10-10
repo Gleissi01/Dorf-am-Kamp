@@ -1,5 +1,30 @@
 # Patch Notes
 
+## Gegen die Wölfe kann man jetzt etwas tun
+
+Dein ältester Kritikpunkt. Drei Wege, die sich ergänzen:
+
+**Die Hundehütte** — neu in der Vieh-Leiste, 1x1, 6 Holz, 3 Bretter, 1 Nagel,
+niemand muss eingeteilt werden. Der Hofhund deckt alles im Umkreis von 8
+Feldern ab. Wölfe gehen eine bewachte Weide gar nicht erst an, und wer dem
+Hund zu nahe kommt, dreht ab und zieht sich zurück.
+
+**Die Treibjagd** — beim Wolfsereignis steht jetzt eine echte Entscheidung
+statt eines "Verstanden"-Knopfes:
+
+| | |
+|---|---|
+| Treibjagd ansetzen | braucht 4 Männer zwischen 18 und 60. Jeder Wolf wird zu 70 % erlegt, der Rest zieht ab. Das Fleisch kommt ins Lager, 4 Nahrung je Wolf. Zu 25 % kommt einer verletzt heim und liegt sechs Tage. |
+| Abwarten | wie bisher |
+
+**Der Jäger** nimmt weiter die Fährte auf, das war schon drin.
+
+Der Ereignistext sagt jetzt auch, was du hast: ob ein Jäger besetzt ist und
+wie viele Hofhunde stehen.
+
+Dazu: der Steinhaufen auf der Baustelle ist da. Ein Ziegelhaus bekommt jetzt
+Steine und Mörtel, ein Wohnhaus Bretter und Strohbunde.
+
 ## Gerüst, Bretter, Mörtel — echte Bilder auf der Baustelle
 
 Vier neue Bilder, die auf jeder Baustelle gleich aussehen und deshalb nicht
