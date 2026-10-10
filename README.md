@@ -14,6 +14,9 @@ Läuft auch offline, Spielstände bleiben auf dem Gerät.
 - Echte Baumaterialien: Holz, Bretter, Nägel, Stein, Stroh- und Schilfdach, Ziegel
 - Produktionsketten: Erz → Schmelzhütte → Schmiede, Flachs → Leinen → Gewand, Schafe → Wolle → Wintergewand
 - Leute mit Familien, Arbeit, Lohn, Bildung, Hochzeit, Krankheit und Alter
+- Jede Person antippbar: Beruf, Haus, Ehe und Stammbaum über drei Geschlechter
+- Geldkreislauf ab dem Dorf: Die Haushalte kaufen Nahrung, Brennholz, Gewand und Bier am Marktstand
+- Zierde fürs Dorf: Wegkreuz, Marterl, Maibaum, Blumenbeet, Obstbaum und Zaun
 - Jahreszeiten nach Kalender: Saat, Ernte, harte Winter
 - Wald pflanzen und schlagen, Bergwerk, Kohlenmeiler, Wagen für den Transport
 - Hungerkrisen, Ruhr und Wölfe – leicht ist es nicht
