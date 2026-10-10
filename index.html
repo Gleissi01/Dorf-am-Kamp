@@ -2878,7 +2878,7 @@ function drawBuilding(b,winter,now){
   if(b.type==='heuwiese'){drawHeuwiese(b,winter);return;}
   if(b.type==='weide'){drawWeide(b,winter,now);return;}
   if(b.type==='teich'){drawTeich(b,winter,now);return;}
-  if(DEKO[b.type]){drawDeko(b,b.x*T,b.y*T,winter,now);return;}
+  if(DEKO[b.type]){const sp=BSPR[b.type];if(sp&&sp.ok)drawSpr(b,b.x*T,b.y*T,d.w*T,d.h*T,winter,now);else drawDeko(b,b.x*T,b.y*T,winter,now);return;}
   if(b.cond>0&&(b.type==='bank'||b.type==='dorfplatz'||b.type==='brunnen')&&BSPR[b.type]&&BSPR[b.type].ok){drawSpr(b,b.x*T,b.y*T,d.w*T,d.h*T,winter,now);return;}
   if(b.type==='bank'){const px=b.x*T,py=b.y*T;ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(px+4,py+15,18,3);
     ctx.fillStyle='#5a3e24';ctx.fillRect(px+5,py+12,2,6);ctx.fillRect(px+17,py+12,2,6);ctx.fillStyle=winter?'#e6eaec':'#8a6238';ctx.fillRect(px+3,py+10,18,3);ctx.fillStyle='#6b4a2a';ctx.fillRect(px+3,py+6,18,2);ctx.fillRect(px+4,py+6,1.5,5);ctx.fillRect(px+18.5,py+6,1.5,5);return;}
