@@ -53,6 +53,11 @@ def freistellen(pfad, ziel):
         print("  %s: kein neutraler Rand gefunden, uebersprungen" % os.path.basename(pfad))
         return False
     lo, hi = np.percentile(toene, 2) - LUFT, np.percentile(toene, 98) + LUFT
+    # Beim Schachbrett gibt es zwei Toene. Eine eingeschlossene Flaeche ist nur
+    # dann Hintergrund, wenn beide darin vorkommen - ein Schatten zwischen zwei
+    # Brettern hat nur einen und bleibt stehen.
+    dunkel, hell = np.percentile(toene, 10), np.percentile(toene, 90)
+    kariert = (hell - dunkel) > 25
 
     kandidat = neutral & (lum >= lo) & (lum <= hi)
 
@@ -71,6 +76,12 @@ def freistellen(pfad, ziel):
         m = innen == k
         if m.sum() < MIN_LOCH:
             continue
+        if kariert:
+            l = lum[m]
+            anteil_d = (np.abs(l - dunkel) <= 18).mean()
+            anteil_h = (np.abs(l - hell) <= 18).mean()
+            if min(anteil_d, anteil_h) < 0.18:
+                continue        # nur ein Ton: das ist ein Schatten, kein Muster
         bg |= m
 
     # weicher Saum: der JPEG-Uebergang wird halbdurchsichtig

@@ -1,5 +1,22 @@
 # Patch Notes
 
+## Gerüst, Bretter, Mörtel — echte Bilder auf der Baustelle
+
+Vier neue Bilder, die auf jeder Baustelle gleich aussehen und deshalb nicht
+je Gebäude gezeichnet werden müssen:
+
+- **Gerüst** aus Rundhölzern mit Seilbünden, ersetzt die gezeichneten
+  Stangen. Eines ab 30 %, das zweite ab 62 %.
+- **Bretterstapel**, **Strohbund** und **Mörtelkübel mit Leiter** liegen vor
+  dem Bau — und zwar das, was für dieses Gebäude tatsächlich geliefert
+  wurde. Ein Ziegelhaus bekommt den Mörtel, ein Wohnhaus Bretter und Stroh.
+
+Zusammen 30 KB. Die Datei liegt jetzt bei 2,56 MB.
+
+Nicht gemacht: Mauern und Dächer je Bauabschnitt als Bild. Das wären drei
+Bilder mal 55 Gebäude, rund 860 KB, und sie müssten pixelgenau zum fertigen
+Gebäude passen. Der Dachstuhl kommt weiter aus dem fertigen Bild.
+
 ## Baustellen bauen jetzt in Abschnitten
 
 Eine Baustelle war ein brauner Fleck mit gestricheltem Rahmen. Jetzt

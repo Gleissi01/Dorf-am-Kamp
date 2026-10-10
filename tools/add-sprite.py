@@ -41,7 +41,8 @@ BREITE_BAU = 256
 BREITE_TRAGE = 48
 BREITE_NATUR = 96
 NATUR_NEU = {"schaf", "widder", "lamm", "schwein", "eber", "ferkel",
-             "huhn", "hahn", "kueken", "stier", "kalb", "ziege", "gans"}
+             "huhn", "hahn", "kueken", "stier", "kalb", "ziege", "gans",
+             "geruest", "bretterstapel", "steinhaufen", "strohbund", "moertel"}
 QUALITAET = 88
 
 
