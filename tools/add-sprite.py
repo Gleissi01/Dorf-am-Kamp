@@ -95,7 +95,10 @@ def main(argv):
             if r:
                 def_keys |= set(re.findall(r"(\w+)\s*:", r.group(1)))
     else:
-        def_keys = set(re.findall(r"^\s{0,4}(\w+):\s*\{n:tr`", s, re.M))
+        # nur der DEF-Block, sonst zaehlen auch Haendlerwaren (WARE) als Gebaeude
+        i0 = s.index("const DEF={")
+        i1 = s.index("\n};", i0)
+        def_keys = set(re.findall(r"^\s{0,4}(\w+):\s*\{n:tr`", s[i0:i1], re.M))
 
     neu, ersetzt = [], []
     for p in pfade:
