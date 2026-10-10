@@ -5,6 +5,7 @@ Aufruf:
     python3 tools/add-sprite.py bilder/wegkreuz.png bilder/marterl.png
     python3 tools/add-sprite.py bilder/           # alle PNG im Ordner
     python3 tools/add-sprite.py --trage bilder/wasser.png   # Tragegut
+    python3 tools/add-sprite.py --natur bilder/schaf.png    # Tier oder Natur
 
 Der Dateiname ohne Endung ist der Gebaeudeschluessel, so wie er in DEF steht
 (wegkreuz, marterl, maibaum, blumen, obstbaum, zaun, ...).
@@ -38,6 +39,8 @@ except ImportError:
 HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "index.html")
 BREITE_BAU = 256
 BREITE_TRAGE = 48
+BREITE_NATUR = 96
+NATUR_NEU = {"schaf", "schwein", "huhn", "ziege", "gans"}
 QUALITAET = 88
 
 
@@ -61,11 +64,12 @@ def eintrag(schluessel, w, h, src):
 
 def main(argv):
     trage = "--trage" in argv
-    argv = [a for a in argv if a != "--trage"]
+    natur = "--natur" in argv
+    argv = [a for a in argv if a not in ("--trage", "--natur")]
     if not argv:
         sys.exit(__doc__)
-    breite = BREITE_TRAGE if trage else BREITE_BAU
-    tabelle = "const CSPR=" if trage else "const BSPR="
+    breite = BREITE_NATUR if natur else BREITE_TRAGE if trage else BREITE_BAU
+    tabelle = "const NSPR=" if natur else "const CSPR=" if trage else "const BSPR="
 
     pfade = []
     for a in argv:
@@ -85,7 +89,10 @@ def main(argv):
     block = s[i + len(tabelle):j + 1]
 
     vorhanden = set(re.findall(r'"(\w+)":\s*\{"w":', block))
-    if trage:
+    if natur:
+        # Tiere und Natur: was schon drin ist, dazu die geplanten neuen
+        def_keys = set(vorhanden) | NATUR_NEU
+    elif trage:
         # Tragegut: erlaubt ist alles, was eine Tragefarbe hat (CARRYCOL),
         # dazu die Warennamen aus RN. Wasser steht nur in CARRYCOL, weil es
         # keine Lagerware ist, sondern im Haus steht.
