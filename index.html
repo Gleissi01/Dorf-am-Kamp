@@ -2961,6 +2961,129 @@ const BCH={"haus": [0.66, 0.06], "ziegelhaus": [0.49, 0.04], "bauernhaus": [0.44
 const OFEN={baecker:['#efe9dd',2],brauerei:['#e6e0d2',2],schmiede:['#6e6a62',2],schmelze:['#5e5a52',3],ziegelei:['#7a736a',3],koehler:['#4a463f',3]};;
 for(const k in BSPR){const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);BSPR[k].sh=c;BSPR[k].ok=true;};im.src=BSPR[k].src;BSPR[k].img=im;}
 const BSC={wegkreuz:.65,marterl:.43,maibaum:.73,obstbaum:1.08,zaun:.95,blumen:1,bank:.55,brunnen:.8,bauernhaus:1.08,speicher:.85,dach:.85,jaeger:.85,sammler:.85,markt:.72,rathaus:1.15,hauptschule:1.1,spital:1.12};
+/* ---------- Dachschaden ---------- */
+// Ein undichtes Dach sieht nicht aus wie ein paar dunkle Rechtecke: es
+// fehlen Schindeln, darunter kommen die Latten zum Vorschein, der Bruchrand
+// ist ausgefranst, und ein paar Schindeln rutschen ab. Die Stellen werden
+// einmal je Gebaeudeart aus dem Bild selbst gesucht und als kleine Bilder
+// gemerkt. Im Spiel ist jede Schadstelle dann ein drawImage.
+const DMG={};
+let dmgNow=-1,dmgCnt=0;   // hoechstens eine Art je Bild vorbereiten, sonst ruckelt es
+// Gruben, Meiler und Oefen haben kein Dach - dort waere ein Loch im Dach Unsinn.
+const KEINDACH={erzgrube:1,lehmgrube:1,bergwerk:1,koehler:1,schmelze:1,ziegelei:1,dorfplatz:1,bank:1,brunnen:1,damm:1};
+const seedOf=t=>{let h=7;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return Math.abs(h);};
+// Eine Schadstelle im Strohdach. Stroh bricht nicht wie eine Schindel: es
+// wird duenn, wird grau, saugt sich voll, und erst dann klafft ein Loch mit
+// ausgefransten Halmen am Rand. Darum drei Lagen: Verwitterung, Mulde, Loch.
+function dmgPatch(bw,bh,roof,h0){
+  const rand=k=>((h0>>>(k*3))%1000)/1000;
+  const pad=Math.max(3,Math.round(bw*0.55)),W=bw+pad*2,H=bh+pad*2;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const cx=W/2,cy=H/2;
+  const form=(rx,ry,n,rau,dy)=>{x.beginPath();
+    for(let k=0;k<n;k++){const a=k/n*6.283,f=1-rau+rand(k)*rau*2;
+      const px=cx+Math.cos(a)*rx*f,py=cy+dy+Math.sin(a)*ry*f;
+      k?x.lineTo(px,py):x.moveTo(px,py);}
+    x.closePath();};
+  // 1. verwittertes, feuchtes Stroh - weich auslaufend
+  const g=x.createRadialGradient(cx,cy,0,cx,cy,Math.max(bw,bh)*0.95);
+  g.addColorStop(0,'rgba(92,84,64,.58)');g.addColorStop(.5,'rgba(104,96,74,.34)');g.addColorStop(1,'rgba(104,96,74,0)');
+  x.save();x.scale(1,bh/bw);x.fillStyle=g;
+  x.beginPath();x.arc(cx,cy*bw/bh,Math.max(bw,bh)*0.95,0,6.283);x.fill();x.restore();
+  // 2. Mulde: das Stroh haengt durch, oben ein Schatten
+  x.save();form(bw*0.55,bh*0.5,13,0.26,0);x.clip();
+  const g2=x.createLinearGradient(0,cy-bh*0.5,0,cy+bh*0.5);
+  g2.addColorStop(0,'rgba(38,31,22,.72)');g2.addColorStop(.55,'rgba(62,52,38,.5)');g2.addColorStop(1,'rgba(90,78,56,.25)');
+  x.fillStyle=g2;x.fillRect(0,0,W,H);x.restore();
+  // 3. offenes Loch, klein und unregelmaessig
+  x.save();form(bw*0.3,bh*0.26,11,0.38,bh*0.06);x.clip();
+  x.fillStyle='#17110a';x.fillRect(0,0,W,H);
+  if(rand(7)>0.45){ // ab und zu schaut eine Latte heraus
+    x.fillStyle='rgba(122,98,66,.75)';x.fillRect(cx-bw*0.4,cy+bh*(rand(8)*0.2-0.04),bw*0.8,Math.max(.7,bh*0.07));}
+  x.restore();
+  // 4. ausgefranste Halme rund um das Loch
+  const halm=(a,l,col,dick)=>{const r0=Math.max(bw*0.26,bh*0.22);
+    const sx=cx+Math.cos(a)*r0*0.95,sy=cy+bh*0.06+Math.sin(a)*r0*0.75;
+    x.strokeStyle=col;x.lineWidth=dick;x.beginPath();x.moveTo(sx,sy);
+    x.lineTo(sx+Math.cos(a)*l,sy+Math.sin(a)*l*0.7);x.stroke();};
+  for(let k=0;k<11;k++){
+    const a=rand(k)*6.283,l=Math.max(1.2,bh*(0.22+rand(k+3)*0.34));
+    halm(a,l,k%3?shadeCol(roof,0.16):shadeCol(roof,-0.3),Math.max(.5,bw*0.035));}
+  // 5. heruntergerutschtes Stroh unterhalb
+  x.fillStyle=shadeCol(roof,-0.12);
+  for(let k=0;k<3;k++){const sx=cx+(rand(k+5)-0.5)*bw*1.1,sy=cy+bh*(0.5+rand(k+6)*0.4);
+    x.save();x.translate(sx,sy);x.rotate((rand(k+7)-0.5)*0.8);
+    x.fillRect(-bw*0.16,-Math.max(.5,bh*0.05),bw*0.32,Math.max(1,bh*0.1));x.restore();}
+  return{c:c,pad:pad,W:W,H:H};
+}
+// Sucht im Bild das Dach und legt dort bis zu sechs Schadstellen an.
+function dmgBuild(type){
+  const sp=BSPR[type];
+  if(!sp||!sp.ok||DEKO[type]||KEINDACH[type])return null;
+  const W=sp.w,H=sp.h;
+  let D;
+  try{
+    const c=document.createElement('canvas');c.width=W;c.height=H;
+    const x=c.getContext('2d');x.drawImage(sp.img,0,0,W,H);
+    D=x.getImageData(0,0,W,H).data;
+  }catch(e){return null;}
+  if(!D)return null;
+  const top=new Int16Array(W).fill(-1);let oben=H;
+  for(let i=0;i<W;i++)for(let j=0;j<H;j++){if(D[(j*W+i)*4+3]>140){top[i]=j;if(j<oben)oben=j;break;}}
+  const band=Math.max(6,Math.round(H*0.55)),chx=BCH[type]?BCH[type][0]:-1,sd=seedOf(type);
+  const stellen=[];
+  for(let k=0;k<60&&stellen.length<6;k++){
+    const h1=hash(sd+k*101);
+    const fx=0.18+((h1%1000)/1000)*0.64;
+    if(chx>=0&&Math.abs(fx-chx)<0.07)continue;
+    const ix=Math.round(fx*W);
+    if(top[ix]<0||top[ix]>oben+band*0.6)continue;
+    const iy=Math.round(top[ix]+Math.max(2,H*0.08)+((h1>>>10)%1000)/1000*(band*0.55));
+    if(iy<0||iy>=H||ix<0||ix>=W)continue;
+    const o=(iy*W+ix)*4;
+    if(D[o+3]<200)continue;
+    const R=D[o],Gr=D[o+1],Bl=D[o+2],hell=(R+Gr+Bl)/3;
+    if(Gr>R+8&&Gr>Bl+8)continue;                          // Laub oder Gras, kein Dach
+    if(hell>188&&R-Bl<28)continue;                        // gekalkte Wand, kein Dach
+    if(stellen.some(t=>Math.abs(t.ix-ix)<W*0.12&&Math.abs(t.iy-iy)<H*0.07))continue;
+    const roof='#'+[R,Gr,Bl].map(v=>v.toString(16).padStart(2,'0')).join('');
+    const bw=Math.round(W*(0.085+((h1>>>20)%100)/100*0.055)),bh=Math.round(H*(0.045+((h1>>>24)%100)/100*0.03));
+    const p=dmgPatch(Math.max(4,bw),Math.max(3,bh),roof,h1);
+    // Das Loch darf nicht ueber den Umriss hinausragen
+    const px=Math.round(ix-p.W/2),py=Math.round(iy-p.H/2);
+    const x2=p.c.getContext('2d');
+    x2.globalCompositeOperation='destination-in';
+    x2.drawImage(sp.img,px,py,p.W,p.H,0,0,p.W,p.H);
+    stellen.push({ix:ix,iy:iy,dx:px,dy:py,w:p.W,h:p.H,img:p.c});
+  }
+  return{stellen:stellen,moos:dmgMoos(sp,top,oben,band,W,H,sd)};
+}
+// Graue, moosige Dachflaeche. Liegt genau im Umriss des Daches, weil sie
+// aus dem Bild selbst ausgeschnitten wird.
+function dmgMoos(sp,top,oben,band,W,H,sd){
+  try{
+    const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+    x.drawImage(sp.img,0,0,W,H);
+    x.globalCompositeOperation='source-in';
+    x.fillStyle='rgba(100,96,74,.52)';x.fillRect(0,0,W,H);
+    x.globalCompositeOperation='source-atop';
+    for(let k=0;k<9;k++){const h=hash(sd+k*37);
+      const px=(h%1000)/1000*W,py=oben+((h>>>10)%1000)/1000*band*0.8,r=W*(0.06+((h>>>20)%100)/100*0.09);
+      const g=x.createRadialGradient(px,py,0,px,py,r);
+      g.addColorStop(0,k%3?'rgba(78,88,56,.62)':'rgba(66,58,44,.6)');g.addColorStop(1,'rgba(70,70,58,0)');
+      x.fillStyle=g;x.beginPath();x.arc(px,py,r,0,6.283);x.fill();}
+    // nach unten auslaufen lassen, sonst steht eine Kante quer ueber dem Dach
+    x.globalCompositeOperation='destination-out';
+    for(let i=0;i<W;i++){const t=top[i];
+      if(t<0){x.clearRect(i,0,1,H);continue;}
+      const a=t+band*0.55,b2=t+band;
+      const g=x.createLinearGradient(0,a,0,b2);
+      g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,1)');
+      x.fillStyle=g;x.fillRect(i,a,1,H-a);}
+    return c;
+  }catch(e){return null;}
+}
+
 // Eine weiche Schwade als kleines Bild, einmal je Farbe gebaut und dann
 // nur noch skaliert gezeichnet. Billiger als jedes Mal einen Verlauf anzulegen.
 const PUFF={};
@@ -3001,9 +3124,21 @@ function drawSpr(b,px,py,pw,ph,winter,now){
   if(winter)ctx.filter='saturate(.55) brightness(1.08)';
   ctx.drawImage(sp.img,dx,dy,dw,dh);ctx.filter='none';
   if(winter){ctx.fillStyle='rgba(235,240,244,.28)';ctx.fillRect(dx+dw*0.08,dy+dh*0.12,dw*0.84,dh*0.32);}
-  if(b.cond<65){const holes=Math.min(6,1+Math.floor((65-b.cond)/11)),h0=hash(b.id*7);
-    for(let k=0;k<holes;k++){const hx=dx+dw*0.2+((h0>>(k*3))%Math.max(4,dw*0.55)),hy=dy+dh*0.18+((h0>>(k*2+1))%Math.max(3,dh*0.3));
-      ctx.fillStyle='#2a211a';ctx.fillRect(hx,hy,4,3);ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(hx,hy,4,.8);}}
+  if(b.cond<65&&!DEKO[b.type]&&!KEINDACH[b.type]){
+    if(DMG[b.type]===undefined){
+      if(now!==dmgNow){dmgNow=now;dmgCnt=0;}
+      if(dmgCnt<1){dmgCnt++;DMG[b.type]=dmgBuild(b.type);}
+    }
+    const dm=DMG[b.type],h0=hash(b.id*7);
+    const anz=b.cond<20?6:b.cond<40?4:2;
+    if(dm&&dm.stellen.length){const sc=dw/sp.w,st=dm.stellen;
+      if(dm.moos){ctx.globalAlpha=Math.min(.62,(65-b.cond)/65*0.8);ctx.drawImage(dm.moos,dx,dy,dw,dh);ctx.globalAlpha=1;}
+      for(let k=0;k<anz&&k<st.length;k++){const p=st[(k+h0)%st.length];
+        ctx.drawImage(p.img,dx+p.dx*sc,dy+p.dy*sc,p.w*sc,p.h*sc);}
+    }else{
+      for(let k=0;k<anz;k++){const hx=dx+dw*0.2+((h0>>(k*3))%Math.max(4,dw*0.55)),hy=dy+dh*0.18+((h0>>(k*2+1))%Math.max(3,dh*0.3));
+        ctx.fillStyle='#2a211a';ctx.fillRect(hx,hy,4,3);ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(hx,hy,4,.8);}}
+  }
   const ch=BCH[b.type];
   if(ch&&b.cond>0){
     const of=OFEN[b.type];
