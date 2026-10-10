@@ -1,5 +1,25 @@
 # Patch Notes
 
+## Baustellen bauen jetzt in Abschnitten
+
+Eine Baustelle war ein brauner Fleck mit gestricheltem Rahmen. Jetzt
+entsteht das Haus so, wie es gebaut wird:
+
+| Fortschritt | was zu sehen ist |
+|---|---|
+| bis 12 % | abgesteckt, Boden aufgegraben, Fundamentsteine am Rand |
+| 12–50 % | **Rohbau**: die Mauern wachsen aus dem Boden, oben die rohe Mauerkrone |
+| 50–72 % | **Dachstuhl**: Sparren und First stehen frei, Traufbalken quer |
+| 72–100 % | **Dach decken**: das Dach schließt von der Traufe nach oben |
+
+Die Dachform ist nicht geraten: das Spiel liest die Traufe und den Umriss
+aus dem Gebäudebild selbst, indem es die breiteste Zeile sucht. Darum passt
+der Dachstuhl zu jedem Gebäude, auch zu neuen.
+
+Dazu: das gelieferte Material liegt als Bretterstapel und Steinhaufen auf
+der Baustelle, das Gerüst steht seitlich statt quer über dem Dach, und die
+Grube verschwindet, sobald die Mauern stehen.
+
 ## 10. Oktober 1800 — Vieh, Dächer, Winter
 
 ### Vieh
