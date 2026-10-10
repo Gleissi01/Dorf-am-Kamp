@@ -2967,7 +2967,25 @@ const BSC={wegkreuz:.65,marterl:.43,maibaum:.73,obstbaum:1.08,zaun:.95,blumen:1,
 // ist ausgefranst, und ein paar Schindeln rutschen ab. Die Stellen werden
 // einmal je Gebaeudeart aus dem Bild selbst gesucht und als kleine Bilder
 // gemerkt. Im Spiel ist jede Schadstelle dann ein drawImage.
-const DMG={};
+const DMG={},SNOW={},WSPR={};
+// Im Winter lag ueber jedem Gebaeude ein ctx.filter. Das kostet pro Bild und
+// pro Haus und hat die Bildrate gedrittelt. Jetzt wird die blasse Fassung
+// einmal je Gebaeudeart gerechnet und nur noch gezeichnet.
+function winterBild(type){
+  const sp=BSPR[type];if(!sp||!sp.ok)return null;
+  try{
+    const c=document.createElement('canvas');c.width=sp.w;c.height=sp.h;
+    const x=c.getContext('2d');x.filter='saturate(.55) brightness(1.08)';
+    x.drawImage(sp.img,0,0,sp.w,sp.h);
+    return c;
+  }catch(e){return null;}
+}
+// Schnee liegt oben auf und rutscht am Dach nicht bis zur Traufe herunter.
+function schneeBild(type){
+  const sp=BSPR[type];if(!sp||!sp.ok)return null;
+  const k=dachKante(sp);if(!k)return null;
+  return bandBild(sp,k.top,k.oben,Math.max(5,Math.round(k.H*0.52)),k.W,k.H,seedOf(type),'rgba(240,245,250,.6)',0);
+}
 let dmgNow=-1,dmgCnt=0;   // hoechstens eine Art je Bild vorbereiten, sonst ruckelt es
 // Gruben, Meiler und Oefen haben kein Dach - dort waere ein Loch im Dach Unsinn.
 const KEINDACH={erzgrube:1,lehmgrube:1,bergwerk:1,koehler:1,schmelze:1,ziegelei:1,dorfplatz:1,bank:1,brunnen:1,damm:1};
@@ -3016,10 +3034,9 @@ function dmgPatch(bw,bh,roof,h0){
     x.fillRect(-bw*0.16,-Math.max(.5,bh*0.05),bw*0.32,Math.max(1,bh*0.1));x.restore();}
   return{c:c,pad:pad,W:W,H:H};
 }
-// Sucht im Bild das Dach und legt dort bis zu sechs Schadstellen an.
-function dmgBuild(type){
-  const sp=BSPR[type];
-  if(!sp||!sp.ok||DEKO[type]||KEINDACH[type])return null;
+// Die obere Kante des Bildes Spalte fuer Spalte - das ist die Dachflaeche.
+// Schnee und Schaden brauchen beide diese Linie.
+function dachKante(sp){
   const W=sp.w,H=sp.h;
   let D;
   try{
@@ -3030,6 +3047,14 @@ function dmgBuild(type){
   if(!D)return null;
   const top=new Int16Array(W).fill(-1);let oben=H;
   for(let i=0;i<W;i++)for(let j=0;j<H;j++){if(D[(j*W+i)*4+3]>140){top[i]=j;if(j<oben)oben=j;break;}}
+  return{D:D,top:top,oben:oben,W:W,H:H};
+}
+// Sucht im Bild das Dach und legt dort bis zu sechs Schadstellen an.
+function dmgBuild(type){
+  const sp=BSPR[type];
+  if(!sp||!sp.ok||DEKO[type]||KEINDACH[type])return null;
+  const k0=dachKante(sp);if(!k0)return null;
+  const D=k0.D,top=k0.top,oben=k0.oben,W=k0.W,H=k0.H;
   const band=Math.max(6,Math.round(H*0.55)),chx=BCH[type]?BCH[type][0]:-1,sd=seedOf(type);
   const stellen=[];
   for(let k=0;k<60&&stellen.length<6;k++){
@@ -3056,18 +3081,19 @@ function dmgBuild(type){
     x2.drawImage(sp.img,px,py,p.W,p.H,0,0,p.W,p.H);
     stellen.push({ix:ix,iy:iy,dx:px,dy:py,w:p.W,h:p.H,img:p.c});
   }
-  return{stellen:stellen,moos:dmgMoos(sp,top,oben,band,W,H,sd)};
+  return{stellen:stellen,moos:bandBild(sp,top,oben,band,W,H,sd,'rgba(100,96,74,.52)',1)};
 }
-// Graue, moosige Dachflaeche. Liegt genau im Umriss des Daches, weil sie
-// aus dem Bild selbst ausgeschnitten wird.
-function dmgMoos(sp,top,oben,band,W,H,sd){
+// Eine Lage auf der Dachflaeche - Moos oder Schnee. Sie liegt genau im
+// Umriss des Daches, weil sie aus dem Bild selbst ausgeschnitten wird, und
+// laeuft nach unten weich aus.
+function bandBild(sp,top,oben,band,W,H,sd,farbe,flecken){
   try{
     const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
     x.drawImage(sp.img,0,0,W,H);
     x.globalCompositeOperation='source-in';
-    x.fillStyle='rgba(100,96,74,.52)';x.fillRect(0,0,W,H);
+    x.fillStyle=farbe;x.fillRect(0,0,W,H);
     x.globalCompositeOperation='source-atop';
-    for(let k=0;k<9;k++){const h=hash(sd+k*37);
+    for(let k=0;flecken&&k<9;k++){const h=hash(sd+k*37);
       const px=(h%1000)/1000*W,py=oben+((h>>>10)%1000)/1000*band*0.8,r=W*(0.06+((h>>>20)%100)/100*0.09);
       const g=x.createRadialGradient(px,py,0,px,py,r);
       g.addColorStop(0,k%3?'rgba(78,88,56,.62)':'rgba(66,58,44,.6)');g.addColorStop(1,'rgba(70,70,58,0)');
@@ -3121,9 +3147,23 @@ function drawSmoke(x,y,now,seed,farbe,kraft){
 function drawSpr(b,px,py,pw,ph,winter,now){
   const sp=BSPR[b.type],dw=pw*1.12*(BSC[b.type]||1),dh=dw*sp.h/sp.w,dx=px+pw/2-dw/2,dy=py+ph+1-dh;
   if(sp.sh){const by=dy+dh-dh*.06,kx=.55,ky=.3;ctx.save();ctx.globalAlpha=.26;ctx.transform(1,0,-kx,ky,kx*by,by*(1-ky));ctx.drawImage(sp.sh,dx,dy,dw,dh);ctx.restore();}
-  if(winter)ctx.filter='saturate(.55) brightness(1.08)';
-  ctx.drawImage(sp.img,dx,dy,dw,dh);ctx.filter='none';
-  if(winter){ctx.fillStyle='rgba(235,240,244,.28)';ctx.fillRect(dx+dw*0.08,dy+dh*0.12,dw*0.84,dh*0.32);}
+  let bild=sp.img;
+  if(winter){
+    if(WSPR[b.type]===undefined){
+      if(now!==dmgNow){dmgNow=now;dmgCnt=0;}
+      if(dmgCnt<1){dmgCnt++;WSPR[b.type]=winterBild(b.type);}
+    }
+    if(WSPR[b.type])bild=WSPR[b.type];else ctx.filter='saturate(.55) brightness(1.08)';
+  }
+  ctx.drawImage(bild,dx,dy,dw,dh);ctx.filter='none';
+  if(winter){
+    if(SNOW[b.type]===undefined){
+      if(now!==dmgNow){dmgNow=now;dmgCnt=0;}
+      if(dmgCnt<1){dmgCnt++;SNOW[b.type]=schneeBild(b.type);}
+    }
+    if(SNOW[b.type])ctx.drawImage(SNOW[b.type],dx,dy,dw,dh);
+    else{ctx.fillStyle='rgba(235,240,244,.28)';ctx.fillRect(dx+dw*0.08,dy+dh*0.12,dw*0.84,dh*0.32);}
+  }
   if(b.cond<65&&!DEKO[b.type]&&!KEINDACH[b.type]){
     if(DMG[b.type]===undefined){
       if(now!==dmgNow){dmgNow=now;dmgCnt=0;}
