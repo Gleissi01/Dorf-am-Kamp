@@ -4,9 +4,15 @@
 Aufruf:
     python3 tools/add-sprite.py bilder/wegkreuz.png bilder/marterl.png
     python3 tools/add-sprite.py bilder/           # alle PNG im Ordner
+    python3 tools/add-sprite.py --trage bilder/wasser.png   # Tragegut
 
 Der Dateiname ohne Endung ist der Gebaeudeschluessel, so wie er in DEF steht
 (wegkreuz, marterl, maibaum, blumen, obstbaum, zaun, ...).
+
+Mit --trage landet das Bild stattdessen in CSPR, der Tabelle fuer das, was
+die Leute in der Hand tragen (wasser, holz, stein, nahrung, ...). Tragegut
+wird auf 48 Pixel skaliert statt auf 256, weil es im Spiel nur rund 10 Pixel
+breit erscheint.
 
 Was das Werkzeug macht:
   - laedt das Bild, schneidet durchsichtige Raender weg
@@ -30,18 +36,19 @@ except ImportError:
     sys.exit("Pillow fehlt. Installieren mit: pip install --break-system-packages pillow")
 
 HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "index.html")
-BREITE = 256
+BREITE_BAU = 256
+BREITE_TRAGE = 48
 QUALITAET = 88
 
 
-def bild_einlesen(pfad):
+def bild_einlesen(pfad, breite):
     im = Image.open(pfad).convert("RGBA")
     rand = im.getbbox()
     if rand:
         im = im.crop(rand)
-    if im.width > BREITE:
-        h = max(1, round(im.height * BREITE / im.width))
-        im = im.resize((BREITE, h), Image.LANCZOS)
+    if im.width > breite:
+        h = max(1, round(im.height * breite / im.width))
+        im = im.resize((breite, h), Image.LANCZOS)
     puffer = io.BytesIO()
     im.save(puffer, "WEBP", quality=QUALITAET, method=6, lossless=False)
     roh = puffer.getvalue()
@@ -53,8 +60,12 @@ def eintrag(schluessel, w, h, src):
 
 
 def main(argv):
+    trage = "--trage" in argv
+    argv = [a for a in argv if a != "--trage"]
     if not argv:
         sys.exit(__doc__)
+    breite = BREITE_TRAGE if trage else BREITE_BAU
+    tabelle = "const CSPR=" if trage else "const BSPR="
 
     pfade = []
     for a in argv:
@@ -69,20 +80,30 @@ def main(argv):
     with io.open(HTML, encoding="utf8") as f:
         s = f.read()
 
-    i = s.index("const BSPR=")
+    i = s.index(tabelle)
     j = s.index("};", i)
-    block = s[i + len("const BSPR="):j + 1]
+    block = s[i + len(tabelle):j + 1]
 
     vorhanden = set(re.findall(r'"(\w+)":\s*\{"w":', block))
-    def_keys = set(re.findall(r"^\s{0,4}(\w+):\s*\{n:tr`", s, re.M))
+    if trage:
+        # Tragegut: erlaubt ist alles, was eine Tragefarbe hat (CARRYCOL),
+        # dazu die Warennamen aus RN. Wasser steht nur in CARRYCOL, weil es
+        # keine Lagerware ist, sondern im Haus steht.
+        def_keys = set(vorhanden)
+        for muster in (r"const CARRYCOL=\{(.*?)\};", r"const RN=\{(.*?)\};"):
+            r = re.search(muster, s, re.S)
+            if r:
+                def_keys |= set(re.findall(r"(\w+)\s*:", r.group(1)))
+    else:
+        def_keys = set(re.findall(r"^\s{0,4}(\w+):\s*\{n:tr`", s, re.M))
 
     neu, ersetzt = [], []
     for p in pfade:
         k = os.path.splitext(os.path.basename(p))[0]
         if k not in def_keys:
-            print("  uebersprungen: %s — kein Gebaeude mit diesem Schluessel in DEF" % k)
+            print("  uebersprungen: %s — diesen Schluessel gibt es nicht" % k)
             continue
-        w, h, src, roh = bild_einlesen(p)
+        w, h, src, roh = bild_einlesen(p, breite)
         e = eintrag(k, w, h, src)
         if k in vorhanden:
             block = re.sub(r'"%s":\s*\{"w":\s*\d+,\s*"h":\s*\d+,\s*"src":\s*"[^"]*"\}' % k,
@@ -96,7 +117,7 @@ def main(argv):
     if not neu and not ersetzt:
         sys.exit("Nichts eingebaut.")
 
-    s = s[:i] + "const BSPR=" + block + s[j + 1:]
+    s = s[:i] + tabelle + block + s[j + 1:]
     with io.open(HTML, "w", encoding="utf8") as f:
         f.write(s)
 
