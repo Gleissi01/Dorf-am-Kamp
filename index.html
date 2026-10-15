@@ -267,7 +267,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 52</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 53</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -4223,6 +4223,12 @@ cv.addEventListener('pointercancel',e=>{pts.delete(e.pointerId);if(!pts.size){do
 cv.addEventListener('wheel',e=>{e.preventDefault();const[x,y]=rel(e);zoomAt(x,y,cam.z*Math.exp(-e.deltaY*0.0015));},{passive:false});
 
 let mode=null,ghost=null,sel=null;
+// Wann wurde zuletzt ein Fenster geoeffnet. Auf dem Handy schickt der
+// Browser nach dem pointerup noch ein click an dieselbe Stelle. Da steht
+// dort aber schon das frisch geoeffnete Fenster, und der Finger drueckt
+// den Knopf mit, der zufaellig darunter liegt - beim Rathaus etwa den
+// Steuersatz, beim Schlachthaus die Tierart.
+let sheetAuf=0;
 function setGhostFromTile(tx,ty){const d=DEF[mode];ghost={x:tx-Math.floor((d.w-1)/2),y:ty-Math.floor((d.h-1)/2)};updatePlacebar();}
 function closeSheets(){if($('land'))$('land').hidden=true;if($('person'))$('person').hidden=true;$('menu').hidden=true;$('people').hidden=true;$('village').hidden=true;$('quest').hidden=true;if($('store'))$('store').hidden=true;}
 function tap(sx,sy,type){
@@ -4358,6 +4364,7 @@ function openInfo(b){
   h+=`<div id="iStatus"></div>`;
   $('iBody').innerHTML=h;
   $('info').hidden=false;
+  sheetAuf=performance.now();
   updateInfo();
 }
 function closeInfo(){sel=null;$('info').hidden=true;}
@@ -4487,6 +4494,9 @@ function updateInfo(){
   const st=$('iStatus');st.textContent=status;st.className=warn?'warn':'';
 }
 $('iBody').addEventListener('click',e=>{
+  // Der Tipp, mit dem das Fenster aufgegangen ist, darf nicht gleich noch
+  // einen Knopf darin druecken.
+  if(performance.now()-sheetAuf<450)return;
   const b=G.bmap.get(sel);if(!b)return;
   if(e.target.closest('#iFireBtn')){const n=sendFighters(b,4);toast(n?tr`${n} Leute eilen zum Löschen.`:tr`Niemand kann löschen.`,n?'':'warn');updateInfo();return;}
   const hb=e.target.closest('[data-hire]');if(hb){hireFor(b,hb.dataset.hire);openInfo(b);updateHUD();return;}

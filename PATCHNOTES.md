@@ -1,5 +1,30 @@
 # Patch Notes
 
+## v53 — Der Geisterklick
+
+Du hattest einen Fehler gefunden, den ich in sechs Versuchen nicht nachstellen
+konnte: Steuersatz oder Betriebsart springen zurück, „als ob es wer anders
+umstellt". Dein Bildschirmvideo hat ihn verraten.
+
+**Was passiert ist:** Die Karte reagiert auf das Loslassen des Fingers. Der
+Browser schickt danach aber noch einen Klick an dieselbe Stelle hinterher — und
+dort steht inzwischen das Fenster, das gerade aufgegangen ist. Dein Finger
+drückt also den Knopf mit, der zufällig unter ihm erscheint. Beim Rathaus ist
+das die Steuerzeile, beim Schlachthaus die Tierart.
+
+Du hast nie etwas zurückgestellt. Dein eigener Tipp, mit dem du das Gebäude
+angetippt hast, hat zweimal gewirkt: einmal zum Öffnen, einmal auf den Knopf.
+
+**Nachgestellt:** Rathaus auf Steuer „Hoch" gestellt, Fenster zu, Gebäude
+wieder angetippt — vorher sprang es auf „Niedrig", jetzt bleibt es auf „Hoch".
+
+**Behoben:** Knopfdrücke im Infofenster werden in den ersten knapp einer halben
+Sekunde nach dem Öffnen nicht angenommen. Lang genug für den Geisterklick, kurz
+genug, dass man es beim Bedienen nicht merkt. Das gilt für alle Knöpfe im
+Fenster, also auch Schlachthaus, Schmiede, Weberei, Schneider, Bergwerk und
+Handelsposten.
+
+
 ## v52 — Die Festtafel war so groß wie ein Haus
 
 Du hast recht gehabt, und es war schlimmer als es aussah: nachgerechnet wurde
