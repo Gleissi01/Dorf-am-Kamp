@@ -1,5 +1,54 @@
 # Patch Notes
 
+## v49 — Fünf neue Wildarten, der Damm und zwei Stücke Zierde
+
+Deine acht Bilder sind drin. Gemini hat sie in drei Dateien gepackt, ich habe
+sie auseinandergeschnitten — beim Hasen hing der Schweineschwanz am Ohr, das
+musste von Hand weg.
+
+**Im Wald leben jetzt sechs Arten statt einer.** Bisher gab es nur das Reh.
+Dazu kommen Feldhase, Fuchs, Dachs, Wildschwein und Hirsch. Jede Art hat ihren
+eigenen Platz:
+
+| Tier | Fleisch | wo es steht | wie oft |
+|---|---|---|---|
+| Feldhase | 2 | auch am Feldrand, braucht kaum Wald | sehr oft |
+| Reh | 5 | im lichten Wald | oft |
+| Fuchs | 1 | am Waldrand | mittel |
+| Dachs | 2 | im dichteren Wald | selten |
+| Wildschwein | 7 | im Dickicht | selten |
+| Hirsch | 9 | tief im Wald | am seltensten |
+
+Der Jäger bringt also nicht mehr immer dieselben fünf Nahrung heim. Ein Hirsch
+lohnt den weiten Weg, ein Fuchs kaum. Bei starker Beute kommt eine Meldung.
+Die Wölfe reißen alles Wild, nicht mehr nur Rehe, und der Hase flieht am
+schnellsten.
+
+**Der Fuchs holt sich Hühner.** Steht ein Hühnerstall ohne Hofhund in der Nähe,
+schleicht er sich an und nimmt sich eines. Mit Hundehütte traut er sich nicht
+heran. Das ist die einzige neue Mechanik, die ich dazugebaut habe — ein Fuchs,
+der nur herumsteht, wäre Deko gewesen.
+
+**Der Damm ist jetzt gemalt.** Das Bild zeigte ein längliches Stück von schräg
+oben, das sich nicht aneinanderreihen ließ: drei Dämme nebeneinander ergaben
+drei einzelne Haufen. Ich habe aus der Mitte ein kachelbares Stück Schüttung
+herausgeschnitten. Jetzt ergibt eine Reihe Dämme eine durchgehende Böschung,
+egal in welche Richtung du baust, und nach außen franst sie unregelmäßig ins
+Gras aus statt an einer geraden Kante aufzuhören. Im Winter liegt Schnee darauf.
+
+**Festtafel und Erntekrone** stehen in der Zierde-Leiste:
+
+- Festtafel, 2×1, aus 4 Holz, 6 Brettern und 2 Nägeln, Zierwert 3
+- Erntekrone, 1×1, aus 8 Getreide und 3 Holz, Zierwert 4
+
+Beide zählen auf die Dorfschönheit. Wenn wir Maifest und Erntedankfest bauen,
+sind sie der Platz, an dem sich die Leute sammeln — dafür fehlt noch die
+Spiellogik, die Bilder stehen aber schon bereit.
+
+Nachgeprüft: alle acht Bilder laden, sechs Wildarten tauchen im Wald auf und
+wandern, keine Fehlermeldungen über fünf Spieljahre.
+
+
 ## v48 — Die sieben Fehler aus deinem Test
 
 **Der Jäger erlegt jetzt wirklich Wölfe.** Das war kaputt, und zwar schlimmer
