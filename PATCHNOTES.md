@@ -1,5 +1,29 @@
 # Patch Notes
 
+## v50 — Das Dorf steht am Grab
+
+Stirbt jemand, legen die Angehörigen die Arbeit nieder und gehen zum Friedhof.
+Sie stehen beisammen am Rand, ein gutes Stück eines Spieltages lang, dann geht
+jeder zurück an seine Arbeit.
+
+**Wer kommt:** Ehepartner, Eltern, Kinder und Geschwister, dazu der Pfarrer,
+wenn einer im Dorf ist. Kinder unter sechs bleiben daheim. In einem Dorf mit
+höchstens vierzehn Leuten kommen auch zwei Nachbarn mit, weil dort jeder jeden
+kennt.
+
+**Höchstens sechs Leute** gehen hin. Sonst stünde bei einer Seuche das halbe
+Dorf auf dem Friedhof und die Arbeit läge still — das wäre eine Strafe auf die
+Strafe.
+
+Ein Begräbnis mit Pfarrer tröstet das Dorf ein wenig, die Stimmung sinkt nicht
+so tief. Ohne Friedhof werden die Toten weiterhin in Gföhl begraben, dann
+bleibt auch der Trauerzug aus. Der Friedhof hat damit einen zweiten Grund
+dazubekommen.
+
+Nachgeprüft: Ehemann und Tochter gehen zum Grab, stehen nebeneinander und
+nehmen danach ihre Arbeit wieder auf. Keine Fehlermeldungen.
+
+
 ## v49 — Fünf neue Wildarten, der Damm und zwei Stücke Zierde
 
 Deine acht Bilder sind drin. Gemini hat sie in drei Dateien gepackt, ich habe

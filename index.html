@@ -261,7 +261,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 49</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 50</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -930,8 +930,55 @@ function bury(c,why){
   const f=G.B.find(b=>b.type==='friedhof'&&b.done&&(b.graves||[]).length<12);
   if(!f){G.gfoehl=(G.gfoehl||0)+1;return;}
   f.graves=f.graves||[];f.graves.push({n:fullName(c),a:c.age,y:year(),w:cause,k:hash(c.id)%3});
-  const pf=pfarrer();if(pf)toastOnce('burial',tr`Pfarrer ${pf.sur} hält das Begräbnis für ${fullName(c)}.`,'',20);sfxOnce('bell',15000,0,0.5);
+  const pf=pfarrer();
+  const n=trauerzug(c,f);
+  if(pf&&n)toastOnce('burial',tr`Pfarrer ${pf.sur} hält das Begräbnis für ${fullName(c)}. ${n} Leute stehen am Grab.`,'',20);
+  else if(n)toastOnce('burial',tr`${n} Leute stehen am Grab von ${fullName(c)}.`,'',20);
+  else if(pf)toastOnce('burial',tr`Pfarrer ${pf.sur} hält das Begräbnis für ${fullName(c)}.`,'',20);
+  // Ein Begraebnis mit Pfarrer troestet das Dorf ein wenig.
+  if(pf&&n)G.penalty-=1;
+  sfxOnce('bell',15000,0,0.5);
   if(!G.B.some(b=>b.type==='friedhof'&&b.done&&(b.graves||[]).length<12))toastOnce('fhfull',tr`Der Friedhof ist voll. Leg einen zweiten an, sonst werden die Toten in Gföhl begraben.`,'warn',120);
+}
+// Stirbt jemand, legen die Angehoerigen die Arbeit nieder und stehen am
+// Grab: Ehepartner, Eltern, Kinder und Geschwister, dazu der Pfarrer.
+// Kleine Kinder bleiben daheim. Hoechstens sechs Leute, damit bei einer
+// Seuche nicht das halbe Dorf auf dem Friedhof steht und die Arbeit ruht.
+function trauerzug(tot,fried){
+  if(!fried)return 0;
+  const verwandt=o=>
+    o.partner===tot.id ||
+    (tot.mother!=null&&o.id===tot.mother) || (tot.father!=null&&o.id===tot.father) ||
+    o.mother===tot.id || o.father===tot.id ||
+    (tot.mother!=null&&o.mother===tot.mother) || (tot.father!=null&&o.father===tot.father);
+  const frei=o=>!(o.sick>0)&&!o.hidden&&!o.fightId&&!(o.robot>0)&&o.trauer==null&&o.age>=6;
+  let leute=G.C.filter(o=>o.id!==tot.id&&frei(o)&&verwandt(o));
+  // Im kleinen Dorf kennt jeder jeden: dann kommen auch Nachbarn mit.
+  if(leute.length<2&&G.C.length<=14)
+    leute=leute.concat(G.C.filter(o=>o.id!==tot.id&&frei(o)&&!verwandt(o)&&isAdult(o)).slice(0,2));
+  const pf=pfarrer();
+  if(pf&&!leute.includes(pf)&&pf.trauer==null)leute.unshift(pf);
+  leute=leute.slice(0,6);
+  if(!leute.length)return 0;
+  // Plaetze rund um den Friedhof, nicht mitten drauf: sonst verschwinden sie
+  // im Gebaeude und man sieht niemanden stehen.
+  const d=DEF.friedhof,rand=[];
+  for(let x=fried.x-1;x<=fried.x+d.w;x++){rand.push([x,fried.y-1]);rand.push([x,fried.y+d.h]);}
+  for(let y=fried.y;y<fried.y+d.h;y++){rand.push([fried.x-1,y]);rand.push([fried.x+d.w,y]);}
+  let gut=rand.filter(([x,y])=>inb(x,y)&&walkC(y*W+x));
+  if(!gut.length)return 0;
+  // Nicht rundherum verstreut: die Trauergemeinde steht beisammen. Als
+  // Ankerpunkt dient die Seite, die dem Dorf zugewandt ist.
+  const lager=G.B.find(b=>b.type==='lager'&&b.done)||G.B[0];
+  const mx=fried.x+d.w/2,my=fried.y+d.h/2;
+  const ax=lager?lager.x+1:mx,ay=lager?lager.y+1:my+d.h;
+  gut=gut.map(p=>({p,d:(p[0]+.5-ax)**2+(p[1]+.5-ay)**2})).sort((a,b)=>a.d-b.d).map(o=>o.p);
+  const bis=G.t+DAYLEN*0.8;
+  let k=0;
+  for(const o of leute){
+    resetTask(o);o.trauer=bis;o.tpl=gut[k%gut.length];k++;
+  }
+  return leute.length;
 }
 function ancAdd(c,why){
   if(!G.anc)G.anc=[];
@@ -998,6 +1045,15 @@ function think(c){
   if(c.carry){
     const keep=b&&DEF[b.type].prod&&c.carry.r===DEF[b.type].prod&&c.carry.n<15&&fieldHasRipe(b);
     if(!keep){deliver(c);return;}
+  }
+  // Begraebnis geht allem vor ausser Krankheit und Feuer.
+  if(c.trauer!=null){
+    if(G.t>=c.trauer||!c.tpl){c.trauer=null;c.tpl=null;}
+    else{const[px,py]=c.tpl;
+      if(Math.abs(c.x-(px+.5))>0.7||Math.abs(c.y-(py+.5))>0.7){
+        if(!goTo(c,px,py,()=>{c.cool=1.5;}))c.cool=2;
+      }else c.cool=1.2;
+      return;}
   }
   if(c.sick>0){const sp=c.inSp!=null?G.bmap.get(c.inSp):spitalBed();if(!sp)c.inSp=null;if(sp){c.inSp=sp.id;goTo(c,sp.x+(c.id%3),sp.y+1,()=>{c.cool=4;})||(c.cool=3);return;}
     const h=homeOf(c)||G.B.find(x=>HOUSE[x.type]&&x.done);if(h){goTo(c,h.x+(c.id%2),h.y+1,()=>{c.cool=4;})||(c.cool=3);}else c.cool=3;return;}
