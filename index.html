@@ -41,6 +41,10 @@ main{position:relative;flex:1;min-height:0;overflow:hidden}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 nav{background:var(--panel);border-top:1px solid var(--line);padding:6px 16px 8px;display:flex;flex-direction:column;gap:6px;z-index:3}
 .cats{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+#storeBar{display:flex;gap:4px;flex-wrap:wrap;padding:4px 0 2px}
+#navTog{position:absolute;right:8px;top:-26px;z-index:6;border:1px solid var(--line,#d8d4c8);background:#faf9f5;color:#141413;border-radius:8px 8px 0 0;padding:3px 12px;font:600 12px -apple-system,sans-serif;box-shadow:0 -1px 4px rgba(0,0,0,.08)}
+#build{position:relative}
+#build.zu .cats,#build.zu .blist{display:none}
 .cats button{background:none;border:0;border-bottom:2px solid transparent;padding:2px 8px;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
 .cats button.on{color:var(--linen);border-bottom-color:var(--straw)}
 .blist{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin}
@@ -163,6 +167,13 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
 <div id="app">
   <header>
     <div class="res">
+      <button class="chip" id="cStore" aria-label="Lager"><span>Lager</span><b id="rStore">0</b></button>
+      <div class="chip" id="cGulden"><span>Gulden</span><b id="rGulden">0</b></div>
+      <button class="chip" id="cPop" aria-label="Leute einteilen"><span>Leute</span><b id="rPop">0</b><span id="rFreeS"></span></button>
+      <button class="chip" id="cMs" aria-label="Meilensteine"><span>Meilen&shy;steine</span><b id="rMs">0</b></button>
+      <button class="chip" id="cMood" aria-label="Dorf und Stimmung"><span id="rStage">Weiler</span><b id="rMood">0%</b></button>
+    </div>
+    <div id="storeBar" hidden>
       <div class="chip" id="cHolz"><span>Holz</span><b id="rHolz">0</b></div>
       <div class="chip" id="cBretter"><span>Bretter</span><b id="rBretter">0</b></div>
       <div class="chip" id="cNaegel"><span>Nägel</span><b id="rNaegel">0</b></div>
@@ -170,10 +181,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
       <div class="chip" id="cStein"><span>Stein</span><b id="rStein">0</b></div>
       <div class="chip" id="cNahrung" title="Vorrat reicht so viele Tage"><span>Nahrung</span><b id="rNahrung">0</b><span id="rNd"></span></div>
       <div class="chip" id="cWerkzeug"><span>Werkzeug</span><b id="rWerkzeug">0</b></div>
-      <div class="chip" id="cGulden"><span>Gulden</span><b id="rGulden">0</b></div>
-      <button class="chip" id="cPop" aria-label="Leute einteilen"><span>Leute</span><b id="rPop">0</b></button>
       <div class="chip" id="cFree"><span>Frei</span><b id="rFree">0</b></div>
-      <button class="chip" id="cMood" aria-label="Dorf und Stimmung"><span id="rStage">Weiler</span><b id="rMood">0%</b></button>
     </div>
     <div class="row2">
       <div id="date">März 1800</div>
@@ -253,7 +261,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 47</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 48</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -341,7 +349,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
       </div>
     </div>
   </main>
-  <nav id="build" aria-label="Gebäude bauen"><div class="cats" id="cats" role="tablist"></div><div class="blist" id="blist"></div></nav>
+  <nav id="build" aria-label="Gebäude bauen"><button id="navTog" aria-label="Gebäudeleiste ein- und ausklappen">Bauen ▾</button><div class="cats" id="cats" role="tablist"></div><div class="blist" id="blist"></div></nav>
 </div>
 
 <script>
@@ -394,8 +402,8 @@ const DEF={
   dorfplatz:{n:tr`Dorfplatz mit Linde`,cat:0,w:2,h:2,cost:{stein:12,holz:4,bretter:4},bt:12,wk:0,st:1,seats:6,roof:'#4f7a34',wall:'#b9ad92',d:tr`Sechs Plätze unter der Dorflinde. Die schnellste Erholung, und die Leute treffen sich hier gern.`},
   bauernhaus:{n:tr`Bauernhaus`,cat:0,w:3,h:2,beds:6,cost:{holz:8,bretter:10,stein:2,naegel:4,dach:8},bt:18,wk:0,roof:'#9c8450',wall:'#e9e1cd',d:tr`Platz für 6 Leute, mit Gemüsegarten hinterm Haus. Von Frühling bis Herbst baut die Familie selbst an: Das spart Einkäufe, und der Überschuss geht gegen Gulden an den Marktstand.`},
   ziegelhaus:{n:tr`Ziegelhaus`,cat:0,w:2,h:2,beds:6,st:1,cost:{holz:4,bretter:6,stein:6,naegel:4,ziegel:12},bt:18,wk:0,roof:'#a8452e',wall:'#f2ece0',d:tr`Gemauert und mit Ziegeldach: Platz für 6 Leute, fängt kaum Feuer und muss selten ausgebessert werden. Der Dachdecker braucht dafür 2 Ziegel statt Stroh.`},
-  bader:   {n:tr`Bader`,cat:0,ed:1,st:1,w:2,h:2,cost:{holz:6,bretter:8,stein:6,naegel:4,dach:4},bt:14,wk:1,r:16,roof:'#8a7a5a',wall:'#efe6cf',d:tr`Der Bader, der Wundarzt im Dorf, geht zu den Kranken nach Hause. Wer behandelt wird, ist doppelt so schnell gesund, und die Ruhr ist nur noch selten tödlich (4 statt 12 %). Mit Bader erkranken auch weniger Leute. Braucht Volksschule.`},
-  spital:  {n:tr`Spital`,cat:0,ed:1,st:2,w:3,h:2,sb:8,cost:{bretter:16,stein:30,naegel:8,dach:10},bt:24,wk:2,roof:'#6d6a64',wall:'#f0ebe0',d:tr`Acht Betten. Kranke werden hier gepflegt, genesen doppelt so schnell und sterben kaum noch an der Ruhr (2 %). Mit Spital leben auch die Alten länger. Braucht Volksschule.`},
+  bader:   {n:tr`Bader`,cat:0,st:1,w:2,h:2,cost:{holz:6,bretter:8,stein:6,naegel:4,dach:4},bt:14,wk:1,r:16,roof:'#8a7a5a',wall:'#efe6cf',d:tr`Der Bader, der Wundarzt im Dorf, geht zu den Kranken nach Hause. Wer behandelt wird, ist doppelt so schnell gesund, und die Ruhr ist nur noch selten tödlich (4 statt 12 %). Mit Bader erkranken auch weniger Leute. Braucht Volksschule.`},
+  spital:  {n:tr`Spital`,cat:0,st:2,w:3,h:2,sb:8,cost:{bretter:16,stein:30,naegel:8,dach:10},bt:24,wk:2,roof:'#6d6a64',wall:'#f0ebe0',d:tr`Acht Betten. Kranke werden hier gepflegt, genesen doppelt so schnell und sterben kaum noch an der Ruhr (2 %). Mit Spital leben auch die Alten länger. Braucht Volksschule.`},
   friedhof:{n:tr`Friedhof`,cat:0,st:1,w:3,h:3,cost:{stein:12,holz:4},bt:10,wk:0,roof:'#6d6a64',wall:'#9a968c',d:tr`Die Toten des Dorfes finden hier ihre Ruhe, jedes Grab trägt ihren Namen. Platz für 12 Gräber. Ohne Friedhof werden sie in Gföhl begraben.`},
   markt:   {n:tr`Marktstand`,cat:0,w:2,h:2,cost:{holz:6,bretter:8,naegel:2},bt:10,wk:2,roof:'#b5533a',wall:'#d8c9a4',d:tr`Die Marktfrau holt Nahrung, Bier und Leinen aus dem Lager an den Stand. Ab dem Dorf kaufen die Haushalte hier mit ihrem Lohn ein. Wer nicht einkaufen kann, ist unzufrieden.`},
   bauhuette:{n:tr`Bauhütte`,cat:0,w:2,h:2,cost:{holz:10,bretter:10,naegel:4,dach:4},bt:12,wk:6,st:1,roof:'#8a6a42',wall:'#c9b08a',d:tr`Feste Bauleute: Sie bauen immer, auch wenn alle anderen in Betrieben stecken, und bekommen den vollen Lohn. Mit einem freien Wagen vom Wagenstand bringen sie 8 Ladungen auf einmal. Freie Leute helfen als Tagelöhner für den halben Lohn mit.`},
@@ -405,14 +413,14 @@ const DEF={
   dach:    {n:tr`Dachdecker`,cat:0,w:2,h:2,cost:{holz:6,bretter:4,naegel:2,dach:4},bt:12,wk:2,r:99,any:1,roof:'#b09150',wall:'#e0d4bc',d:tr`Deckt schadhafte Dächer neu ein. Jede Reparatur braucht 3 Dachmaterial (Schilf oder Stroh) und 1 Brett für die Lattung. Deckt im ganzen Dorf, das schlechteste Dach zuerst.`},
   brunnen: {n:tr`Brunnen`,cat:0,w:1,h:1,cost:{stein:10,bretter:2},bt:6,wk:0,roof:'#6d6a64',wall:'#9a968c',d:tr`Trinkwasser und Löschwasser. Die Haushalte holen ihr Wasser am nächsten Brunnen; ohne Brunnen müssen sie zum Kamp hinunter, was weit ist und weniger bringt. Brennt es im Umkreis von 10 Feldern, eilen freie Leute von selbst zum Löschen und löschen doppelt so schnell.`},
   kapelle: {n:tr`Kapelle`,cat:0,w:2,h:2,cost:{bretter:10,stein:30,naegel:6,dach:6},bt:20,wk:1,st:1,roof:'#4a4442',wall:'#f0ebe0',d:tr`Ab der Stufe Dorf erwarten die Leute eine Kapelle. Sobald sie steht, schickt die Diözese St. Pölten einen Pfarrer. Nur er traut Paare im Dorf. Ohne Pfarrer heiraten die Leute selten, in der Pfarrkirche Gföhl.`},
-  wirtshaus:{n:tr`Wirtshaus`,cat:0,ed:1,w:2,h:2,cost:{bretter:14,stein:14,naegel:8,dach:8},bt:18,wk:1,roof:'#96804c',wall:'#efe3c8',d:tr`Braucht einen Wirt und Bier im Lager. Ein Markt ohne Wirtshaus ist kein Markt.`},
+  wirtshaus:{n:tr`Wirtshaus`,cat:0,w:2,h:2,cost:{bretter:14,stein:14,naegel:8,dach:8},bt:18,wk:1,roof:'#96804c',wall:'#efe3c8',d:tr`Braucht einen Wirt und Bier im Lager. Ein Markt ohne Wirtshaus ist kein Markt.`},
   feld:    {n:tr`Feld`,cat:1,sz:1,w:4,h:4,cost:{holz:4},bt:8,wk:2,prod:'getreide',sow:[0,1],gr:1,yl:5,roof:'#6e5132',wall:'#6e5132',d:tr`Liefert Getreide und nebenbei Stroh fürs Dach. Aussaat im Frühling und Sommer.`},
   erdaepfel:{n:tr`Erdäpfelacker`,cat:1,sz:1,w:4,h:4,cost:{holz:4},bt:8,wk:2,prod:'nahrung',sow:[0,1],gr:0.75,yl:7,roof:'#6e5132',wall:'#6e5132',d:tr`Waldviertler Erdäpfel: im Frühling oder Frühsommer setzen, ernten, bevor der Frost kommt. Liefert direkt viel Nahrung.`},
   sammler: {n:tr`Sammler`,cat:1,sz:1,w:2,h:2,cost:{holz:8},bt:8,wk:2,r:99,any:1,roof:'#9a8450',wall:'#a3845c',d:tr`Sammelt Beeren und Schwammerl im Wald. Im Sommer und Herbst am meisten, im Winter nichts.`},
   fischer: {n:tr`Fischer`,cat:1,w:2,h:2,cost:{holz:6,bretter:4,naegel:2,dach:3},bt:10,wk:1,r:99,any:1,roof:'#8f7a48',wall:'#a3845c',d:tr`Fischt im Kamp. Im Winter fängt er wenig.`},
   jaeger:  {n:tr`Jäger`,cat:1,w:2,h:2,cost:{holz:6,bretter:4,naegel:2,dach:3},bt:10,wk:1,r:99,any:1,roof:'#8a7446',wall:'#9a7b55',d:tr`Jagt Rehe im Wald und vertreibt Wölfe. Wild vermehrt sich nur, wo Wald steht.`},
   teich:   {n:tr`Karpfenteich`,cat:1,sz:1,w:3,h:3,cost:{holz:6,stein:8},bt:18,wk:1,roof:'#3f6f88',wall:'#3f6f88',d:tr`Im Teich wachsen im Frühling und Sommer Karpfen heran. Der Teichwirt fischt im Herbst ab, bis zu 6 Nahrung pro Gang.`},
-  baecker: {n:tr`Bäckerei`,cat:1,ed:1,w:2,h:2,cost:{holz:8,bretter:6,stein:6,naegel:4,dach:4},bt:14,wk:1,roof:'#a0864e',wall:'#e3d6bb',d:tr`Holt 4 Getreide aus dem Lager und bäckt daraus 6 Nahrung.`},
+  baecker: {n:tr`Bäckerei`,cat:1,w:2,h:2,cost:{holz:8,bretter:6,stein:6,naegel:4,dach:4},bt:14,wk:1,roof:'#a0864e',wall:'#e3d6bb',d:tr`Holt 4 Getreide aus dem Lager und bäckt daraus 6 Nahrung.`},
   imker:   {n:tr`Imkerei`,cat:1,sz:1,w:2,h:2,cost:{holz:6,bretter:4,naegel:2,dach:2},bt:10,wk:1,r:6,roof:'#9c8650',wall:'#d8c9a4',d:tr`Honig im Frühling und Sommer. Mehr freie Wiese im Umkreis bringt mehr Ertrag.`},
   weide:   {n:tr`Weide`,cat:1,w:4,h:4,cost:{holz:10,naegel:4},bt:8,wk:0,roof:'#7d9a52',wall:'#7d9a52',d:tr`Eingezäunte Weide für bis zu 6 Waldviertler Blondvieh. Kälber kommen, wenn ein Kuhstall in der Nähe arbeitet.`},
   heuwiese:{n:tr`Heuwiese`,cat:1,sz:1,w:4,h:4,cost:{holz:4},bt:6,wk:2,roof:'#8a9a52',wall:'#8a9a52',d:tr`Das Gras wächst im Frühling und Sommer von selbst. Freie Leute, Kinder und Alte mähen es, sobald es hoch steht, und setzen es zu Heumandln auf. Nach rund 6 Tagen ist das Heu trocken und kommt in den Heustadel. Zwei Schnitte im Jahr.`},
@@ -421,7 +429,7 @@ const DEF={
   huehner: {n:tr`Hühnerstall`,cat:1,w:2,h:2,cost:{holz:6,bretter:6,naegel:2,dach:3},bt:10,wk:1,roof:'#a08a52',wall:'#d8c9a4',d:tr`Startet mit 4 Hühnern, bis zu 12. Die Magd sammelt Eier. Die Hühner vermehren sich im Frühling und Sommer.`},
   schweine:{n:tr`Schweinestall`,cat:1,w:2,h:2,cost:{holz:8,bretter:6,naegel:4,dach:4},bt:12,wk:1,r:7,roof:'#8f7848',wall:'#c9b08a',d:tr`Startet mit 2 Schweinen, bis zu 8. Der Schweinehirt treibt sie zur Eichelmast in den Wald. Ohne Wald im Umkreis wachsen keine Ferkel nach. Im Winter fressen sie Getreide.`},
   schlacht:{n:tr`Schlachthaus`,cat:1,w:2,h:2,cost:{holz:6,bretter:8,stein:8,naegel:4,dach:4},bt:14,wk:1,r:14,roof:'#8a6a44',wall:'#e2d6c0',d:tr`Der Fleischhauer schlachtet aus Ställen und Weiden im Umkreis: Huhn 3, Schwein 12, Kuh 20 Nahrung. Automatisch nimmt er nur den Überschuss und lässt Zuchttiere stehen.`},
-  brauerei:{n:tr`Brauerei`,cat:1,ed:1,w:2,h:2,cost:{holz:8,bretter:10,stein:10,naegel:6,dach:6},bt:16,wk:1,st:1,roof:'#8f7446',wall:'#d9c9a6',d:tr`Braut aus 3 Getreide 4 Bier. Ab der Stufe Dorf wollen die Leute Bier.`},
+  brauerei:{n:tr`Brauerei`,cat:1,w:2,h:2,cost:{holz:8,bretter:10,stein:10,naegel:6,dach:6},bt:16,wk:1,st:1,roof:'#8f7446',wall:'#d9c9a6',d:tr`Braut aus 3 Getreide 4 Bier. Ab der Stufe Dorf wollen die Leute Bier.`},
   holz:    {n:tr`Holzfäller`,cat:2,w:2,h:2,cost:{holz:8,naegel:2,dach:3},bt:10,wk:2,r:99,any:1,roof:'#8f7a48',wall:'#a3845c',d:tr`Fällt ausgewachsene Fichten. Ein Baum bringt 6 Holz. Kein fester Umkreis, der nächste Baum zuerst. Mit Wagen trägt jeder doppelt so viel und geht normal schnell.`},
   foerster:{n:tr`Förster`,cat:2,w:2,h:2,cost:{holz:6,bretter:2,naegel:2,dach:3},bt:10,wk:1,r:7,roof:'#8a7a48',wall:'#a3845c',d:tr`Pflanzt Fichten nach. Sie wachsen nur von Frühling bis Herbst und brauchen rund zwei Jahre bis zur Schlägerung. Ohne Förster wächst kein Wald nach.`},
   stein:   {n:tr`Steinbruch`,cat:2,w:2,h:2,cost:{holz:8,bretter:4,naegel:2,dach:3},bt:12,wk:2,r:99,any:1,roof:'#8a7a50',wall:'#bab4a7',d:tr`Bricht Granit aus Felsen. Kein fester Umkreis, der nächste Fels zuerst. Mit Wagen trägt jeder doppelt so viel und geht normal schnell.`},
@@ -438,12 +446,12 @@ const DEF={
   hund:    {n:tr`Hundehütte`,cat:2,st:1,w:1,h:1,cost:{holz:6,bretter:3,naegel:1},bt:5,wk:0,r:8,roof:'#7a5a38',wall:'#8a6a42',d:tr`Ein Hofhund hält Wölfe von Weiden und Ställen im Umkreis fern. Er braucht niemanden, der ihn einteilt, nur einen Platz nahe beim Vieh.`},
   schafweide:{n:tr`Schafweide`,cat:2,st:1,w:4,h:4,cost:{holz:8,naegel:3},bt:7,wk:0,roof:'#8a9a62',wall:'#8a9a62',d:tr`Eingezäunte Weide für einen Schafstall in der Nähe. Vom Frühling bis Herbst steht die Herde draußen im Gras, die Wolle wächst um die Hälfte schneller. Im Winter bleiben die Schafe im Stall.`},
   saege:   {n:tr`Sägewerk`,cat:3,w:2,h:2,cost:{holz:10,stein:4,naegel:4,dach:4},bt:12,wk:1,roof:'#8a7446',wall:'#b0916a',d:tr`Schneidet aus 2 Holz 3 Bretter. Bretter braucht fast jedes Gebäude.`},
-  schmiede:{n:tr`Schmiede`,cat:3,ed:1,w:2,h:2,cost:{holz:8,bretter:6,stein:10,naegel:4,dach:4},bt:16,wk:1,roof:'#6d6660',wall:'#a39c90',d:tr`Schmiedet aus Eisen und Holzkohle Werkzeug (1 Eisen, 2 Kohle → 2) oder Nägel (1 Eisen, 1 Kohle → 8). Eisen kommt aus der Schmelzhütte.`},
-  wagner:  {n:tr`Wagnerei`,cat:3,ed:1,w:2,h:2,cost:{holz:6,bretter:8,naegel:4,dach:4},bt:14,wk:1,roof:'#8a7446',wall:'#b39468',d:tr`Richtet abgenutzte Wagen (2 Bretter, 1 Nagel: +50 %). Sonst baut sie aus 4 Holz, 6 Brettern und 4 Nägeln neue Wagen, bis 3 auf Vorrat sind. Wagen nutzen sich bei jeder Fuhre und jedem Gang ab und zerbrechen bei 0 %.`},
+  schmiede:{n:tr`Schmiede`,cat:3,w:2,h:2,cost:{holz:8,bretter:6,stein:10,naegel:4,dach:4},bt:16,wk:1,roof:'#6d6660',wall:'#a39c90',d:tr`Schmiedet aus Eisen und Holzkohle Werkzeug (1 Eisen, 2 Kohle → 2) oder Nägel (1 Eisen, 1 Kohle → 8). Eisen kommt aus der Schmelzhütte.`},
+  wagner:  {n:tr`Wagnerei`,cat:3,w:2,h:2,cost:{holz:6,bretter:8,naegel:4,dach:4},bt:14,wk:1,roof:'#8a7446',wall:'#b39468',d:tr`Richtet abgenutzte Wagen (2 Bretter, 1 Nagel: +50 %). Sonst baut sie aus 4 Holz, 6 Brettern und 4 Nägeln neue Wagen, bis 3 auf Vorrat sind. Wagen nutzen sich bei jeder Fuhre und jedem Gang ab und zerbrechen bei 0 %.`},
   ziegelei:{n:tr`Ziegelei`,cat:3,st:1,w:2,h:2,cost:{holz:8,bretter:6,stein:10,naegel:4,dach:4},bt:16,wk:1,roof:'#7a4a34',wall:'#c9a88a',d:tr`Brennt aus 4 Lehm und 2 Holz 6 Ziegel für Ziegelhäuser und Ziegeldächer.`},
-  weberei: {n:tr`Weberei`,cat:3,ed:1,w:2,h:2,cost:{holz:8,bretter:10,stein:6,naegel:6,dach:6},bt:16,wk:1,roof:'#9a8a5a',wall:'#e6dcc8',d:tr`Webt aus 4 Flachs 3 Leinen oder aus 4 Wolle 3 Wollstoff, umschaltbar. Leinen wird zu Sommergewand, Wollstoff zu Wintergewand. Die Städte zahlen gut für Leinen.`},
+  weberei: {n:tr`Weberei`,cat:3,w:2,h:2,cost:{holz:8,bretter:10,stein:6,naegel:6,dach:6},bt:16,wk:1,roof:'#9a8a5a',wall:'#e6dcc8',d:tr`Webt aus 4 Flachs 3 Leinen oder aus 4 Wolle 3 Wollstoff, umschaltbar. Leinen wird zu Sommergewand, Wollstoff zu Wintergewand. Die Städte zahlen gut für Leinen.`},
   schneider:{n:tr`Schneider`,cat:3,st:1,w:2,h:2,cost:{holz:6,bretter:8,naegel:4,dach:4},bt:12,wk:1,roof:'#8a6a5a',wall:'#efe3d0',d:tr`Näht aus 2 Leinen ein Sommergewand und aus 2 Wollstoff ein Wintergewand. Jeder im Dorf braucht beides, ein Gewand hält rund drei Jahre.`},
-  handel:  {n:tr`Handelsposten`,cat:3,ed:1,w:2,h:2,cost:{holz:8,bretter:10,stein:6,naegel:6,dach:6},bt:16,wk:1,wg:1,st:1,roof:'#58453a',wall:'#d8ccb0',d:tr`Der Fuhrmann bringt Waren in die Städte. Mit Wagen 30 Stück je Fuhre, sonst 10 zu Fuß und halb so schnell.`},
+  handel:  {n:tr`Handelsposten`,cat:3,w:2,h:2,cost:{holz:8,bretter:10,stein:6,naegel:6,dach:6},bt:16,wk:1,wg:1,st:1,roof:'#58453a',wall:'#d8ccb0',d:tr`Der Fuhrmann bringt Waren in die Städte. Mit Wagen 30 Stück je Fuhre, sonst 10 zu Fuß und halb so schnell.`},
 };
 const KEEP={auto:{huehner:6,schweine:4,weide:4},fix:2};
 const MEAT={huehner:3,schweine:12,weide:20};
@@ -1014,7 +1022,15 @@ function think(c){
   switch(b.type){
     case 'holz':{
       const mk=G.mark||new Uint8Array(N),ripe=collect(cx,cy,d.r,j=>G.tree[j]>=100&&!reserved[j]&&mk[j]!==2),pref=ripe.filter(j=>mk[j]===1);
-      const i=(pref.length?nearReach(c,pref,1,300)[0]:undefined)??nearReach(c,ripe,1,300)[0]??-1;
+      // Der naechste Baum gewinnt. Markierte zaehlen als sechs Felder naeher,
+      // damit eine Markierung am anderen Ende der Karte keinen Marsch ausloest.
+      const nahe=nearReach(c,ripe,1,300),nahePref=pref.length?nearReach(c,pref,1,300):[];
+      const dd=j=>Math.hypot(j%W+.5-c.x,(j/W|0)+.5-c.y);
+      let i=-1;
+      if(nahe.length||nahePref.length){
+        const a=nahe.length?nahe[0]:-1,p=nahePref.length?nahePref[0]:-1;
+        i=p<0?a:a<0?p:(dd(p)-6<=dd(a)?p:a);
+      }
       if(i<0){b.status=collect(cx,cy,d.r,j=>G.tree[j]>=100&&mk[j]===2).length?tr`Alle reifen Bäume sind geschützt. Markiere Bäume zum Fällen.`:tr`Keine ausgewachsenen Bäume in Reichweite.`;idleAt(c,b);return;}
       b.status='';reserve(c,i);
       goOrFail(c,i,()=>{setWork(c,3.5,()=>{unreserve(c);if(G.tree[i]>=100){G.tree[i]=0;const wg=rawWagon(c);c.carry={r:'holz',n:wg?12:6};wearC(c,0.5);}});});
@@ -1027,14 +1043,21 @@ function think(c){
       return;}
     case 'jaeger':{
       let best=null,bd=1e9;
-      const wolves=G.animals.filter(a=>a.kind==='wolf'&&(!a.hunter||a.hunter===c.id)&&(a.x-cx)**2+(a.y-cy)**2<=(d.r*1.4)**2);
-      const pool=wolves.length?wolves:G.animals.filter(a=>a.kind==='reh'&&(!a.hunter||a.hunter===c.id)&&(a.x-cx)**2+(a.y-cy)**2<=d.r*d.r);
+      const frei=a=>!a.hunter||a.hunter===c.id;
+      const wolves=G.animals.filter(a=>a.kind==='wolf'&&frei(a));
+      const pool=wolves.length?wolves:G.animals.filter(a=>a.kind==='reh'&&frei(a)&&(a.x-cx)**2+(a.y-cy)**2<=d.r*d.r);
       for(const a of pool){const dd=(a.x-c.x)**2+(a.y-c.y)**2;if(dd<bd){bd=dd;best=a;}}
       if(!best){b.status=tr`Kein Wild in Reichweite. Rehe brauchen Wald.`;idleAt(c,b);return;}
       b.status=best.kind==='wolf'?tr`Jagt Wölfe.`:'';best.hunter=c.id;c.huntId=best.id;
-      const ax=Math.floor(best.x),ay=Math.floor(best.y);let spot=-1,sd=9;
-      for(let yy=ay-1;yy<=ay+1;yy++)for(let xx=ax-1;xx<=ax+1;xx++){if(!inb(xx,yy))continue;const j=yy*W+xx;if(!walkC(j))continue;const dd=(xx+.5-best.x)**2+(yy+.5-best.y)**2;if(dd<sd){sd=dd;spot=j;}}
-      if(spot<0||!goTo(c,spot%W,spot/W|0,()=>stalk(c))){unreserve(c);c.cool=1.5;if(spot<0)b.status=tr`Das Wild steht tief im Wald. Der Jäger wartet am Waldrand.`;}
+      // Steht das Wild in Schussweite, wird sofort geschossen.
+      if(Math.hypot(best.x-c.x,best.y-c.y)<=(best.kind==='wolf'?7:1.8)){stalk(c);return;}
+      // Sonst pirscht er sich in kurzen Etappen an und sieht dabei, wohin
+      // das Rudel zieht. Ein Marsch quer ueber die Karte ging immer ins Leere.
+      const vx=best.x-c.x,vy=best.y-c.y,len=Math.hypot(vx,vy)||1,et=Math.min(len,4);
+      const zx=Math.floor(c.x+vx/len*et),zy=Math.floor(c.y+vy/len*et);
+      let spot=-1,sd=1e9;
+      for(let yy=zy-2;yy<=zy+2;yy++)for(let xx=zx-2;xx<=zx+2;xx++){if(!inb(xx,yy))continue;const j=yy*W+xx;if(!walkC(j))continue;const dd=(xx+.5-best.x)**2+(yy+.5-best.y)**2;if(dd<sd){sd=dd;spot=j;}}
+      if(spot<0||!goTo(c,spot%W,spot/W|0,()=>{c.cool=0.1;})){unreserve(c);c.cool=1.2;if(spot<0)b.status=tr`Das Wild steht tief im Wald. Der Jäger wartet am Waldrand.`;}
       return;}
     case 'fischer':{
       const spots=[];
@@ -1244,8 +1267,13 @@ function fieldThink(c,b){
 function stalk(c){
   const a=G.animals.find(x=>x.id===c.huntId);
   if(!a){c.huntId=null;return;}
-  if(Math.hypot(a.x-c.x,a.y-c.y)>1.8){c.cool=0.2;return;}
-  a.wait=Math.max(a.wait,3.4);
+  // Auf den Wolf schiesst er aus der Entfernung, das Reh schleicht er an.
+  // Ein Steinschlossgewehr traegt weiter, als ein Mann einem Wolf nachlaufen
+  // kann - vorher ist der Jaeger hinter dem Rudel hergelaufen, ohne je in
+  // Reichweite zu kommen.
+  const schuss=a.kind==='wolf'?7:1.8;
+  if(Math.hypot(a.x-c.x,a.y-c.y)>schuss){c.cool=0.25;return;}
+  if(a.kind!=='wolf')a.wait=Math.max(a.wait,3.4);
   setWork(c,a.kind==='wolf'?2.5:3,()=>{
     const a2=G.animals.find(x=>x.id===c.huntId);c.huntId=null;if(!a2)return;a2.hunter=0;
     if(Math.random()<(a2.kind==='wolf'?0.6:0.7)){
@@ -1256,11 +1284,24 @@ function stalk(c){
   });
 }
 function fuelReserve(){return season()>=2?G.B.filter(b=>HOUSE[b.type]&&b.done).length*8:0;}
+// Ab Herbst bleibt Getreide fuer das Vieh liegen. Bisher nahmen Baecker und
+// Brauer aus demselben Topf, und im Winter verhungerten die Tiere, obwohl
+// Getreide da war. Heu im Stadel wird gegengerechnet.
+function feedReserve(){
+  if(season()<2)return 0;
+  let n=0;
+  for(const b of G.B){if(!b.done)continue;
+    if(b.type==='schweine')n+=Math.ceil((b.pigs||0)/2);
+    else if(b.type==='schaf')n+=Math.ceil((b.sheep||0)/3);
+    else if(b.type==='weide')n+=(b.cows||0);}
+  return Math.max(0,n*6-(G.res.heu||0));
+}
 function fetchInputs(c,b,need){
   if(c.hold)return false;
   if(b.ib&&Object.keys(need).every(k=>(b.ib[k]||0)>=need[k])){for(const k in need)b.ib[k]-=need[k];c.hold=Object.assign({},need);return false;}
   const lk=lacking(need);if(lk){b.status=tr`Wartet auf ${need[lk]} ${RN[lk]} im Lager.`;idleAt(c,b);return true;}
   if(need.holz&&G.res.holz-need.holz<fuelReserve()){b.status=tr`Hält ${fuelReserve()} Holz als Brennholz für den Winter zurück.`;idleAt(c,b);return true;}
+  if(need.getreide&&G.res.getreide-need.getreide<feedReserve()){b.status=tr`Hält ${feedReserve()} Getreide als Winterfutter für das Vieh zurück.`;idleAt(c,b);return true;}
   const s=nearestStore(c.x,c.y,Object.keys(need).every(k=>FOOD.includes(k)));if(!s){c.cool=2;return true;}
   b.status=tr`Holt Material aus dem Lager.`;
   if(!goTo(c,s.x+(c.id%2),s.y+1,()=>{
@@ -1437,7 +1478,16 @@ function assignWorker(b){
   const need=DEF[b.type].ed||0;
   const free0=G.C.filter(c=>c.job==null&&canWork(c)&&!c.fightId);
   if(!free0.length){toast(tr`Niemand ist frei. Ziehe erst jemanden aus einem anderen Betrieb ab.`,'warn');return false;}
-  const free=free0.filter(c=>c.edu>=need);
+  let free=free0.filter(c=>c.edu>=need);
+  // Notbesetzung: hat im ganzen Dorf niemand den Abschluss, darf ein
+  // Ungelernter die Stelle uebernehmen. Sonst steht das Dorf fuer immer,
+  // wenn der letzte Absolvent stirbt - in der Schule lernen die Kinder
+  // dann halb so schnell.
+  if(!free.length&&need>0){
+    if(G.C.some(c=>c.edu>=need&&canWork(c))){toast(tr`Keiner der Freien hat ${EDU[need]}. Ziehe jemanden mit Abschluss aus einem anderen Betrieb ab.`,'warn');return false;}
+    free=free0;
+    toast(tr`Niemand im Dorf hat ${EDU[need]}. Ein Ungelernter übernimmt notdürftig.`,'warn');
+  }
   if(!free.length){toast(tr`Keiner der Freien hat ${EDU[need]}. Diese Stelle braucht Schulbildung.`,'warn');return false;}
   if(workersOf(b).length>=DEF[b.type].wk)return false;
   let best=free[0],bd=1e9;for(const c of free){const d=(c.x-b.x)**2+(c.y-b.y)**2;if(d<bd){bd=d;best=c;}}
@@ -1479,10 +1529,14 @@ function schoolDay(){
     const bs=G.B.filter(b=>b.type===type&&b.done&&b.cond>0&&b.fire<=0&&workersOf(b).length);
     const kids=G.C.filter(c=>c.age>=a0&&c.age<=a1&&(type==='kindergarten'||(type==='volksschule'?!(c.edu>=1):c.edu===1))).sort((x,y)=>x.age-y.age||x.id-y.id);
     let k=0;
-    for(const b of bs){let n=0;while(n<d.cap&&k<kids.length){const c=kids[k++];c.school=b.id;n++;if(c.help!=null)continue;
-      if(type==='kindergarten')c.kgd++;
-      else if(type==='volksschule'){c.l1+=c.kgd>=10?1.25:1;if(c.l1>=SCHOOLD){c.edu=1;toast(tr`${c.name} hat die Volksschule abgeschlossen.`,'good');}}
-      else{c.l2+=1;if(c.l2>=SCHOOLD){c.edu=2;toast(tr`${c.name} hat die Hauptschule abgeschlossen.`,'good');}}}}
+    for(const b of bs){
+      // Wer ohne den geforderten Abschluss unterrichtet, bringt halb so viel bei.
+      const nd=d.ed||0,lehrer=workersOf(b)[0];
+      const tempo=nd&&lehrer&&!(lehrer.edu>=nd)?0.5:1;
+      let n=0;while(n<d.cap&&k<kids.length){const c=kids[k++];c.school=b.id;n++;if(c.help!=null)continue;
+      if(type==='kindergarten')c.kgd+=tempo;
+      else if(type==='volksschule'){c.l1+=(c.kgd>=10?1.25:1)*tempo;if(c.l1>=SCHOOLD){c.edu=1;toast(tr`${c.name} hat die Volksschule abgeschlossen.`,'good');}}
+      else{c.l2+=tempo;if(c.l2>=SCHOOLD){c.edu=2;toast(tr`${c.name} hat die Hauptschule abgeschlossen.`,'good');}}}}
   }
 }
 function graduate(c){
@@ -1607,7 +1661,7 @@ function trinken(){
   const durstig=G.C.filter(c=>(c.durst||0)>=1).length;
   if(durstig)toastOnce('durst',tr`${durstig} Leute haben kein Wasser im Haus. Ein Brunnen in der Nähe hilft.`,'warn',25);
   for(const c of G.C.slice()){
-    if((c.durst||0)>=3&&!(c.sick>0)&&Math.random()<0.25){c.sick=6;resetTask(c);
+    if((c.durst||0)>=3&&!(c.sick>0)&&Math.random()<0.25){c.sick=6;c.ill='wasser';resetTask(c);
       toastOnce('durstkrank',tr`Wer zu lange kein sauberes Wasser hat, wird krank.`,'warn',40);}
     if((c.durst||0)>=6)removeCitizen(c,tr`verdurstet`);
   }
@@ -1689,14 +1743,18 @@ function helpTick(){
   const can=c=>!(c.sick>0)&&!c.hidden&&!c.fightId&&!(c.robot>0)&&c.job==null&&c.temp==null&&!c.priest&&
     ((c.age>=8&&c.age<14&&(need||(harvest&&c.school==null)))||c.age>=RETIRE||(isAdult(c)&&noSite&&hayTime()));// Schulkinder helfen nur in der Not
   const ok=(b,c)=>b&&b.done&&b.cond>0&&b.fire<=0&&LIGHT[b.type]&&(DEF[b.type].prod?fieldHasRipe(b)||c.age>=RETIRE:b.type==='heuwiese'?season()<3&&((b.grass||0)>=60||(b.hay||0)>=4&&heustadels().length>0):(c.age>=RETIRE||need));
+  // Wer heute schon hilft, bleibt bis zum Tagesende dabei. Sonst kippen
+  // Ernte- und Notlage im Takt hin und her, und die Kinder laufen mit.
+  const frei=c=>!(c.sick>0)&&!c.hidden&&!c.fightId&&!(c.robot>0)&&c.job==null&&c.temp==null&&!c.priest;
   const cnt=new Map();for(const c of G.C)if(c.help!=null)cnt.set(c.help,(cnt.get(c.help)||0)+1);
   for(const c of G.C){if(c.help==null)continue;const b=G.bmap.get(c.help);
-    if(!can(c)||!ok(b,c)){cnt.set(c.help,(cnt.get(c.help)||1)-1);c.help=null;if(!c.carry)resetTask(c);}}
+    const halten=c.helpD===dayNo()&&frei(c)&&b&&b.done&&b.cond>0&&b.fire<=0;
+    if(!halten&&(!can(c)||!ok(b,c))){cnt.set(c.help,(cnt.get(c.help)||1)-1);c.help=null;c.helpD=null;if(!c.carry)resetTask(c);}}
   const cap=b=>DEF[b.type].prod||b.type==='heuwiese'?3:Math.max(1,DEF[b.type].wk||1);
   const pool=G.B.filter(b=>b.done&&b.cond>0&&b.fire<=0&&LIGHT[b.type]);
   for(const c of G.C){if(c.help!=null||!can(c))continue;
     const cand=pool.filter(b=>ok(b,c)&&(cnt.get(b.id)||0)<cap(b)).sort((a,z)=>(DEF[z.type].prod&&fieldHasRipe(z)?1:0)-(DEF[a.type].prod&&fieldHasRipe(a)?1:0)||Math.hypot(a.x-c.x,a.y-c.y)-Math.hypot(z.x-c.x,z.y-c.y))[0];
-    if(!cand)continue;resetTask(c);c.help=cand.id;cnt.set(cand.id,(cnt.get(cand.id)||0)+1);}
+    if(!cand)continue;resetTask(c);c.help=cand.id;c.helpD=dayNo();cnt.set(cand.id,(cnt.get(cand.id)||0)+1);}
 }
 function dayLabour(){
   const free=G.C.filter(c=>c.job==null&&canWork(c)&&!c.fightId&&!c.hidden);
@@ -1756,7 +1814,7 @@ function treibjagd(){
   if(erlegt)G.res.nahrung+=Math.min(erlegt*4,room('nahrung'));
   // Eine Treibjagd im Winterwald geht nicht immer ohne Blessuren aus.
   let verletzt=null;
-  if(mann.length&&Math.random()<0.25){verletzt=pick(mann);verletzt.sick=Math.max(verletzt.sick||0,6);}
+  if(mann.length&&Math.random()<0.25){verletzt=pick(mann);verletzt.sick=Math.max(verletzt.sick||0,6);verletzt.ill='wunde';}
   const rest=G.animals.filter(a=>a.kind==='wolf'&&!a.verjagt).length;
   let txt=erlegt?tr`${erlegt} Wölfe erlegt, das Fleisch kommt ins Lager.`:tr`Kein Wolf erlegt, aber das Rudel ist abgezogen.`;
   if(rest)txt+=tr` ${rest} streifen noch umher.`;
@@ -1874,8 +1932,11 @@ function newDay(d){
   }
   for(const b of G.B){
     if(!b.done||!decays(b))continue;
-    const was=b.cond;b.cond=Math.max(0,b.cond-(DECAY[b.type]??0.15));
-    if(was>=40&&b.cond<40)toastOnce('leak'+b.id,tr`Undichtes Dach: ${DEF[b.type].n}. Ein Dachdecker muss ran.`,'warn',60);
+    // Ein Betrieb, in dem niemand arbeitet, verfaellt doppelt so schnell:
+    // es flickt ja keiner mehr das Dach.
+    const ohne=DEF[b.type].wk&&!RESERVED[b.type]&&!workersOf(b).some(canWork);
+    const was=b.cond;b.cond=Math.max(0,b.cond-(DECAY[b.type]??0.15)*(ohne?2:1));
+    if(was>=40&&b.cond<40)toastOnce('leak'+b.id,ohne?tr`${DEF[b.type].n} steht leer und verfällt. Teile jemanden ein oder reiß sie ab.`:tr`Undichtes Dach: ${DEF[b.type].n}. Ein Dachdecker muss ran.`,'warn',60);
     if(was>0&&b.cond<=0)toast(tr`${DEF[b.type].n} ist zur Ruine verfallen.`,'warn');
   }
   for(const b of G.B)if(b.type==='schaf'&&b.done&&b.sheep&&sea<3)b.fleece=Math.min(40,(b.fleece||0)+vErw(b)*(weideVon(b)?0.0675:0.045));
@@ -1884,7 +1945,14 @@ function newDay(d){
   clothesDay(sea);
   schoolDay();assignHomes();
   if(d%10===2)gardens();
-  for(const c of G.C.slice())if(c.sick>0){c.sick=Math.max(0,c.sick-(c.treat||c.inSp!=null?2:1));if(c.sick===0){const p=c.inSp!=null?0.02:c.treat?0.04:0.12;c.treat=0;c.inSp=null;if(Math.random()<p)removeCitizen(c,tr`an der Ruhr gestorben`);else toastOnce('heal',tr`Die Kranken erholen sich.`,'good',20);}}
+  for(const c of G.C.slice())if(c.sick>0){c.sick=Math.max(0,c.sick-(c.treat||c.inSp!=null?2:1));if(c.sick===0){
+    // Jede Krankheit hat ihr eigenes Risiko, und der Tod nennt sie beim Namen.
+    const art=c.ill||'ruhr';
+    const schwer={ruhr:0.12,fieber:0.07,wasser:0.06,grippe:0.02,kaelte:0.05,wunde:0}[art]??0.08;
+    const name={ruhr:tr`an der Ruhr gestorben`,fieber:tr`am Wechselfieber gestorben`,wasser:tr`an verdorbenem Wasser gestorben`,grippe:tr`an der Grippe gestorben`,kaelte:tr`an einer Lungenentzündung gestorben`,wunde:tr`an einer Wunde gestorben`}[art]||tr`an der Ruhr gestorben`;
+    const p=c.inSp!=null?schwer*0.17:c.treat?schwer*0.34:schwer;
+    c.treat=0;c.inSp=null;c.ill=null;
+    if(Math.random()<p)removeCitizen(c,name);else toastOnce('heal',tr`Die Kranken erholen sich.`,'good',20);}}
   if(d%10===0&&d>0){
     if(m===2){toast(tr`Frühling ${year()}. Zeit zur Aussaat.`,'good');G.need.warmth=1;G.bumper=false;springSwitch();}
     if(m===11)winterSwitch();
@@ -1955,7 +2023,7 @@ function clothesDay(sea){
       if(h&&(h[hk]||0)>0){h[hk]--;c[kk]=100;continue;}
       if(G.res[rr]>0){G.res[rr]--;c[kk]=100;}}
     if(c.gW<=0)missW++;if(c.gS<=0)missS++;
-    if(sea===3&&c.gW<=0&&!(c.sick>0)&&Math.random()<0.01){c.sick=8;resetTask(c);}}
+    if(sea===3&&c.gW<=0&&!(c.sick>0)&&Math.random()<0.01){c.sick=8;c.ill='kaelte';resetTask(c);}}
   if(sea===3&&missW)toastOnce('nowinter',tr`${missW} Leute haben kein Wintergewand. Sie frieren, werden öfter krank und arbeiten langsamer.`,'warn',40);
   else if(sum&&missS)toastOnce('nosommer',tr`${missS} Leute laufen in Lumpen herum. Ein Schneider mit Leinen hilft.`,'warn',60);
 }
@@ -2645,10 +2713,13 @@ const EVENTS={
   },
   ernte(){G.bumper=true;showEvent(tr`Glück`,tr`Ein gutes Jahr`,tr`Warmer Regen zur rechten Zeit: Bis zum Winter wächst alles auf den Feldern um die Hälfte schneller.`,[{l:tr`Gut so`,fn:()=>{}}]);},
   seuche(){
-    const n=Math.max(1,Math.round(G.C.length*(baders().length?0.12:0.2)));const vic=G.C.slice().sort(()=>Math.random()-.5).slice(0,n);
-    for(const c of vic){c.sick=12;resetTask(c);}
-    G.penalty+=8;
-    showEvent(tr`Krankheit`,tr`Die Ruhr geht um`,tr`${n} Leute liegen krank im Bett und arbeiten 12 Tage lang nicht. Nicht alle werden es überstehen. Betriebe mit kranken Arbeitern stehen still.`,[{l:tr`Verstanden`,fn:()=>{}}]);
+    // Drei Krankheiten mit eigener Schwere statt immer die Ruhr. Und ein
+    // Ausbruch trifft nicht mehr jeden Fuenften, sondern bleibt oertlich.
+    const art=pick([{k:'ruhr',n:tr`Ruhr`,t:12,a:0.10},{k:'fieber',n:tr`Wechselfieber`,t:9,a:0.13},{k:'grippe',n:tr`Grippe`,t:6,a:0.16}]);
+    const n=Math.max(1,Math.round(G.C.length*art.a*(baders().length?0.6:1)));const vic=G.C.slice().sort(()=>Math.random()-.5).slice(0,n);
+    for(const c of vic){c.sick=art.t;c.ill=art.k;resetTask(c);}
+    G.penalty+=art.k==='ruhr'?8:art.k==='fieber'?5:3;
+    showEvent(tr`Krankheit`,tr`${art.n} geht um`,tr`${n} Leute liegen krank im Bett und arbeiten ${art.t} Tage lang nicht. Betriebe mit kranken Arbeitern stehen still. Ein Bader im Dorf hält den Ausbruch klein.`,[{l:tr`Verstanden`,fn:()=>{}}]);
   },
   woelfe(){
     spawnWolves(2+(Math.random()*2|0));
@@ -3620,7 +3691,11 @@ function drawSpr(b,px,py,pw,ph,winter,now){
       const laeuft=b.type==='koehler'?(b.burn>0||b.ready):workersOf(b).some(canWork);
       if(laeuft){farbe=of[0];kraft=of[1];}
     }
-    if(!farbe&&(winter||season()===2)){farbe='rgba(226,226,220,1)';kraft=1;}
+    // Der kalte Rauch aus Herbst und Winter gehoert zum Wohnen. Ein Betrieb
+    // ohne Arbeiter bleibt kalt, damit man von weitem sieht, dass dort
+    // niemand mehr steht.
+    const kalt=of&&b.type!=='koehler'&&!workersOf(b).some(canWork);
+    if(!farbe&&!kalt&&(winter||season()===2)){farbe='rgba(226,226,220,1)';kraft=1;}
     if(farbe)drawSmoke(dx+dw*ch[0],dy+dh*ch[1],now,b.id,farbe,kraft);
   }
   if(b.wagon)drawCart(px-6,py+ph-6);
@@ -3718,8 +3793,33 @@ function drawBuilding(b,winter,now){
     ctx.fillStyle=winter?'rgba(120,100,80,.6)':'#4f7a34';ctx.beginPath();ctx.arc(px+s/2,py+s/2-6,winter?8:13,0,6.283);ctx.fill();
     if(!winter){ctx.fillStyle='#6a9a45';ctx.beginPath();ctx.arc(px+s/2-4,py+s/2-10,6,0,6.283);ctx.fill();}
     ctx.fillStyle='#6b4a2a';ctx.fillRect(px+4,py+s-8,10,2);ctx.fillRect(px+s-14,py+s-8,10,2);return;}
-  if(b.type==='damm'){const px=b.x*T,py=b.y*T;ctx.fillStyle='#7a6a4a';ctx.beginPath();ctx.roundRect(px+1,py+3,T-2,T-6,5);ctx.fill();
-    ctx.fillStyle=winter?'#e6eaec':'#8fa060';ctx.fillRect(px+3,py+4,T-6,4);ctx.fillStyle='#9a968c';for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(px+5+k*7,py+T-7,2.4,0,6.283);ctx.fill();}return;}
+  if(b.type==='damm'){const px=b.x*T,py=b.y*T;
+    // Aufgeschuettete Steinwehr am Ufer. Keine gerade Kante: der Damm ist
+    // eine dichte Schuettung aus Bruchsteinen, zwischen denen Gras waechst,
+    // so gehen mehrere Dammkacheln ineinander ueber.
+    // hash() liefert auch negative Zahlen, darum ueberall >>> statt >>.
+    const H=k=>hash(b.id*29+k)>>>0;
+    ctx.fillStyle=winter?'#b9bdbd':'#6b6358';
+    ctx.beginPath();
+    for(let k=0;k<10;k++){const h=H(k*3+1),a2=k/10*6.283;
+      const rad=T*0.47+((h%100)/100-0.5)*T*0.1;
+      const x=px+T/2+Math.cos(a2)*rad,y=py+T/2+Math.sin(a2)*rad*0.98;
+      k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+    ctx.closePath();ctx.fill();
+    for(let k=0;k<16;k++){const h=H(k);
+      const bx=px+2+h%(T-4),by=py+2+(h>>>4)%(T-4),rr=1.6+((h>>>9)%4)*0.6;
+      ctx.fillStyle=winter?['#e8ecee','#d6dbdd','#c3c9cb'][(h>>>6)%3]
+                          :['#9d9890','#8a857a','#ada89d','#7b766c'][(h>>>6)%4];
+      ctx.beginPath();ctx.ellipse(bx,by,rr+0.6,rr*0.85,((h>>>2)%8)*0.4,0,6.283);ctx.fill();
+      ctx.fillStyle=winter?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)';
+      ctx.beginPath();ctx.ellipse(bx-rr*0.25,by-rr*0.3,rr*0.42,rr*0.26,0,0,6.283);ctx.fill();
+      ctx.fillStyle='rgba(0,0,0,.16)';
+      ctx.beginPath();ctx.ellipse(bx+rr*0.2,by+rr*0.42,rr*0.5,rr*0.22,0,0,6.283);ctx.fill();}
+    if(!winter)for(let k=0;k<6;k++){const h=H(k*7+3);
+      const gx=px+3+h%(T-6),gy=py+3+(h>>>5)%(T-6);
+      ctx.fillStyle=['rgba(109,140,70,.75)','rgba(132,156,84,.7)'][(h>>>3)%2];
+      for(let q=0;q<3;q++)ctx.fillRect(gx+q*1.3,gy-((h>>>(q*3))%3),1,2.6+((h>>>(q*2))%3));}
+    return;}
   const px=b.x*T,py=b.y*T,ph=d.h*T;let pw=d.w*T;
   if(b.type==='bauernhaus'){pw=3*T;if(b.cond>0)drawGarden(b,px+1.55*T,py+2,1.4*T,0.62*T,winter);}
   if(b.type==='brunnen'){
@@ -4274,7 +4374,11 @@ $('iDemo').addEventListener('click',()=>{const b=G.bmap.get(sel);if(!b)return;
 /* people */
 function jobLabel(b){const same=G.B.filter(x=>x.type===b.type&&x.done);const idx=same.length>1?' '+(same.indexOf(b)+1):'';return DEF[b.type].n+idx;}
 function renderPeople(){
-  const jobs=G.B.filter(b=>b.done&&DEF[b.type].wk&&!RESERVED[b.type]);
+  // Betriebe ohne Arbeiter stehen oben, damit man sie nicht uebersieht.
+  const jobs=G.B.filter(b=>b.done&&DEF[b.type].wk&&!RESERVED[b.type])
+    .sort((a,z)=>{const fa=workersOf(a).some(canWork)?1:0,fz=workersOf(z).some(canWork)?1:0;
+      return fa-fz||DEF[a.type].n.localeCompare(DEF[z.type].n);});
+  const leer=jobs.filter(b=>!workersOf(b).some(canWork));
   const ord=c=>c.robot>0?5:c.age<14?3:c.age>=65?4:c.job!=null?0:1;
   const rows=G.C.slice().sort((a,b)=>ord(a)-ord(b)||(a.job??0)-(b.job??0)).map(c=>{
     let state;
@@ -4298,7 +4402,8 @@ function renderPeople(){
       }}
     return`<div class="prow"><div class="pn"><button class="plink" data-pid="${c.id}">${fullName(c)}</button>${state}</div>${ctl}</div>`;
   });
-  $('pList').innerHTML=rows.join('')||tr`<p class="note">Niemand mehr da.</p>`;
+  const kopf=leer.length?`<p class="note warn">${tr`Ohne Arbeiter: ${leer.map(b=>DEF[b.type].n+(b.cond<60?tr` (verfällt)`:'')).join(', ')}`}</p>`:'';
+  $('pList').innerHTML=kopf+(rows.join('')||tr`<p class="note">Niemand mehr da.</p>`);
 }
 $('pList').addEventListener('click',e=>{const b=e.target.closest('[data-pid]');if(b)openPerson(Number(b.dataset.pid));});
 $('pList').addEventListener('change',e=>{const s=e.target.closest('select');if(!s)return;
@@ -4361,6 +4466,12 @@ $('cMood').addEventListener('click',()=>{const open=!$('village').hidden;setMode
 $('vClose').addEventListener('click',()=>{$('village').hidden=true;});
 $('qbar').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
 $('qClose').addEventListener('click',()=>{$('quest').hidden=true;});
+// Lager auf Tipp: die Warenzeile klappt unter der Kopfleiste auf.
+$('cStore').addEventListener('click',()=>{const b=$('storeBar');b.hidden=!b.hidden;$('cStore').classList.toggle('on',!b.hidden);});
+// Meilensteine fuehren in dieselbe Uebersicht wie der Auftrag.
+$('cMs').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
+// Die Bauleiste laesst sich wegklappen, damit man die Karte ganz sieht.
+$('navTog').addEventListener('click',()=>{const n=$('build'),zu=n.classList.toggle('zu');$('navTog').textContent=zu?'Bauen ▴':'Bauen ▾';});
 $('qBody').addEventListener('click',e=>{if(e.target.closest('#qDeliver')){deliverOrder();updateHUD();}});
 
 function updateHUD(){
@@ -4381,8 +4492,16 @@ function updateHUD(){
   $('cFree').classList.toggle('warn',sites&&free===0);
   $('cMood').classList.toggle('warn',G.mood<40);
   const ch=stageChecks();$('cMood').classList.toggle('good',!!ch&&ch.every(x=>x.ok));
+  // Das Lager zeigt die knappste Ware als Zahl, die Leute-Kachel die Freien,
+  // und die Meilensteine zaehlen mit.
+  $('rStore').textContent=G.res.holz+G.res.bretter+G.res.stein;
+  $('cStore').classList.toggle('warn',have('dach')<6||G.res.bretter<8||G.res.naegel<4||G.res.werkzeug<=3||short);
+  $('rFreeS').textContent=free?tr` · ${free} frei`:'';
+  $('rMs').textContent=`${(G.ms||[]).length}/${MILES.length}`;
   const day=dayNo()%10+1;
-  $('date').innerHTML=tr`${MONTHS[monthIdx()]} ${year()}<small>${SEASONS[sea]} · Tag ${day}</small>`;
+  // Das Jahr laeuft in Monaten, nicht in vier Jahreszeiten: der Monat steht
+  // vorn, der Tag im Monat dahinter.
+  $('date').innerHTML=tr`${MONTHS[monthIdx()]} ${year()}<small>Tag ${day} von 10</small>`;
   for(const b of nav.children){if(b===mkBtn)continue;const d=DEF[b.dataset.t];b.classList.toggle('poor',(d.st||0)<=G.stage&&unlocked(b.dataset.t)&&!!lacking(d.cost));}
   updateQuestBar();
   for(const b of document.querySelectorAll('.speed button'))b.classList.toggle('on',Number(b.dataset.s)===G.speed);

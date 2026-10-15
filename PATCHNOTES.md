@@ -1,5 +1,87 @@
 # Patch Notes
 
+## v48 — Die sieben Fehler aus deinem Test
+
+**Der Jäger erlegt jetzt wirklich Wölfe.** Das war kaputt, und zwar schlimmer
+als gedacht: Im Test vor der Änderung hat ein Jäger in zwanzig Spieltagen
+keinen einzigen von drei Wölfen erlegt. Er ist dorthin gelaufen, wo der Wolf
+war, als er losging — bis er ankam, war das Rudel weiter, und das ging endlos
+so. Die Wölfe verschwanden irgendwann von allein, nicht durch ihn.
+
+Jetzt schießt er, statt hinterherzulaufen: ein Steinschlossgewehr trägt rund
+sieben Felder weit, und auf dem Weg pirscht er sich in kurzen Etappen an, statt
+quer über die Karte zu marschieren. Nachgeprüft: drei von drei Wölfen erlegt,
+auch wenn man die Wölfe unsterblich macht, damit nur der Jäger sie entfernen
+kann.
+
+**Getreide bleibt für das Vieh liegen.** Bäcker und Brauer haben aus demselben
+Topf genommen wie die Tiere, wer zuerst kam. Für Brennholz gab es längst eine
+Winterreserve, für Futter nicht. Ab Herbst wird jetzt zurückgehalten, was
+Schweine, Schafe und Rinder über den Winter brauchen — Heu im Stadel wird
+gegengerechnet. Nachgeprüft: acht Kühe und sechs Schweine ohne Heu sperren 66
+Getreide, der Bäcker schreibt dann "Hält 66 Getreide als Winterfutter für das
+Vieh zurück". Mit vollem Heustadel fällt die Reserve auf null.
+
+**Nicht mehr nur die Ruhr.** Es gab schon drei Ursachen — Ruhr, verdorbenes
+Wasser, Frieren ohne Wintergewand — aber jeder Tote hieß "an der Ruhr
+gestorben". Darum wirkte es wie eine einzige Krankheit. Jetzt hat jede
+Krankheit ihren Namen und ihr eigenes Risiko: Ruhr 12 %, Wechselfieber 7 %,
+verdorbenes Wasser 6 %, Lungenentzündung 5 %, Grippe 2 %, eine Wunde von der
+Treibjagd tötet nicht mehr. Ein Ausbruch trifft auch nicht mehr jeden Fünften,
+sondern 10 bis 16 Prozent, mit Bader deutlich weniger. Im Testlauf über fünf
+Jahre kamen alle vier Arten vor.
+
+**Die Bildung kann nicht mehr aussterben.** Das war deine Sackgasse: Die
+Volksschule brauchte selbst einen Volksschulabschluss. Stirbt der letzte
+Absolvent, ist sie nie wieder besetzbar, es gibt nie wieder Absolventen, und
+irgendwann steht auch das Rathaus leer. Zwei Änderungen:
+
+- Bäcker, Brauerei, Schmiede, Wagnerei, Weberei, Bader, Spital, Wirtshaus und
+  Handelsposten brauchen gar keinen Abschluss mehr. Nur Rathaus (Hauptschule)
+  und die Schulen verlangen noch einen.
+- Hat im ganzen Dorf niemand den Abschluss, darf ein Ungelernter übernehmen.
+  In der Schule lernen die Kinder dann halb so schnell — es geht weiter, aber
+  schlechter. Wer einen Abschluss hat, wird weiterhin zuerst genommen.
+
+**Die Kinder laufen nicht mehr vor und zurück.** Am Jahreswechsel kippten
+Erntezeit und Notlage im Takt hin und her, und mit jedem Takt wurden die Kinder
+zugeteilt und wieder abgezogen. Wer heute hilft, bleibt jetzt bis zum
+Tagesende dabei.
+
+**Der Holzfäller nimmt den nächsten Baum.** Markierte Bäume hatten immer
+Vorrang, egal wie weit weg sie standen — eine Markierung am anderen Ende der
+Karte hat ihn quer durchs Dorf geschickt. Jetzt gewinnt der nächste Baum, und
+markierte zählen nur als sechs Felder näher.
+
+**Der Damm ist zu sehen.** Er war ein brauner Fleck mit drei Pünktchen. Jetzt
+ist er eine geschüttete Steinwehr: Bruchsteine mit Gras in den Fugen, mehrere
+Dammstücke gehen ineinander über, im Winter liegt Schnee darauf. Das ist
+gezeichnet, kein gemaltes Bild wie bei den Gebäuden — wenn du eins willst,
+sag Bescheid, dann schreibe ich dir den Prompt dafür.
+
+### Dazu die optischen Sachen
+
+**Die obere Leiste hat nur noch fünf Felder:** Lager, Gulden, Leute,
+Meilensteine, Dorfstufe. Die Rohstoffe stecken hinter "Lager" — antippen, dann
+klappt die Zeile mit Holz, Brettern, Nägeln, Dach, Stein, Nahrung, Werkzeug
+und den freien Leuten auf. "Meilensteine" zeigt den Stand und führt in die
+Übersicht.
+
+**Die Gebäudeleiste lässt sich wegklappen** über den Knopf "Bauen" rechts
+unten, damit man die Karte ganz sieht.
+
+**Betriebe ohne Arbeiter stehen oben in der Liste**, mit einer Zeile darüber:
+"Ohne Arbeiter: Jäger, Sägewerk (verfällt), Schmiede". Auf der Karte bleiben
+sie kalt — kein Rauch mehr aus dem Kamin — und sie verfallen doppelt so
+schnell, weil niemand mehr das Dach flickt.
+
+**Das Jahr läuft in Monaten.** Oben steht jetzt "März 1800 · Tag 2 von 10"
+statt der Jahreszeit.
+
+Noch nicht drin, weil dafür Bilder aus Gemini fehlen: Maifest und
+Erntedankfest zum Zuschauen, mehr Waldtiere.
+
+
 ## Die Hundehütte hat ihr Bild
 
 Bis jetzt war die Hundehütte gezeichnet: ein brauner Kasten mit Dach. Jetzt
