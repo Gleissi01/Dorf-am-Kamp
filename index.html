@@ -167,12 +167,14 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
 <div id="app">
   <header>
     <div class="res">
-      <button class="chip" id="cStore" aria-label="Lager"><span>Lager</span><b id="rStore">0</b></button>
+      <button class="chip" id="cStore" aria-label="Lager"><span>Lager</span><b id="rStore">0</b><span id="rStoreD"></span></button>
       <div class="chip" id="cGulden"><span>Gulden</span><b id="rGulden">0</b></div>
       <button class="chip" id="cPop" aria-label="Leute einteilen"><span>Leute</span><b id="rPop">0</b><span id="rFreeS"></span></button>
       <button class="chip" id="cMs" aria-label="Meilensteine"><span>Meilen&shy;steine</span><b id="rMs">0</b></button>
       <button class="chip" id="cMood" aria-label="Dorf und Stimmung"><span id="rStage">Weiler</span><b id="rMood">0%</b></button>
     </div>
+    <!-- Die Kacheln bleiben als Zahlenhalter fuer die Kopfzeile stehen,
+         sichtbar sind die Bestaende im Lagerfenster. -->
     <div id="storeBar" hidden>
       <div class="chip" id="cHolz"><span>Holz</span><b id="rHolz">0</b></div>
       <div class="chip" id="cBretter"><span>Bretter</span><b id="rBretter">0</b></div>
@@ -238,6 +240,10 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
       <div class="ih"><h2 id="vTitle">Weiler</h2><button class="xbtn" id="vClose" aria-label="Schließen">×</button></div>
       <div id="vBody"></div>
     </section>
+    <section class="sheet" id="store" hidden>
+      <div class="ih"><h2>Lager</h2><button class="xbtn" id="stClose" aria-label="Schließen">×</button></div>
+      <div id="stBody"></div>
+    </section>
     <section class="sheet" id="land" hidden>
       <div class="ih"><h2>Grund kaufen</h2><button class="xbtn" id="lClose" aria-label="Schließen">×</button></div>
       <p id="lText"></p>
@@ -261,7 +267,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 50</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 51</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -4218,7 +4224,7 @@ cv.addEventListener('wheel',e=>{e.preventDefault();const[x,y]=rel(e);zoomAt(x,y,
 
 let mode=null,ghost=null,sel=null;
 function setGhostFromTile(tx,ty){const d=DEF[mode];ghost={x:tx-Math.floor((d.w-1)/2),y:ty-Math.floor((d.h-1)/2)};updatePlacebar();}
-function closeSheets(){if($('land'))$('land').hidden=true;if($('person'))$('person').hidden=true;$('menu').hidden=true;$('people').hidden=true;$('village').hidden=true;$('quest').hidden=true;}
+function closeSheets(){if($('land'))$('land').hidden=true;if($('person'))$('person').hidden=true;$('menu').hidden=true;$('people').hidden=true;$('village').hidden=true;$('quest').hidden=true;if($('store'))$('store').hidden=true;}
 function tap(sx,sy,type){
   if(!G||G.over)return;
   if(markMode!==null){markPaint(sx,sy);markInfo();return;}
@@ -4606,7 +4612,31 @@ $('vClose').addEventListener('click',()=>{$('village').hidden=true;});
 $('qbar').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
 $('qClose').addEventListener('click',()=>{$('quest').hidden=true;});
 // Lager auf Tipp: die Warenzeile klappt unter der Kopfleiste auf.
-$('cStore').addEventListener('click',()=>{const b=$('storeBar');b.hidden=!b.hidden;$('cStore').classList.toggle('on',!b.hidden);});
+// Gruppen fuer das Lagerfenster: was zusammengehoert, steht beisammen.
+const LAGERGRUPPEN=[
+  {t:tr`Nahrung und Futter`,k:['nahrung','getreide','heu','bier']},
+  {t:tr`Bauen`,k:['holz','bretter','stein','naegel','stroh','schilf','schilfnass','lehm','ziegel']},
+  {t:tr`Handwerk und Gewand`,k:['werkzeug','eisen','roheisen','kohle','flachs','leinen','wolle','wollstoff','kleidS','kleidW']},
+];
+function renderStore(){
+  if($('store').hidden)return;
+  const lager=stores().length,spei=speichers().length,hst=heustadels().length;
+  let h=tr`<p class="note">${lager} Lager, ${spei} Speicher, ${hst} Heustadel. Das Lager fasst Baustoffe und Waren, der Speicher nur Nahrung und Getreide, der Heustadel nur Heu.</p>`;
+  if(!lager&&!spei&&!hst)h=tr`<p class="note warn">Kein Lager gebaut. Ohne Lager bleibt nichts liegen.</p>`;
+  for(const g of LAGERGRUPPEN){
+    const zeilen=g.k.filter(k=>RN[k]!==undefined).map(k=>{
+      const n=Math.round(G.res[k]||0),cap=capOf(k),p=cap>0?Math.min(100,Math.round(n/cap*100)):0;
+      const eng=cap>0&&n>=cap*0.95;
+      return `<div class="bar"><span>${RN[k]}</span><span class="tr"><span class="fl ${eng?'low':p>60?'':'mid'}" style="width:${p}%;display:block"></span></span><b style="white-space:nowrap;font-size:12px">${n}${cap<1e8?'/'+cap:''}</b></div>`;
+    }).join('');
+    if(zeilen)h+=`<h3>${g.t}</h3>${zeilen}`;
+  }
+  const traeger=G.C.filter(c=>c.carry).length;
+  if(traeger)h+=tr`<p class="note">${traeger} Leute tragen gerade etwas, das noch nicht im Lager liegt.</p>`;
+  $('stBody').innerHTML=h;
+}
+$('cStore').addEventListener('click',()=>{const open=!$('store').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('store').hidden=false;renderStore();}});
+$('stClose').addEventListener('click',()=>{$('store').hidden=true;});
 // Meilensteine fuehren in dieselbe Uebersicht wie der Auftrag.
 $('cMs').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
 // Die Bauleiste laesst sich wegklappen, damit man die Karte ganz sieht.
@@ -4633,16 +4663,20 @@ function updateHUD(){
   const ch=stageChecks();$('cMood').classList.toggle('good',!!ch&&ch.every(x=>x.ok));
   // Das Lager zeigt die knappste Ware als Zahl, die Leute-Kachel die Freien,
   // und die Meilensteine zaehlen mit.
-  $('rStore').textContent=G.res.holz+G.res.bretter+G.res.stein;
-  $('cStore').classList.toggle('warn',have('dach')<6||G.res.bretter<8||G.res.naegel<4||G.res.werkzeug<=3||short);
+  // Die wichtigste Zahl im Lager ist die Nahrung, dahinter steht, wie lange
+  // sie reicht. Alles andere steht im Lagerfenster.
+  $('rStore').textContent=G.res.nahrung;
+  $('rStoreD').textContent=fd>=999?'':` · ${fd>199?'199+':fd} ${LANG==='en'?'d':'T'}`;
+  $('cStore').classList.toggle('warn',short||have('dach')<6||G.res.bretter<8||G.res.naegel<4||G.res.werkzeug<=3);
   $('rFreeS').textContent=free?tr` · ${free} frei`:'';
   $('rMs').textContent=`${(G.ms||[]).length}/${MILES.length}`;
   const day=dayNo()%10+1;
   // Das Jahr laeuft in Monaten, nicht in vier Jahreszeiten: der Monat steht
   // vorn, der Tag im Monat dahinter.
-  $('date').innerHTML=tr`${MONTHS[monthIdx()]} ${year()}<small>Tag ${day} von 10</small>`;
+  $('date').innerHTML=tr`${MONTHS[monthIdx()]} ${year()}<small>Tag ${day}</small>`;
   for(const b of nav.children){if(b===mkBtn)continue;const d=DEF[b.dataset.t];b.classList.toggle('poor',(d.st||0)<=G.stage&&unlocked(b.dataset.t)&&!!lacking(d.cost));}
   updateQuestBar();
+  renderStore();
   for(const b of document.querySelectorAll('.speed button'))b.classList.toggle('on',Number(b.dataset.s)===G.speed);
   if(mode&&ghost)updatePlacebar();
   updateInfo();

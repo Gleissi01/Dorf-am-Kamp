@@ -1,5 +1,56 @@
 # Patch Notes
 
+## v51 — Das Lager zeigt, was drin ist
+
+Der Knopf **Lager** oben links öffnet jetzt ein richtiges Fenster statt einer
+Zeile mit sieben Zahlen. Darin steht jede Ware mit Balken und Zahl, dazu wie
+viel Platz noch ist:
+
+- **Nahrung und Futter** — Nahrung, Getreide, Heu, Bier
+- **Bauen** — Holz, Bretter, Stein, Nägel, Stroh, Schilf, nasses Schilf, Lehm, Ziegel
+- **Handwerk und Gewand** — Werkzeug, Erz, Eisen, Holzkohle, Flachs, Leinen,
+  Wolle, Wollstoff, Sommer- und Wintergewand
+
+Oben steht, wie viele Lager, Speicher und Heustadel stehen und was wohin geht:
+Das Lager fasst Baustoffe und Waren (250 je Lager), der Speicher nur Nahrung
+und Getreide (400 je Speicher, dazu 100 je Lager), der Heustadel nur Heu
+(300 je Stadel). Wird eine Ware knapp am Anschlag, färbt sich ihr Balken.
+
+Wer gerade etwas trägt, das noch nicht im Lager liegt, wird unten mitgezählt —
+dann weißt du, dass noch etwas unterwegs ist.
+
+Nebenbei: In der Kopfzeile stand bei Dezember und September „Tag 6 von 10"
+über den Rand hinaus. Jetzt steht dort nur noch der Tag.
+
+
+## v51 — Das Lagerfenster
+
+Der Lager-Knopf oben klappt nicht mehr nur eine Zeile Kacheln auf, sondern
+öffnet ein eigenes Fenster mit allem, was im Dorf liegt.
+
+**Jede Ware mit Balken und Grenze.** Du siehst nicht nur, wie viel Holz da ist,
+sondern auch, wie nah es an der Kapazität ist. Was fast voll ist, wird rot —
+dann lohnt ein zweites Lager, bevor die Träger vor vollen Regalen stehen.
+
+**Drei Gruppen**, damit man nicht sucht:
+
+- Nahrung und Futter: Nahrung, Getreide, Heu, Bier
+- Bauen: Holz, Bretter, Stein, Nägel, Stroh, Schilf, nasses Schilf, Lehm, Ziegel
+- Handwerk und Gewand: Werkzeug, Erz, Eisen, Holzkohle, Flachs, Leinen, Wolle,
+  Wollstoff, Sommer- und Wintergewand
+
+Oben steht, wie viele Lager, Speicher und Heustadel stehen und was wohin geht:
+das Lager fasst Baustoffe und Waren, der Speicher nur Nahrung und Getreide, der
+Heustadel nur Heu. Darum hat jede Ware ihre eigene Grenze — Nahrung 500 mit
+einem Speicher, Heu 300 je Heustadel, alles andere 250 je Lager.
+
+Unten steht, wie viele Leute gerade etwas tragen, das noch nicht angekommen ist.
+
+**Die Lager-Kachel selbst** zeigt jetzt die Nahrung und daneben, für wie viele
+Tage sie reicht. Vorher stand dort die Summe aus Holz, Brettern und Stein, die
+nichts aussagte, und die Tagesanzeige war seit dem Umbau der Kopfleiste
+verschwunden. Das war ein Rückschritt, der ist behoben.
+
 ## v50 — Das Dorf steht am Grab
 
 Stirbt jemand, legen die Angehörigen die Arbeit nieder und gehen zum Friedhof.
