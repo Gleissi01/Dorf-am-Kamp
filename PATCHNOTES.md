@@ -1,5 +1,19 @@
 # Patch Notes
 
+## Die Hundehütte hat ihr Bild
+
+Bis jetzt war die Hundehütte gezeichnet: ein brauner Kasten mit Dach. Jetzt
+steht eine echte Holzhütte mit Schindeldach, davor liegt der Hofhund an der
+Kette.
+
+- Gleiche Größe wie bisher (1×1), etwas größer gezeichnet, damit sie neben
+  Weide und Stall nicht verschwindet
+- Im Winter bekommt sie Schnee aufs Dach wie jedes andere Gebäude
+- An der Wirkung ändert sich nichts: 8 Felder Umkreis, Wölfe drehen ab
+
+Nachgeprüft: Wolf neben dem Hund wird verjagt, bewachte Weide wird nicht
+angegangen, Händler, Vieh, Baustellen und Bildrate (55–61) unverändert.
+
 ## Gegen die Wölfe kann man jetzt etwas tun
 
 Dein ältester Kritikpunkt. Drei Wege, die sich ergänzen:
