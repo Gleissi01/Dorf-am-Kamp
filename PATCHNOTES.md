@@ -1,5 +1,16 @@
 # Patch Notes
 
+## v52 — Die Festtafel war so groß wie ein Haus
+
+Du hast recht gehabt, und es war schlimmer als es aussah: nachgerechnet wurde
+die Tafel 56 × 46 Pixel gezeichnet, ein Wohnhaus 54 × 47. Sie war also nicht
+ungefähr so groß wie ein Haus, sondern exakt. Jetzt ist sie 36 × 29, also gut
+halb so hoch wie ein Haus — eine Tafel, an der zwölf Leute sitzen, neben einem
+Haus, in dem eine Familie wohnt.
+
+Erntekrone und Maibaum habe ich gegengeprüft, die stimmen.
+
+
 ## v51 — Das Lager zeigt, was drin ist
 
 Der Knopf **Lager** oben links öffnet jetzt ein richtiges Fenster statt einer

@@ -267,7 +267,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 51</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 52</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -3532,7 +3532,7 @@ const BCH={"haus": [0.66, 0.06], "ziegelhaus": [0.49, 0.04], "bauernhaus": [0.44
 // Der Wert ist die Farbe der Schwaden, der zweite die Staerke.
 const OFEN={baecker:['#efe9dd',2],brauerei:['#e6e0d2',2],schmiede:['#6e6a62',2],schmelze:['#5e5a52',3],ziegelei:['#7a736a',3],koehler:['#4a463f',3]};;
 for(const k in BSPR){const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);BSPR[k].sh=c;BSPR[k].ok=true;};im.src=BSPR[k].src;BSPR[k].img=im;}
-const BSC={hund:1.2,wegkreuz:.65,marterl:.43,maibaum:.73,festtafel:1.05,erntekrone:.62,obstbaum:1.08,zaun:.95,blumen:1,bank:.55,brunnen:.8,bauernhaus:1.08,speicher:.85,dach:.85,jaeger:.85,sammler:.85,markt:.72,rathaus:1.15,hauptschule:1.1,spital:1.12};
+const BSC={hund:1.2,wegkreuz:.65,marterl:.43,maibaum:.73,festtafel:.66,erntekrone:.62,obstbaum:1.08,zaun:.95,blumen:1,bank:.55,brunnen:.8,bauernhaus:1.08,speicher:.85,dach:.85,jaeger:.85,sammler:.85,markt:.72,rathaus:1.15,hauptschule:1.1,spital:1.12};
 /* ---------- Dachschaden ---------- */
 // Ein undichtes Dach sieht nicht aus wie ein paar dunkle Rechtecke: es
 // fehlen Schindeln, darunter kommen die Latten zum Vorschein, der Bruchrand
