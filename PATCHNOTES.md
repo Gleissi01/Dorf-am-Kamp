@@ -1,5 +1,61 @@
 # Patch Notes
 
+## v54 — Das Geldbuch und zwei Sackgassen beim Wasser
+
+### Geldbuch im Rathaus
+
+Du hast 15 Gulden bei 55 Leuten, 113 rein und 135 raus. Statt blind am
+Steuersatz zu drehen, siehst du jetzt selbst, wo es hingeht: Das Rathaus
+zeigt Einnahmen und Ausgaben der letzten zehn Tage, aufgeschlüsselt nach
+Steuer, Zunftabgabe, Marktstand, Bestellungen, Löhnen, Handel, Grund und
+Anwerbungen — und unterm Strich, ob die Kasse wächst oder schrumpft.
+
+**Zum Testen:** Rathaus antippen, zum „Geldbuch der letzten zehn Tage"
+scrollen. Schick mir einen Screenshot davon, dann sehe ich deine Zahlen.
+
+### Zunftabgabe — und warum sie dein Problem nicht löst
+
+Handwerk und Handel zahlen jetzt zusätzlich eine Zunftabgabe, gestaffelt nach
+Ertrag (Wirtshaus und Handel am meisten, Köhler und Dachdecker am wenigsten).
+Historisch sauber, aber ich sage es offen: **Das schließt deine Lücke nicht.**
+Gemessen bringt sie 3 bis 9 Gulden. Sie zieht aus derselben Haushaltskasse wie
+die Kopfsteuer und teilt nur eine Basis, die ohnehin leer läuft.
+
+In meinem Testdorf fallen die Haushaltskassen von 220 auf 35 Gulden, und die
+Steuer bricht von 81 auf 13 ein — bei gleichbleibender Einwohnerzahl. Das ist
+dein Muster. Der echte Hebel ist Geld von außen: Bestellungen aus der Stadt.
+Das ist der nächste Bau, und es behebt die Monotonie gleich mit.
+
+### Hortungssteuer verschärft
+
+Wer mehr als 25 Gulden hortet, gibt 18 Prozent davon ab (vorher ab 40 Gulden
+zehn Prozent). Geld, das in Haushalten liegen bleibt, fehlt im Kreislauf.
+
+### Wasser: zwei Wege, die in den Tod führten
+
+**Kranke konnten sich kein Wasser mehr holen.** Wer vom Durst krank wurde, war
+damit vom Wasserholen ausgeschlossen — und drei Trinktage später tot. Waren
+alle im Haus krank, ging niemand mehr zum Brunnen. Eine Einbahn ohne Ausweg.
+Jetzt tragen Nachbarn die Eimer hin, so wie das am Land üblich war. Getestet
+mit drei Häusern voll Dauerkranker: nach 56 Tagen leben alle acht noch, die
+Fässer werden immer wieder nachgefüllt.
+
+**Der nächste Brunnen war nicht immer der erreichbare.** Die Leute suchten den
+Brunnen mit der kürzesten Luftlinie und prüften nie, ob ein Weg hinführt. Stand
+ein Haus im Weg, scheiterte der Gang stumm — und sie verdursteten neben zwei
+anderen, erreichbaren Brunnen. Jetzt werden die nächsten vier Wasserstellen
+durchprobiert.
+
+**Verbauter Heimweg.** Kam jemand mit vollem Eimer nicht mehr heim, wurde das
+Wasser weggeschüttet und das Ganze begann von vorn — endlos, bis die Leute
+starben. Jetzt stellt er den Eimer beim nächsten Nachbarn ab, der ihn braucht.
+Und nach dem dritten Fehlschlag bekommst du eine Warnung: „Haushalte kommen
+nicht zum Brunnen — der Weg ist verbaut." Dann kannst du einen Brunnen näher
+setzen oder ein Gebäude abreißen, statt dass das Dorf stumm ausstirbt.
+
+**Zum Testen:** Spiel normal weiter und schau, ob dir eine Wasserwarnung
+begegnet. Wenn ja, schick mir einen Screenshot — dann will ich wissen, wo.
+
 ## v53 — Der Geisterklick
 
 Du hattest einen Fehler gefunden, den ich in sechs Versuchen nicht nachstellen

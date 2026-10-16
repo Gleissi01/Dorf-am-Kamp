@@ -267,7 +267,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 53</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 54</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -1067,7 +1067,8 @@ function think(c){
   // Das verhindert, dass Leute verdursten, waehrend alle auf der Baustelle stehen.
   if(c.age>=HOLALTER&&!c.carry&&!c.hold&&!c.trip&&!c.haul&&!c.fightId&&c.wag==null){
     const hd=homeOf(c);
-    if(hd&&(hd.wasser||0)<=0&&residents(hd).length){const hw=wasserFor(c);if(hw&&goWasser(c,hw))return;}}
+    if(hd&&(hd.wasser||0)<=0&&residents(hd).length){const hw=wasserFor(c);if(hw&&goWasser(c,hw))return;}
+    {const hn=wasserNachbar(c);if(hn&&goWasser(c,hn))return;}}
   if(!isAdult(c)&&c.help!=null){const hb=G.bmap.get(c.help);if(hb&&hb.done)b=hb;else c.help=null;}
   if(!isAdult(c)&&!b){if(c.age>=HOLALTER&&!c.sick){const hw=wasserFor(c);if(hw&&goWasser(c,hw))return;const h=shopFor(c);if(h&&goShop(c,h))return;}
     const sc=c.school!=null?G.bmap.get(c.school):null;
@@ -1442,7 +1443,7 @@ function tradeThink(c,b){
       G.res[o.r]-=o.n;back={r:'gulden',n:o.pay};c.carry={r:o.r,n:o.n};
     }else{
       if(G.res.gulden<o.pay){b.queue.shift();toast(tr`Einkauf in ${VIL[o.v].n} gestrichen: zu wenig Gulden.`,'warn');return;}
-      G.res.gulden-=o.pay;back={r:o.r,n:o.n};c.carry={r:'gulden',n:o.pay};
+      kasse(-o.pay,'einkauf');back={r:o.r,n:o.n};c.carry={r:'gulden',n:o.pay};
     }
     b.queue.shift();const slow=b.wagon&&b.wc<30;wearWagon(b,4);
     c.trip={o,stage:'out',back,refund:o.dir==='sell'?{r:o.r,n:o.n}:{r:'gulden',n:o.pay}};
@@ -1520,6 +1521,7 @@ function builderThink(c){
     return;
   }
   {const hw=wasserFor(c);if(hw&&goWasser(c,hw))return;}
+  {const hn=wasserNachbar(c);if(hn&&goWasser(c,hn))return;}
   {const h=shopFor(c);if(h&&goShop(c,h))return;}
   const hm=homeOf(c);wander(c,hm,3,2);
 }
@@ -1683,15 +1685,20 @@ function nebenan(px,py){
     if(inb(nx,ny)&&G.terrain[ny*W+nx]===GRASS&&G.occ[ny*W+nx]<0&&!G.rock[ny*W+nx]&&!G.ore[ny*W+nx])return[nx,ny];}
   return null;
 }
-function wasserStelle(c){
-  let best=null,bd=1e9;
-  for(const b of brunnen()){const d=(b.x+.5-c.x)**2+(b.y+.5-c.y)**2;if(d<bd){bd=d;best=b;}}
-  if(best){const p=nebenan(best.x,best.y);if(p)return{x:p[0],y:p[1],n:EIMER_BRUNNEN,b:best};}
+// Alle Wasserstellen nach Entfernung. Wichtig: Der naechste Brunnen ist nicht
+// immer der erreichbare - steht ein Haus im Weg, muss der zweite herhalten.
+// Sonst scheitert der Eimergang still und die Leute verdursten neben dem Brunnen.
+function wasserStellen(c){
+  const out=[];
+  for(const b of brunnen()){
+    const p=nebenan(b.x,b.y);
+    if(p)out.push({x:p[0],y:p[1],n:EIMER_BRUNNEN,b,d:(b.x+.5-c.x)**2+(b.y+.5-c.y)**2});}
+  out.sort((a,z)=>a.d-z.d);
   const i=findNear(c.x,c.y,26,j=>G.terrain[j]!==GRASS);
-  if(i<0)return null;
-  const p=nebenan(i%W,i/W|0);
-  return p?{x:p[0],y:p[1],n:EIMER_KAMP,b:null}:null;
+  if(i>=0){const p=nebenan(i%W,i/W|0);if(p)out.push({x:p[0],y:p[1],n:EIMER_KAMP,b:null,d:1e9});}
+  return out;
 }
+function wasserStelle(c){return wasserStellen(c)[0]||null;}
 function wasserFor(c){
   if(c.age<HOLALTER||c.sick>0)return null;
   const h=homeOf(c);
@@ -1699,18 +1706,49 @@ function wasserFor(c){
   if((h.wasser||0)>wasserBedarf(h)*2)return null;
   return wasserStelle(c)?h:null;
 }
+// Kann in diesem Haus ueberhaupt noch jemand Wasser holen?
+function kannHolen(h){return residents(h).some(x=>x.age>=HOLALTER&&!(x.sick>0));}
+// Nachbarschaftshilfe: Wer vom Durst krank wird, kann sich selber kein Wasser
+// mehr holen und verdurstet im eigenen Bett. Ist in einem Haus niemand mehr
+// gehfaehig, traegt ein Nachbar die Eimer hin - so war das am Land ueblich.
+function wasserNachbar(c){
+  if(c.age<HOLALTER||c.sick>0)return null;
+  const eigen=homeOf(c);
+  if(eigen&&residents(eigen).length&&(eigen.wasser||0)<=wasserBedarf(eigen)*2)return null;
+  if(!wasserStelle(c))return null;
+  let best=null,bd=1e9;
+  for(const h of houses()){
+    if(h.holtBy||!residents(h).length||(h.wasser||0)>wasserBedarf(h)||kannHolen(h))continue;
+    const d=(h.x+.5-c.x)**2+(h.y+.5-c.y)**2;
+    if(d<bd&&d<=20*20){bd=d;best=h;}}
+  return best;
+}
 function goWasser(c,h){
-  const st=wasserStelle(c);if(!st)return false;
-  // Ein Kind schleppt weniger als ein Erwachsener
-  const menge=c.age<14?Math.ceil(st.n*0.6):st.n;
+  const sts=wasserStellen(c);if(!sts.length)return false;
   h.holtBy=c.id;c.holt=h.id;
   const heim=()=>{if(!goTo(c,h.x+(c.id%2),h.y+1,()=>{
-      h.wasser=Math.min(40,(h.wasser||0)+(c.eimer||0));
+      h.wasser=Math.min(40,(h.wasser||0)+(c.eimer||0));h.wasserNot=0;
       c.eimer=0;c.bag=null;c.holt=null;if(h.holtBy===c.id)h.holtBy=0;c.cool=1;})){
+    // Kein Weg heim: Der Eimer geht sonst still verloren und das wiederholt sich
+    // endlos, bis die Leute verdursten. Also lieber beim Nachbarn abstellen.
+    h.wasserNot=(h.wasserNot||0)+1;
+    let ab=null,bd=1e9;
+    for(const n of houses()){
+      if(n===h||!residents(n).length||(n.wasser||0)>wasserBedarf(n)*2)continue;
+      const d=(n.x+.5-c.x)**2+(n.y+.5-c.y)**2;if(d<bd){bd=d;ab=n;}}
+    const eim=c.eimer||0;
+    if(ab&&eim>0&&goTo(c,ab.x+(c.id%2),ab.y+1,()=>{
+        ab.wasser=Math.min(40,(ab.wasser||0)+eim);
+        c.eimer=0;c.bag=null;c.holt=null;if(h.holtBy===c.id)h.holtBy=0;c.cool=1;})){
+      if(h.holtBy===c.id)h.holtBy=0;c.holt=null;return;}
     c.eimer=0;c.bag=null;c.holt=null;h.holtBy=0;}};
-  if(!goTo(c,st.x,st.y,()=>{c.work={t:st.b?1.2:2,done:()=>{c.eimer=menge;c.bag='wasser';heim();}};})){
-    h.holtBy=0;c.holt=null;return false;}
-  return true;
+  // Die naechsten vier Stellen durchprobieren, bis ein Weg hinfuehrt
+  for(const st of sts.slice(0,4)){
+    // Ein Kind schleppt weniger als ein Erwachsener
+    const menge=c.age<14?Math.ceil(st.n*0.6):st.n;
+    if(goTo(c,st.x,st.y,()=>{c.work={t:st.b?1.2:2,done:()=>{c.eimer=menge;c.bag='wasser';heim();}};}))return true;
+  }
+  h.holtBy=0;c.holt=null;return false;
 }
 function trinken(){
   let noetig=0,gedeckt=0;
@@ -1726,6 +1764,12 @@ function trinken(){
   G.need.wasser=noetig?gedeckt/noetig:1;
   const durstig=G.C.filter(c=>(c.durst||0)>=1).length;
   if(durstig)toastOnce('durst',tr`${durstig} Leute haben kein Wasser im Haus. Ein Brunnen in der Nähe hilft.`,'warn',25);
+  // Verbauter Weg: Das Dorf darf nicht stumm verdursten, nur weil kein Pfad
+  // zum Brunnen mehr frei ist. Der Spieler muss es erfahren und kann abreissen.
+  const sack=houses().filter(h=>residents(h).length&&(h.wasserNot||0)>=3);
+  if(sack.length){
+    for(const h of sack)h.status=tr`Kein Weg zum Brunnen. Der Pfad ist verbaut.`;
+    toastOnce('wasserweg',tr`${sack.length} Haushalte kommen nicht zum Brunnen - der Weg ist verbaut. Setze einen Brunnen näher hin oder reiß ein Gebäude ab.`,'bad',30);}
   for(const c of G.C.slice()){
     if((c.durst||0)>=3&&!(c.sick>0)&&Math.random()<0.25){c.sick=6;c.ill='wasser';resetTask(c);
       toastOnce('durstkrank',tr`Wer zu lange kein sauberes Wasser hat, wird krank.`,'warn',40);}
@@ -1762,7 +1806,7 @@ function buy(c,h,m){
     const n=Math.min(want[k]||0,m.stock[k]||0,Math.floor(purse/PRICE[k]));
     got[k]=n;if(n>0){m.stock[k]-=n;purse-=n*PRICE[k];paid+=n*PRICE[k];}}
   const pay=Math.round(paid);
-  h.purse=Math.max(0,(h.purse||0)-pay);G.res.gulden+=pay;G.sales=(G.sales||0)+pay;chronAdd('sales',pay);
+  h.purse=Math.max(0,(h.purse||0)-pay);kasse(pay,'markt');G.sales=(G.sales||0)+pay;chronAdd('sales',pay);
   h.pantry=(h.pantry||0)+got.nahrung;
   h.wood=(h.wood||0)+got.holz;h.cS=(h.cS||0)+got.kleidS;h.cW=(h.cW||0)+got.kleidW;
   h.lastBuy={n:got.nahrung,w:got.holz,k:got.kleidS+got.kleidW,b:got.bier,l:got.leinen,g:pay};
@@ -1773,7 +1817,7 @@ function gardens(){
   for(const h of G.B){if(h.type!=='bauernhaus'||!h.done||h.cond<=0)continue;const n=residents(h).length;if(!n)continue;
     const g=Math.ceil(n*(sea===2?1.5:1));h.pantry=(h.pantry||0)+5;
     const add=Math.min(g,room('nahrung'));G.res.nahrung+=add;G.foodSrc.bauernhaus=G.lastDay;chronAdd('food',add);
-    if(G.stage>=1){const pay=Math.min(Math.round(add*0.5),Math.max(0,G.res.gulden));G.res.gulden-=pay;h.purse=(h.purse||0)+pay;}}
+    if(G.stage>=1){const pay=Math.min(Math.round(add*0.5),Math.max(0,G.res.gulden));kasse(-pay,'bauern');h.purse=(h.purse||0)+pay;}}
 }
 function supplied(){if(G.stage<1)return 1;const n=G.C.length;if(!n)return 1;let ok=0;for(const c of G.C){const h=homeOf(c);if(h&&(h.pantry||0)>0)ok++;}return ok/n;}
 function mayor(){const r=G.B.find(b=>b.type==='rathaus'&&b.done);if(!r)return null;const ws=workersOf(r).filter(canWork);return ws[0]||null;}
@@ -1788,7 +1832,7 @@ function wageOf(c){
 function payWages(){
   if(G.stage<1){G.need.lohn=1;return;}
   let w=0;for(const c of G.C)w+=wageOf(c);w=Math.round(w);
-  const pay=Math.min(w,Math.max(0,Math.floor(G.res.gulden)));G.res.gulden-=pay;G.lastWage=w;G.lastPaid=pay;
+  const pay=Math.min(w,Math.max(0,Math.floor(G.res.gulden)));kasse(-pay,'lohn');G.lastWage=w;G.lastPaid=pay;
   const f=w?pay/w:1;for(const c of G.C){const x=wageOf(c);if(!x)continue;const h=homeOf(c);if(h)h.purse=(h.purse||0)+x*f;}
   G.need.lohn=w?pay/w:1;
   if(pay<w){G.unpaid=(G.unpaid||0)+1;
@@ -1834,16 +1878,54 @@ function dayLabour(){
     .map(b=>({b,n:DEF[b.type].wk-workersOf(b).length-free.filter(c=>c.temp===b.id).length})).filter(x=>x.n>0);
   for(const c of free){if(spare<=0)break;if(c.temp!=null)continue;const x=need.find(x=>x.n>0);if(!x)break;x.n--;resetTask(c);c.site=null;c.temp=x.b.id;spare--;}
 }
+// Kassenbuch. Jede Bewegung der Gemeindekasse wird auf eine Spalte
+// gebucht, damit im Rathaus steht, wohin das Geld geht. G.kb ist die
+// laufende Periode, G.kbAlt die letzte abgeschlossene (zehn Tage).
+// Handwerk und Handel zahlen Zunftabgabe, je nach Ertrag unterschiedlich.
+// Felder, Vieh und Gemeindegebaeude zahlen nichts.
+const GEWERBE={saege:1,schmiede:1.4,schmelze:1.4,wagner:1.2,weberei:1.2,schneider:1,
+  baecker:1,brauerei:1.3,wirtshaus:1.5,ziegelei:1.2,koehler:0.8,markt:1.2,handel:1.5,
+  bergwerk:1.3,muehle:1,dach:0.8,bader:0.6,schlacht:1};
+// Was ein Punkt Gewerbe je Steuersatz kostet.
+const ZUNFT=[0,1,2,3];
+const KBSPALTEN=['steuer','gewerbe','markt','auftrag','verkauf','lohn','bauern','einkauf','anwerb','land','sonst'];
+function kbNeu(){const o={};for(const k of KBSPALTEN)o[k]=0;return o;}
+// Alles Geld laeuft hierdurch: positiv ist Einnahme, negativ Ausgabe.
+function kasse(betrag,spalte){
+  if(!G.kb)G.kb=kbNeu();
+  G.res.gulden+=betrag;
+  G.kb[KBSPALTEN.includes(spalte)?spalte:'sonst']+=betrag;
+  return betrag;
+}
+function kbTag(){if(!G.kb)G.kb=kbNeu();G.kbAlt=G.kb;G.kb=kbNeu();}
 function collectTax(){
   const r=G.B.find(b=>b.type==='rathaus'&&b.done);
   if(!r||!G.tax)return;
   if(!workersOf(r).length){toastOnce('taxnone',tr`Das Rathaus hat keinen Schreiber. Es werden keine Steuern eingetrieben.`,'warn',60);return;}
+  // Zuerst die Zunftabgabe: sie haengt am Betrieb und geht der Kopfsteuer
+  // vor. Sonst ist der Geldbeutel schon leer, wenn sie drankommt.
+  let gw=0;
+  if(G.stage>=1&&G.tax){
+    const satz=ZUNFT[G.tax]||0;
+    for(const b of G.B){
+      if(!b.done||b.cond<=0||!GEWERBE[b.type])continue;
+      for(const c of workersOf(b)){
+        if(!canWork(c))continue;
+        const h=homeOf(c);if(!h)continue;
+        const p=Math.min(satz*GEWERBE[b.type],h.purse||0);
+        h.purse-=p;gw+=p;}}
+    gw=Math.round(gw);
+    if(gw)kasse(gw,'gewerbe');
+  }
+  G.lastGew=gw;
   let g;
   if(G.stage>=1){g=0;for(const c of G.C){if(!isAdult(c))continue;const h=homeOf(c);if(!h)continue;const due=(1+0.5*c.edu)*TAXES[G.tax].g,p=Math.min(due,h.purse||0);h.purse-=p;g+=p;}
-    for(const h of houses())if((h.purse||0)>40){const p=(h.purse-40)*0.1;h.purse-=p;g+=p;}g=Math.round(g);}
+    // Wer viel auf der Seite hat, gibt mehr ab. Vorher blieb zu viel Geld in
+    // den Haushalten liegen und die Gemeindekasse lief leer.
+    for(const h of houses())if((h.purse||0)>25){const p=(h.purse-25)*0.18;h.purse-=p;g+=p;}g=Math.round(g);}
   else g=Math.round(G.C.filter(isAdult).reduce((s,c)=>s+1+0.5*c.edu,0)*TAXES[G.tax].g);
-  G.res.gulden+=g;G.lastTax=g;
-  toastOnce('tax',tr`Steuern eingetrieben: ${g} Gulden.`,'good',15);
+  kasse(g,'steuer');G.lastTax=g;
+  toastOnce('tax',gw?tr`Steuern und Zunftabgabe eingetrieben: ${g+gw} Gulden.`:tr`Steuern eingetrieben: ${g} Gulden.`,'good',15);
 }
 function checkJobs(){
   for(const c of G.C){if(c.job!=null){const b=G.bmap.get(c.job);if(!b||!b.done||!isAdult(c))setJob(c,null);}}
@@ -2059,7 +2141,7 @@ function newDay(d){
     if(m===2){toast(tr`Frühling ${year()}. Zeit zur Aussaat.`,'good');G.need.warmth=1;G.bumper=false;springSwitch();}
     if(m===11)winterSwitch();
     if(m===10){const miss=G.C.filter(c=>canWork(c)&&seasonal(jobB(c))&&c.winterJob==null).length;if(miss)toast(tr`Bald Winter: ${miss} Saisonarbeiter haben noch keine Winterarbeit. Siehe Leute-Liste.`,'warn');}
-    collectTax();payWages();
+    kbTag();collectTax();payWages();
     if(m===5)toast('Sommer. Das Korn reift.','good');
     if(m===8)toast('Herbst. Legt Vorräte, Brennholz und Viehfutter an.','good');
     if(m===9||m===10){const houses=G.B.filter(b=>HOUSE[b.type]&&b.done).length;
@@ -2299,6 +2381,7 @@ const REST={bank:4,dorfplatz:3};
 function seatsFree(b){return DEF[b.type].seats-G.C.filter(c=>c.restAt===b.id).length;}
 function restThink(c){
   {const hw=wasserFor(c);if(hw&&goWasser(c,hw))return true;}
+  {const hn=wasserNachbar(c);if(hn&&goWasser(c,hn))return true;}
   {const h=shopFor(c);if(h&&goShop(c,h))return true;}
   const seats=G.B.filter(b=>b.done&&REST[b.type]&&seatsFree(b)>0&&Math.hypot(b.x+.5-c.x,b.y+.5-c.y)<=12)
     .sort((a,z)=>Math.hypot(a.x-c.x,a.y-c.y)-Math.hypot(z.x-c.x,z.y-c.y));
@@ -2361,8 +2444,8 @@ function needHire(b){const d=DEF[b.type];if(!b.done||!d.ed||!d.wk)return false;
 function hireFor(b,how){
   const d=DEF[b.type],cost=hireCost(d.ed),why=hireBlock(d.ed),resc=hireRescue();
   if(why){toast(why,'warn');return;}
-  if(resc){G.res.gulden-=Math.min(G.res.gulden,cost.gulden);G.res.nahrung-=Math.min(G.res.nahrung,cost.nahrung);}
-  else{G.res.gulden-=cost.gulden;G.res.nahrung-=cost.nahrung;hireLeft();G.hireY.n++;G.hireN=(G.hireN||0)+1;}
+  if(resc){kasse(-Math.min(G.res.gulden,cost.gulden),'anwerb');G.res.nahrung-=Math.min(G.res.nahrung,cost.nahrung);}
+  else{kasse(-cost.gulden,'anwerb');G.res.nahrung-=cost.nahrung;hireLeft();G.hireY.n++;G.hireN=(G.hireN||0)+1;}
   const st=nearestStore(b.x,b.y)||b;const c=addCitizen(st.x+1,st.y+2.4,26+(Math.random()*8|0));c.edu=d.ed;setJob(c,b.id);chronAdd('arr');
   toast(tr`${fullName(c)} (${EDU[d.ed]}) kommt aus Krems und übernimmt: ${DEF[b.type].n}.`,'good');
   if(G.C.length>housing())toast(tr`Achtung: Es fehlt Wohnraum für alle.`,'warn');
@@ -2397,7 +2480,7 @@ function orderDay(d){
 }
 function deliverOrder(){
   const o=G.ord;if(!o||G.res[o.r]<o.n)return;
-  G.res[o.r]-=o.n;G.res.gulden+=o.pay;G.rep=Math.min(100,G.rep+6);G.ord=null;chronAdd('ord');chronEv(tr`${o.n} ${RN[o.r]} nach ${VIL[o.v].n} geliefert`);
+  G.res[o.r]-=o.n;kasse(o.pay,'auftrag');G.rep=Math.min(100,G.rep+6);G.ord=null;chronAdd('ord');chronEv(tr`${o.n} ${RN[o.r]} nach ${VIL[o.v].n} geliefert`);
   toast(tr`Geliefert: ${o.n} ${RN[o.r]} nach ${VIL[o.v].n}. ${o.pay} Gulden erhalten, das Ansehen steigt.`,'good');updateQuestBar();renderQuest();
 }
 
@@ -2415,7 +2498,7 @@ function lordDay(d){
     {l:tr`Robot leisten: ${rn} Leute 15 Tage am Herrenhof`,dis:rn<1,fn:()=>{G.favor=Math.min(100,G.favor+8);chronEv(tr`Robot am Herrenhof`);
       for(const c of adults.sort(()=>Math.random()-.5).slice(0,rn)){resetTask(c);c.robot=15;c.hidden=true;}
       toast(tr`${rn} Leute sind für 15 Tage zur Robot am Herrenhof.`,'warn');}},
-    {l:tr`Mit ${gp} Gulden ablösen`,dis:G.res.gulden<gp,fn:()=>{G.res.gulden-=gp;G.favor=Math.min(100,G.favor+5);chronEv(tr`Abgaben in Gulden abgelöst`);}},
+    {l:tr`Mit ${gp} Gulden ablösen`,dis:G.res.gulden<gp,fn:()=>{kasse(-gp,'sonst');G.favor=Math.min(100,G.favor+5);chronEv(tr`Abgaben in Gulden abgelöst`);}},
     {l:tr`Verweigern`,fn:()=>{G.favor=Math.max(0,G.favor-22);G.penalty-=8;computeMood();chronEv(tr`Abgaben verweigert`);
       if(G.favor<20&&Math.random()<0.5){for(const k of['nahrung','getreide'])G.res[k]=Math.floor(G.res[k]*0.75);G.penalty+=12;computeMood();
         toast(tr`Die Herrschaft schickt Soldaten. Sie holen ein Viertel der Vorräte.`,'warn');}
@@ -2684,7 +2767,7 @@ function wanderHaendler(){
   if(kauf){
     const menge=30,lohn=Math.max(4,Math.round(menge*({holz:.35,bretter:.7,stein:.5,getreide:.5,nahrung:.6,leinen:1.6,eisen:1.2,ziegel:.8,wolle:.9,schilf:.4}[kauf]||.5)*teuer));
     wahl.push({l:tr`${menge} ${RN[kauf]} verkaufen für ${lohn} Gulden`,
-      fn:()=>{G.res[kauf]-=menge;G.res.gulden+=lohn;toast(tr`${menge} ${RN[kauf]} verkauft.`,'good');}});
+      fn:()=>{G.res[kauf]-=menge;kasse(lohn,'verkauf');toast(tr`${menge} ${RN[kauf]} verkauft.`,'good');}});
   }
   wahl.push({l:tr`Nichts handeln`,fn:()=>{}});
   showEvent(tr`Besuch`,tr`Händler aus ${h.n}`,h.t,wahl);
@@ -2701,7 +2784,7 @@ function bellDay(d){
     if(monthIdx()!==5||d%10!==3||year()<1802||Math.random()>0.5)return;
     G.flags.bell=1;
     showEvent(tr`Besuch`,tr`Ein Glockengießer aus Krems`,tr`Ein Glockengießer rastet am Lager. Er sagt, die Kapelle habe einen leeren Glockenstuhl, und bietet an, eine Glocke zu gießen: ${bellCost()} Gulden, dazu 20 Eisen und 10 Holzkohle. Er brauche ein halbes Jahr. Eine Glocke rufe die Leute zum Gebet und sei weithin zu hören.`,[
-      {l:tr`Zusagen und anzahlen (${Math.round(bellCost()/2)} Gulden)`,dis:G.res.gulden<Math.round(bellCost()/2),fn:()=>{G.res.gulden-=Math.round(bellCost()/2);G.flags.bell=2;G.flags.bellDue=dayNo()+180;toast(tr`Der Gießer macht sich an die Arbeit. Im Herbst holt er den Rest.`,'good');}},
+      {l:tr`Zusagen und anzahlen (${Math.round(bellCost()/2)} Gulden)`,dis:G.res.gulden<Math.round(bellCost()/2),fn:()=>{kasse(-Math.round(bellCost()/2),'sonst');G.flags.bell=2;G.flags.bellDue=dayNo()+180;toast(tr`Der Gießer macht sich an die Arbeit. Im Herbst holt er den Rest.`,'good');}},
       {l:tr`Zu teuer`,fn:()=>{G.flags.bell=0;G.flags.bellNo=year();}}]);
     return;
   }
@@ -2710,7 +2793,7 @@ function bellDay(d){
     const kannGeld=G.res.gulden>=rest,kannWare=G.res.eisen>=20&&G.res.kohle>=10;
     showEvent(tr`Besuch`,tr`Die Glocke ist gegossen`,tr`Der Gießer ist zurück. Die Glocke steht auf seinem Karren. Er verlangt den Rest: ${rest} Gulden, dazu 20 Eisen und 10 Holzkohle für den Guss.`,[
       {l:tr`Bezahlen und aufhängen`,dis:!(kannGeld&&kannWare),fn:()=>{
-        G.res.gulden-=rest;G.res.eisen-=20;G.res.kohle-=10;G.flags.bell=3;G.flags.glocke=1;
+        kasse(-rest,'sonst');G.res.eisen-=20;G.res.kohle-=10;G.flags.bell=3;G.flags.glocke=1;
         G.penalty-=12;computeMood();chronEv(tr`Die Glocke wurde aufgezogen`);
         toast(tr`Die Glocke hängt. Von jetzt an läutet sie über dem Dorf.`,'good');}},
       {l:tr`Noch nicht zahlen können`,fn:()=>{G.flags.bellDue=dayNo()+60;G.penalty+=3;computeMood();
@@ -2855,7 +2938,7 @@ function evFranzosen(y){
   const pay=50+G.C.length*2;
   showEvent(tr`Krieg ${y}`,tr`Französische Truppen ziehen durch`,tr`Napoleons Armee marschiert durchs Waldviertel. Ein Offizier verlangt Verpflegung für seine Leute: entweder Vorräte oder ${pay} Gulden.`,[
     {l:tr`Vorräte abgeben (40 % von Nahrung, Getreide, Bier)`,fn:()=>{for(const k of['nahrung','getreide','bier'])G.res[k]=Math.floor(G.res[k]*0.6);G.penalty+=6;computeMood();}},
-    {l:tr`Mit ${pay} Gulden abfinden`,dis:G.res.gulden<pay,fn:()=>{G.res.gulden-=pay;}},
+    {l:tr`Mit ${pay} Gulden abfinden`,dis:G.res.gulden<pay,fn:()=>{kasse(-pay,'sonst');}},
     {l:tr`Verweigern`,fn:()=>{
       if(Math.random()<0.5){for(const k of['nahrung','getreide','bier'])G.res[k]=Math.floor(G.res[k]*0.35);
         const cand=G.B.filter(b=>b.done&&decays(b)&&b.type!=='lager');if(cand.length)ignite(pick(cand));
@@ -2923,7 +3006,7 @@ function save(){
     terrain:enc(G.terrain),tree:enc(G.tree),rock:enc(G.rock),reed:enc(G.reed),ore:enc(G.ore),foodSrc:G.foodSrc,nextB:G.nextB,nextC:G.nextC,nextA:G.nextA,
     pfWait:G.pfWait??null,gfoehl:G.gfoehl||0,unpaid:G.unpaid||0,lastWage:G.lastWage||0,lastPaid:G.lastPaid||0,
     wpool:(G.wpool||[]).concat(G.C.filter(c=>c.wag!=null&&c.wag<99.5).map(c=>c.wag)),made:G.made,qb:G.qb,foot:G.foot?enc(G.foot):undefined,mark:G.mark?enc(G.mark):undefined,hireN:G.hireN||0,hireY:G.hireY||null,scar:G.scar?enc(G.scar):undefined,own:G.own?Array.from(G.own):undefined,landN:G.landN||0,
-    stage:G.stage,tax:G.tax,lastTax:G.lastTax,q:G.q,unl:G.unl,wq:G.wq,chron:G.chron,anc:G.anc,hist:G.hist,ms:G.ms,msY:G.msY,tot:G.tot,hungY:G.hungY||0,wqOk:G.wqOk||0,rs:G.rs,ord:G.ord,rep:G.rep,lastOrd:G.lastOrd,favor:G.favor,lordY:G.lordY,mood:G.mood,penalty:G.penalty,need:G.need,flags:G.flags,bumper:G.bumper,
+    stage:G.stage,tax:G.tax,lastTax:G.lastTax,kb:G.kb,kbAlt:G.kbAlt,q:G.q,unl:G.unl,wq:G.wq,chron:G.chron,anc:G.anc,hist:G.hist,ms:G.ms,msY:G.msY,tot:G.tot,hungY:G.hungY||0,wqOk:G.wqOk||0,rs:G.rs,ord:G.ord,rep:G.rep,lastOrd:G.lastOrd,favor:G.favor,lordY:G.lordY,mood:G.mood,penalty:G.penalty,need:G.need,flags:G.flags,bumper:G.bumper,
     B:G.B.map(b=>({id:b.id,type:b.type,x:b.x,y:b.y,done:b.done,prog:b.prog,wagon:b.wagon,cows:b.cows,jung:b.jung&&b.jung.length?b.jung:undefined,mcows:b.mcows,mhens:b.mhens,msheep:b.msheep,mpigs:b.mpigs,fish:b.fish,dry:b.dry,grass:b.grass!=null?Math.round(b.grass):undefined,hay:b.hay||undefined,mode:b.mode,stack:b.stack,burn:b.burn,ready:b.ready||undefined,hens:b.hens,sheep:b.sheep,fleece:b.fleece!=null?Math.round(b.fleece*10)/10:undefined,pigs:b.pigs,mast:b.mast,vil:b.vil,queue:b.queue,cond:Math.round(b.cond*10)/10,fire:Math.round(b.fire),del:b.del,graves:b.graves,purse:b.purse!=null?Math.round(b.purse*10)/10:undefined,pantry:b.pantry,wood:b.wood||undefined,cS:b.cS||undefined,cW:b.cW||undefined,wasser:b.wasser!=null?Math.round(b.wasser):undefined,stock:b.stock,ib:b.ib,ob:b.ob,wc:b.wagon?Math.round(b.wc):undefined,
       crop:b.crop?Array.from(b.crop):null,grow:b.grow?Array.from(b.grow,v=>Math.round(v)):null})),
     C:G.C.map(c=>{let carry=c.carry;if(c.trip)carry=c.trip.stage==='away'?c.trip.back:c.trip.refund;
@@ -2938,7 +3021,7 @@ function load(){
     G={v:6,seed:s.seed,t:s.t*tf,lastDay:Math.floor(s.t*tf/DAYLEN),speed:s.speed??1,terrain:dec(s.terrain),tree:dec(s.tree),rock:dec(s.rock),reed:dec(s.reed),ore:dec(s.ore),foodSrc:s.foodSrc||{},shade:genShade(s.seed),
        occ:new Int16Array(N).fill(-1),res:Object.assign(Object.fromEntries(Object.keys(RN).filter(k=>k!=='dach').map(k=>[k,0])),s.res),
        B:[],C:[],animals:[],nextB:s.nextB,nextC:s.nextC,nextA:s.nextA||1,over:false,bmap:new Map(),jobT:0,
-       stage:s.stage||0,tax:s.tax||0,lastTax:s.lastTax||0,mood:s.mood??70,penalty:s.penalty||0,need:Object.assign({food:1,warmth:1,bier:1,leinen:1},s.need),flags:s.flags||{},bumper:!!s.bumper};
+       stage:s.stage||0,tax:s.tax||0,lastTax:s.lastTax||0,kb:s.kb||null,kbAlt:s.kbAlt||null,mood:s.mood??70,penalty:s.penalty||0,need:Object.assign({food:1,warmth:1,bier:1,leinen:1},s.need),flags:s.flags||{},bumper:!!s.bumper};
     if(G.terrain.length!==N)return false;
     reserved=new Uint8Array(N);
     for(const o of s.B){const d=DEF[o.type];if(!d)continue;
@@ -4346,7 +4429,7 @@ function openInfo(b){
   if(b.done&&b.type==='schlacht')h+=tr`<p class="note">Was soll geschlachtet werden? Bei einer festen Tierart bleiben 2 Zuchttiere stehen.</p><div class="seg" role="group" aria-label="Schlachthaus">${[['auto',tr`Überschuss`],['huehner',tr`Hühner`],['schweine',tr`Schweine`],['kuehe',tr`Kühe`]].map(([k,l])=>`<button data-smode="${k}" class="${b.mode===k?'on':''}">${l}</button>`).join('')}</div>`;
   if(b.done&&b.type==='teich')h+=tr`<div class="irow"><span class="k">Karpfen im Teich</span><span class="v" id="iFish"></span></div>`;
   if(b.done&&b.type==='trocken')h+=tr`<div class="irow"><span class="k">Schilf beim Trocknen</span><span class="v" id="iDry"></span></div><div class="irow"><span class="k">Nasses Schilf wartet</span><span class="v" id="iWet"></span></div>`;
-  if(b.done&&b.type==='rathaus')h+=tr`<p class="note">Steuersatz (Gulden je Erwachsenem alle 10 Tage, Abzug bei der Stimmung):</p><div class="seg" role="group" aria-label="Steuern">${TAXES.map((t,k)=>`<button data-tax="${k}" class="${G.tax===k?'on':''}">${t.n}${k?` ${t.g}G −${t.m}%`:''}</button>`).join('')}</div><div class="irow"><span class="k">Zuletzt eingenommen</span><span class="v" id="iTax"></span></div><div class="irow"><span class="k">Zuletzt Löhne gezahlt</span><span class="v" id="iWage"></span></div><p class="note">Löhne alle 10 Tage: Tagelöhner 1, Angestellte 2, mit Volksschule 3, mit Hauptschule 4, Bürgermeister 8 Gulden.</p>`;
+  if(b.done&&b.type==='rathaus')h+=tr`<p class="note">Steuersatz (Gulden je Erwachsenem alle 10 Tage, Abzug bei der Stimmung):</p><div class="seg" role="group" aria-label="Steuern">${TAXES.map((t,k)=>`<button data-tax="${k}" class="${G.tax===k?'on':''}">${t.n}${k?` ${t.g}G −${t.m}%`:''}</button>`).join('')}</div><div class="irow"><span class="k">Zuletzt eingenommen</span><span class="v" id="iTax"></span></div><div id="iKasse"></div><div class="irow"><span class="k">Zuletzt Löhne gezahlt</span><span class="v" id="iWage"></span></div><p class="note">Löhne alle 10 Tage: Tagelöhner 1, Angestellte 2, mit Volksschule 3, mit Hauptschule 4, Bürgermeister 8 Gulden.</p>`;
   if(b.done&&d.cap)h+=tr`<div class="irow"><span class="k">Kinder (${d.ages[0]}–${d.ages[1]} Jahre)</span><span class="v" id="iPup"></span></div>`;
   if(b.done&&d.ed)h+=tr`<p class="note">Arbeiter brauchen mindestens ${EDU[d.ed]}. Gebildete arbeiten schneller und zahlen mehr Steuern.</p>`;
   if(b.done&&d.ed&&d.wk){const hc=hireCost(d.ed);h+=tr`<div id="iHire" hidden><p class="note warn" style="color:var(--rust)">Niemand Freies im Dorf hat ${EDU[d.ed]}.</p><div class="ia" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn sm" data-hire="g">Fachkraft aus Krems: ${hc.gulden} Gulden + ${hc.nahrung} Nahrung</button></div><p class="note" id="iHireN"></p></div>`;}
@@ -4441,7 +4524,7 @@ function openLand(p){landSel=p;const f=parcelInfo(p),pr=landPrice(),nx=landNext(
 function closeLand(){landSel=-1;$('land').hidden=true;}
 $('lClose').addEventListener('click',closeLand);$('lNo').addEventListener('click',closeLand);
 $('lBuy').addEventListener('click',()=>{const p=landSel;if(p<0)return;const pr=landPrice();if(G.res.gulden<pr||!landNext(p))return;
-  G.res.gulden-=pr;G.own[p]=1;G.landN=(G.landN||0)+1;chronEv(tr`Grund von der Herrschaft gekauft (${pr} Gulden)`);toast(tr`Grund gekauft für ${pr} Gulden. Die Leute arbeiten ab jetzt auch dort.`,'good');sfx('place');closeLand();updateHUD();save();});
+  kasse(-pr,'land');G.own[p]=1;G.landN=(G.landN||0)+1;chronEv(tr`Grund von der Herrschaft gekauft (${pr} Gulden)`);toast(tr`Grund gekauft für ${pr} Gulden. Die Leute arbeiten ab jetzt auch dort.`,'good');sfx('place');closeLand();updateHUD();save();});
 function updateInfo(){
   if(sel==null||$('info').hidden)return;const b=G.bmap.get(sel);if(!b){closeInfo();return;}
   const d=DEF[b.type],set=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
@@ -4482,7 +4565,30 @@ function updateInfo(){
   if(b.done&&d.prod){let s1=0,s2=0;for(let s=0;s<16;s++){if(b.crop[s]===1)s1++;if(b.crop[s]===2)s2++;}set('iCrop',`${s1} · ${s2}`);}
   if(b.done&&b.type==='weide')set('iCows',`${b.cows} / 6 · ${viehStr(b)}`);
   if(b.done&&d.cap)set('iPup',`${G.C.filter(c=>c.school===b.id).length} / ${d.cap}`);
-  if(b.done&&b.type==='rathaus'){set('iTax',tr`${G.lastTax} Gulden`);set('iWage',G.stage>=1?tr`${G.lastPaid||0} von ${G.lastWage||0} Gulden`:tr`erst ab dem Dorf`);}
+  if(b.done&&b.type==='rathaus'){
+    // Geldbuch der letzten zehn Tage: wo kam es her, wo ging es hin.
+    const kb=G.kbAlt;
+    const kbEl=$('iKasse');
+    if(kbEl){
+      if(!kb)kbEl.innerHTML=tr`<p class="note">Das Geldbuch der letzten zehn Tage steht hier, sobald das erste Mal abgerechnet wurde.</p>`;
+      else{
+        const NAME={steuer:tr`Steuer`,gewerbe:tr`Zunftabgabe`,markt:tr`Marktstand`,auftrag:tr`Bestellungen`,
+          verkauf:tr`An Händler verkauft`,lohn:tr`Löhne`,bauern:tr`Von Bauern gekauft`,einkauf:tr`In der Stadt gekauft`,
+          anwerb:tr`Angeworben`,land:tr`Grund gekauft`,sonst:tr`Sonstiges`};
+        const ein=[],aus=[];let se=0,sa=0;
+        for(const k of KBSPALTEN){const v=Math.round(kb[k]||0);if(!v)continue;
+          if(v>0){ein.push([NAME[k],v]);se+=v;}else{aus.push([NAME[k],-v]);sa+=-v;}}
+        const zeile=(n,v,kl)=>`<div class="irow"><span class="k">${n}</span><span class="v ${kl||''}">${v} G</span></div>`;
+        let h2=tr`<h3>Geldbuch der letzten zehn Tage</h3>`;
+        h2+=ein.length?ein.map(([n,v])=>zeile(n,'+'+v)).join(''):tr`<p class="note">Nichts eingenommen.</p>`;
+        h2+=aus.length?aus.map(([n,v])=>zeile(n,'−'+v,'warn')).join(''):'';
+        const saldo=se-sa;
+        h2+=`<div class="bar"><span>${tr`Unterm Strich`}</span><span class="tr"></span><b class="${saldo<0?'warn':''}">${saldo>0?'+':''}${saldo} G</b></div>`;
+        h2+=saldo<0?tr`<p class="note warn">Es geht mehr hinaus als herein. Steuersatz erhöhen, Betriebe besetzen, Bestellungen liefern oder weniger zukaufen.</p>`
+                   :tr`<p class="note">Die Kasse wächst.</p>`;
+        kbEl.innerHTML=h2;}
+    }
+    set('iTax',G.lastGew?tr`${G.lastTax} + ${G.lastGew} Gulden`:tr`${G.lastTax} Gulden`);set('iWage',G.stage>=1?tr`${G.lastPaid||0} von ${G.lastWage||0} Gulden`:tr`erst ab dem Dorf`);}
   if(b.done&&b.type==='huehner')set('iHen',`${b.hens} / 12 · ${viehStr(b)}`);
   if(b.done&&b.type==='schaf')set('iSheep',`${b.sheep} / 12 · ${Math.floor(b.fleece||0)} · ${viehStr(b)}${weideVon(b)?tr` · auf der Weide`:''}`);
   if(b.done&&b.type==='schweine')set('iPig',`${b.pigs} / 8 · ${viehStr(b)}`);
