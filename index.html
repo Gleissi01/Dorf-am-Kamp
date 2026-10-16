@@ -271,7 +271,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 55</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 56</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -684,7 +684,7 @@ function newGame(seed){
   G={v:4,seed,t:0,lastDay:-1,speed:1,terrain,tree,rock,reed,ore,foodSrc:{},shade:genShade(seed),occ:new Int16Array(N).fill(-1),
      res:{holz:50,bretter:30,stein:20,naegel:40,stroh:20,schilf:20,schilfnass:0,getreide:0,nahrung:200,bier:0,werkzeug:16,eisen:0,roheisen:0,kohle:0,flachs:0,leinen:0,lehm:0,ziegel:0,wolle:0,wollstoff:0,kleidS:0,kleidW:0,heu:0,gulden:20,wagen:3},
      B:[],C:[],animals:[],nextB:1,nextC:1,nextA:1,over:false,bmap:new Map(),jobT:0,
-     stage:0,tax:0,lastTax:0,mood:80,penalty:0,need:{food:1,wasser:1,warmth:1,bier:1,leinen:1},flags:{v20:1},bumper:false,q:0,unl:START_UNL.slice(),wq:null,chron:null,hist:[],anc:[],ms:[],msY:{},tot:{},hungY:0,wqOk:0,rs:0.6,ord:null,rep:50,lastOrd:0,favor:35,lordY:0,floodT:0,foot:new Uint8Array(N),mark:new Uint8Array(N),wpool:[],made:{bier:0,leinen:0},qb:{bier:0,leinen:0}};
+     stage:0,tax:0,lastTax:0,mood:80,penalty:0,need:{food:1,wasser:1,warmth:1,bier:1,leinen:1},flags:{v20:1},bumper:false,q:0,unl:START_UNL.slice(),wq:null,chron:null,hist:[],anc:[],ms:[],msY:{},tot:{},hungY:0,wqOk:0,rs:0.6,ord:null,ords:[],rep:50,lastOrd:0,favor:35,lordY:0,floodT:0,foot:new Uint8Array(N),mark:new Uint8Array(N),wpool:[],made:{bier:0,leinen:0},qb:{bier:0,leinen:0}};
   reserved=new Uint8Array(N);
   G.scar=calcScar();
   initOwn(sx+1,sy+1);
@@ -2532,26 +2532,59 @@ function eduWarn(){
 /* ---------- city orders ---------- */
 const ORDG={holz:['holz',60],bretter:['saege',40],stein:['stein',40],naegel:['schmiede',60],werkzeug:['schmiede',12],getreide:['feld',40],nahrung:[null,50],bier:['brauerei',30],leinen:['weberei',20],kohle:['koehler',40]};
 function ordersOpen(){return G.stage>=1||questDone()||year()>=1803;}
+// Bestellungen sind der Motor gegen den Leerlauf: Sie bringen als einziges
+// Geld von aussen ins Dorf und geben laufend etwas zu tun. Darum mehrere
+// gleichzeitig, kuerzere Fristen und Staedte, die Verschiedenes brauchen.
+function ordMax(){return G.stage>=2?3:G.stage>=1?2:1;}
+function ordList(){if(!Array.isArray(G.ords))G.ords=G.ord?[G.ord]:[];return G.ords;}
 function offerOrder(){
   const pool=Object.keys(ORDG).filter(r=>{const b=ORDG[r][0];return!b||G.B.some(x=>x.type===b&&x.done);});
   if(!pool.length)return;
-  const r=pick(pool),v=pick(Object.keys(VIL)),n=Math.round(ORDG[r][1]*(1+G.C.length/25)/5)*5;
-  const pay=Math.round(BASE[r]*n*1.6*(0.8+G.rep/250));
-  const due=dayNo()+60;
+  const v=pick(Object.keys(VIL)),mod=VIL[v].mod||{};
+  // Jede Stadt bestellt, was sie braucht: Was sie gut zahlt, kommt oefter dran.
+  // Horn will Stein und Werkzeug, Zwettl Getreide und Bier, Krems Holz und Leinen.
+  const gew=[];
+  for(const r of pool){const w=Math.max(1,Math.round(Math.pow(mod[r]||1,3)*4));for(let i=0;i<w;i++)gew.push(r);}
+  const r=pick(gew);
+  // Was das Dorf schon offen hat, bestellt so schnell keiner nach
+  if(ordList().some(o=>o.r===r&&o.v===v))return;
+  const n=Math.round(ORDG[r][1]*(1+G.C.length/25)/5)*5;
+  // Der Preis schwankt von Bote zu Bote. Mal zahlt die Stadt gut, mal mager.
+  const schwank=0.85+Math.random()*0.4;
+  const pay=Math.max(5,Math.round(BASE[r]*n*1.6*(mod[r]||1)*schwank*(0.8+G.rep/250)));
+  const frist=clamp(Math.round(20+n/6),25,45);
+  const due=dayNo()+frist;
   G.lastOrd=dayNo();
-  showEvent(tr`Bestellung`,tr`${VIL[v].n} bestellt ${n} ${RN[r]}`,tr`Ein Bote aus ${VIL[v].n} fragt, ob das Dorf in den nächsten 60 Tagen ${n} ${RN[r]} liefern kann. Lohn: ${pay} Gulden. Wer pünktlich liefert, steigt im Ansehen der Städte: bessere Löhne und mehr Zuzug. Wer eine Zusage bricht, verliert Ansehen.`,[
-    {l:tr`Zusagen (${pay} Gulden)`,fn:()=>{G.ord={v,r,n,due,pay};toast(tr`Bestellung angenommen: ${n} ${RN[r]} für ${VIL[v].n}. Liefern über den Auftrag oben.`,'good');updateQuestBar();}},
-    {l:tr`Ablehnen`,fn:()=>{G.rep=Math.max(0,G.rep-2);}}]);
+  const ton=schwank>1.12?tr`Sie zahlen heuer gut dafür.`:schwank<0.95?tr`Der Preis ist mager, die Stadt hat selber genug.`:tr`Der Preis ist der übliche.`;
+  const voll=ordList().length>=ordMax()-1?tr` Mehr als ${ordMax()} Bestellungen nimmt das Dorf nicht an.`:'';
+  showEvent(tr`Bestellung`,tr`${VIL[v].n} bestellt ${n} ${RN[r]}`,
+    tr`Ein Bote aus ${VIL[v].n} fragt, ob das Dorf in den nächsten ${frist} Tagen ${n} ${RN[r]} liefern kann. Lohn: ${pay} Gulden. ${ton} Wer pünktlich liefert, steigt im Ansehen der Städte: bessere Preise und öfter Aufträge. Wer eine Zusage bricht, verliert Ansehen.${voll}`,[
+    {l:tr`Zusagen (${pay} Gulden)`,fn:()=>{ordList().push({v,r,n,due,pay});
+      toast(tr`Bestellung angenommen: ${n} ${RN[r]} für ${VIL[v].n}, ${frist} Tage Frist.`,'good');updateQuestBar();}},
+    {l:tr`Ablehnen`,fn:()=>{G.rep=Math.max(0,G.rep-3);toast(tr`Abgelehnt. Der Bote zieht weiter, das Ansehen sinkt etwas.`,'warn');}}]);
 }
 function orderDay(d){
-  if(G.ord&&dayNo()>G.ord.due){const o=G.ord;G.ord=null;G.rep=Math.max(0,G.rep-10);G.penalty+=3;chronEv(tr`Bestellung aus ${VIL[o.v].n} nicht geliefert`);
-    toast(tr`Frist verpasst: ${VIL[o.v].n} hat keine ${RN[o.r]} bekommen. Der Ruf des Dorfes leidet.`,'warn');updateQuestBar();return;}
-  if(!G.ord&&ordersOpen()&&d%10===6&&dayNo()-G.lastOrd>=45&&$('event').hidden&&Math.random()<0.5)offerOrder();
+  const L=ordList();
+  for(let i=L.length-1;i>=0;i--){
+    const o=L[i];if(dayNo()<=o.due)continue;
+    L.splice(i,1);G.rep=Math.max(0,G.rep-10);G.penalty+=3;
+    chronEv(tr`Bestellung aus ${VIL[o.v].n} nicht geliefert`);
+    toast(tr`Frist verpasst: ${VIL[o.v].n} hat keine ${RN[o.r]} bekommen. Der Ruf des Dorfes leidet.`,'warn');
+  }
+  updateQuestBar();
+  if(!ordersOpen()||!$('event').hidden||L.length>=ordMax())return;
+  if(d%10!==1&&d%10!==6)return;
+  if(dayNo()-(G.lastOrd||0)<15)return;
+  // Je weniger offen ist, desto eher meldet sich eine Stadt. Guter Ruf hilft.
+  const p=(L.length?0.35:0.7)*(0.6+G.rep/160);
+  if(Math.random()<p)offerOrder();
 }
-function deliverOrder(){
-  const o=G.ord;if(!o||G.res[o.r]<o.n)return;
-  G.res[o.r]-=o.n;kasse(o.pay,'auftrag');G.rep=Math.min(100,G.rep+6);G.ord=null;chronAdd('ord');chronEv(tr`${o.n} ${RN[o.r]} nach ${VIL[o.v].n} geliefert`);
-  toast(tr`Geliefert: ${o.n} ${RN[o.r]} nach ${VIL[o.v].n}. ${o.pay} Gulden erhalten, das Ansehen steigt.`,'good');updateQuestBar();renderQuest();
+function deliverOrder(i){
+  const L=ordList(),o=L[i];if(!o||G.res[o.r]<o.n)return;
+  G.res[o.r]-=o.n;kasse(o.pay,'auftrag');G.rep=Math.min(100,G.rep+6);
+  L.splice(i,1);chronAdd('ord');chronEv(tr`${o.n} ${RN[o.r]} nach ${VIL[o.v].n} geliefert`);
+  toast(tr`Geliefert: ${o.n} ${RN[o.r]} nach ${VIL[o.v].n}. ${o.pay} Gulden erhalten, das Ansehen steigt.`,'good');
+  updateQuestBar();renderQuest();
 }
 
 /* ---------- lord of the manor ---------- */
@@ -2682,7 +2715,15 @@ function updateQuestBar(){
   if(wqActive()&&!G.wq.failed){const c=wqChecks(),ok=c.filter(x=>x.ok).length;el.hidden=false;el.classList.add('winter');
     $('qNum').textContent=tr`Vor dem Winter`;$('qName').textContent=tr`Wintervorrat anlegen`;$('qProg').textContent=`${ok}/${c.length}`;el.classList.toggle('ready',ok===c.length);return;}
   el.classList.remove('winter');
-  if(questDone()){if(G.ord){const o=G.ord;el.hidden=false;$('qNum').textContent=tr`Bestellung ${VIL[o.v].n}`;$('qName').textContent=tr`${o.n} ${RN[o.r]} · noch ${Math.max(0,o.due-dayNo())} Tage`;$('qProg').textContent=`${Math.min(G.res[o.r],o.n)}/${o.n}`;el.classList.toggle('ready',G.res[o.r]>=o.n);return;}
+  if(questDone()){const L=ordList();
+    if(L.length){
+      // Fertige zuerst, sonst die knappste Frist
+      const srt=L.slice().sort((a,z)=>((G.res[z.r]>=z.n)-(G.res[a.r]>=a.n))||(a.due-z.due));
+      const o=srt[0];el.hidden=false;
+      $('qNum').textContent=L.length>1?tr`Bestellung ${VIL[o.v].n} · ${L.length} offen`:tr`Bestellung ${VIL[o.v].n}`;
+      $('qName').textContent=tr`${o.n} ${RN[o.r]} · noch ${Math.max(0,o.due-dayNo())} Tage`;
+      $('qProg').textContent=`${Math.min(G.res[o.r],o.n)}/${o.n}`;
+      el.classList.toggle('ready',G.res[o.r]>=o.n);return;}
     const nx=msNext();
     if(nx){el.hidden=false;$('qNum').textContent=tr`Meilenstein ${G.ms.length+1}/${MILES.length}`;$('qName').textContent=nx.x.n;$('qProg').textContent=`${nx.a}/${nx.b}`;el.classList.toggle('ready',nx.f>=1);}
     else el.hidden=true;return;}
@@ -2697,8 +2738,20 @@ function renderQuest(){
   if($('quest').hidden)return;
   let h='';
   if(wqActive()&&!G.wq.failed){h+=tr`<p class="kicker">Jahreszeit-Auftrag · bis Ende November</p><h3>Wintervorrat anlegen</h3><p class="note">Von Dezember bis Februar wächst nichts, Fischer fangen wenig und jedes Haus braucht Brennholz. Im März sind die Felder noch leer. Leg jetzt genug an. Der Bedarf wächst mit jedem neuen Bewohner.</p><ul class="req">${wqChecks().map(x=>`<li class="${x.ok?'ok':''}">${x.t}</li>`).join('')}</ul><p class="note">Belohnung: bessere Stimmung.</p>`;}
-  if(G.ord){const o=G.ord,ok=G.res[o.r]>=o.n;h+=tr`<p class="kicker">Bestellung aus ${VIL[o.v].n} · noch ${Math.max(0,o.due-dayNo())} Tage</p><h3>${o.n} ${RN[o.r]} liefern</h3><ul class="req"><li class="${ok?'ok':''}">${o.n} ${RN[o.r]} im Lager (jetzt ${G.res[o.r]})</li></ul><p class="note">Lohn: ${o.pay} Gulden und mehr Ansehen.</p><button class="btn primary" id="qDeliver" ${ok?'':'disabled'}>Jetzt liefern</button><div style="border-bottom:1px solid var(--line);margin:10px 0 4px"></div>`;}
-  else if(ordersOpen())h+=tr`<p class="note">Keine offene Bestellung. Die Städte melden sich regelmäßig mit neuen Aufträgen. Ruf bei den Städten: ${Math.round(G.rep)}.</p>`;
+  {const L=ordList();
+   if(L.length){
+     const srt=L.map((o,i)=>[o,i]).sort((a,z)=>a[0].due-z[0].due);
+     h+=tr`<p class="kicker">Bestellungen · ${L.length} von ${ordMax()} offen · Ruf ${Math.round(G.rep)}</p>`;
+     for(const [o,i] of srt){
+       const ok=G.res[o.r]>=o.n,rest=Math.max(0,o.due-dayNo()),eilt=rest<=10;
+       h+=tr`<h3>${o.n} ${RN[o.r]} nach ${VIL[o.v].n}</h3>`;
+       h+=`<ul class="req"><li class="${ok?'ok':''}">${o.n} ${RN[o.r]} ${tr`im Lager`} (${tr`jetzt`} ${G.res[o.r]})</li><li class="${eilt?'':'ok'}">${tr`Noch`} ${rest} ${tr`Tage Frist`}</li></ul>`;
+       h+=tr`<p class="note">Lohn: ${o.pay} Gulden und mehr Ansehen.</p>`;
+       h+=`<button class="btn primary" data-del="${i}" ${ok?'':'disabled'}>${tr`Jetzt liefern`}</button>`;
+     }
+     h+='<div style="border-bottom:1px solid var(--line);margin:10px 0 4px"></div>';
+   }
+   else if(ordersOpen())h+=tr`<p class="note">Keine offene Bestellung. Die Städte melden sich regelmäßig. Je besser der Ruf, desto öfter und desto besser bezahlt. Ruf bei den Städten: ${Math.round(G.rep)}.</p>`;}
   if(questDone())h+=tr`<p class="note">Alle ${QUESTS.length} Aufträge sind erfüllt. Du spielst frei weiter.</p>`;
   else{const q=QUESTS[G.q];
     h+=tr`<p class="kicker">Kapitel ${q.k+1}: ${CHAP[q.k]} · Auftrag ${G.q+1} von ${QUESTS.length}</p><h3>${q.n}</h3><p class="note">${q.d}</p>`;
@@ -3076,7 +3129,7 @@ function save(){
     terrain:enc(G.terrain),tree:enc(G.tree),rock:enc(G.rock),reed:enc(G.reed),ore:enc(G.ore),foodSrc:G.foodSrc,nextB:G.nextB,nextC:G.nextC,nextA:G.nextA,
     pfWait:G.pfWait??null,gfoehl:G.gfoehl||0,unpaid:G.unpaid||0,lastWage:G.lastWage||0,lastPaid:G.lastPaid||0,
     wpool:(G.wpool||[]).concat(G.C.filter(c=>c.wag!=null&&c.wag<99.5).map(c=>c.wag)),made:G.made,qb:G.qb,foot:G.foot?enc(G.foot):undefined,mark:G.mark?enc(G.mark):undefined,hireN:G.hireN||0,hireY:G.hireY||null,scar:G.scar?enc(G.scar):undefined,own:G.own?Array.from(G.own):undefined,landN:G.landN||0,
-    stage:G.stage,tax:G.tax,lastTax:G.lastTax,kb:G.kb,kbAlt:G.kbAlt,q:G.q,unl:G.unl,wq:G.wq,chron:G.chron,anc:G.anc,hist:G.hist,ms:G.ms,msY:G.msY,tot:G.tot,hungY:G.hungY||0,wqOk:G.wqOk||0,rs:G.rs,ord:G.ord,rep:G.rep,lastOrd:G.lastOrd,favor:G.favor,lordY:G.lordY,mood:G.mood,penalty:G.penalty,need:G.need,flags:G.flags,bumper:G.bumper,
+    stage:G.stage,tax:G.tax,lastTax:G.lastTax,kb:G.kb,kbAlt:G.kbAlt,q:G.q,unl:G.unl,wq:G.wq,chron:G.chron,anc:G.anc,hist:G.hist,ms:G.ms,msY:G.msY,tot:G.tot,hungY:G.hungY||0,wqOk:G.wqOk||0,rs:G.rs,ord:null,ords:ordList(),rep:G.rep,lastOrd:G.lastOrd,favor:G.favor,lordY:G.lordY,mood:G.mood,penalty:G.penalty,need:G.need,flags:G.flags,bumper:G.bumper,
     B:G.B.map(b=>({id:b.id,type:b.type,x:b.x,y:b.y,done:b.done,prog:b.prog,wagon:b.wagon,cows:b.cows,jung:b.jung&&b.jung.length?b.jung:undefined,mcows:b.mcows,mhens:b.mhens,msheep:b.msheep,mpigs:b.mpigs,fish:b.fish,dry:b.dry,grass:b.grass!=null?Math.round(b.grass):undefined,hay:b.hay||undefined,mode:b.mode,stack:b.stack,burn:b.burn,ready:b.ready||undefined,hens:b.hens,sheep:b.sheep,fleece:b.fleece!=null?Math.round(b.fleece*10)/10:undefined,pigs:b.pigs,mast:b.mast,vil:b.vil,queue:b.queue,cond:Math.round(b.cond*10)/10,fire:Math.round(b.fire),del:b.del,graves:b.graves,purse:b.purse!=null?Math.round(b.purse*10)/10:undefined,pantry:b.pantry,wood:b.wood||undefined,cS:b.cS||undefined,cW:b.cW||undefined,wasser:b.wasser!=null?Math.round(b.wasser):undefined,stock:b.stock,ib:b.ib,ob:b.ob,wc:b.wagon?Math.round(b.wc):undefined,
       crop:b.crop?Array.from(b.crop):null,grow:b.grow?Array.from(b.grow,v=>Math.round(v)):null})),
     C:G.C.map(c=>{let carry=c.carry;if(c.trip)carry=c.trip.stage==='away'?c.trip.back:c.trip.refund;
@@ -3123,7 +3176,7 @@ function load(){
     for(const o of s.C){const c=newCit({id:o.id,name:o.name,age:o.age??25,sick:o.sick||0,edu:o.edu||0,l1:o.l1||0,l2:o.l2||0,kgd:o.kgd||0,winterJob:o.winterJob??null,summerJob:o.summerJob??null,x:o.x,y:o.y,job:o.job,carry:o.carry,hold:o.hold,hunger:o.hunger||0,fightId:o.fightId||null,sex:o.sex||sexOf(o.name),sur:o.sur||pick(SURN),partner:o.partner??null,mother:o.mother??null,father:o.father??null,xp:o.xp||{},tired:o.tired||0,durst:o.durst||0,robot:o.robot||0,temp:o.temp??null,home:o.home??null,priest:!!o.priest,crowd:!!o.crowd,py:o.py||0,lb:o.lb});if(c.robot>0)c.hidden=true;c.gS=o.gS??100;c.gW=o.gW??100;
       if(c.job!=null&&!G.bmap.get(c.job))c.job=null;G.C.push(c);}
     for(const[k,x,y,life]of(s.A||[])){const a={id:G.nextA++,kind:k,x,y,tx:x,ty:y,ex:x,ey:y,wait:Math.random()*3,hunter:0,flee:0,life:life||40,eat:0};G.animals.push(a);}
-    if(s.q==null||!Array.isArray(s.unl)){questCatchUp();G.legacyQ=true;}else{G.q=s.q;G.unl=s.unl;}G.wq=s.wq||null;G.chron=s.chron||null;G.anc=s.anc||[];G.hist=s.hist||[];G.ms=s.ms||[];G.msY=s.msY||{};G.tot=s.tot||{};G.hungY=s.hungY||0;G.wqOk=s.wqOk||0;G.rs=s.rs??0.6;G.ord=s.ord||null;G.rep=s.rep??50;G.lastOrd=s.lastOrd||0;G.favor=s.favor??60;G.lordY=s.lordY||0;G.floodT=0;G.wpool=s.wpool||[];G.unpaid=s.unpaid||0;G.pfWait=s.pfWait??null;G.gfoehl=s.gfoehl||0;G.lastWage=s.lastWage||0;G.lastPaid=s.lastPaid||0;G.foot=s.foot?dec(s.foot):new Uint8Array(N);G.mark=s.mark?dec(s.mark):new Uint8Array(N);G.hireN=s.hireN||0;G.hireY=s.hireY||null;G.scar=s.scar?dec(s.scar):calcScar();G.own=s.own&&s.own.length===PN?Uint8Array.from(s.own):coreOwn();if(s.grown)setTimeout(()=>toast(tr`Neu: Die Karte ist größer. Rundherum liegt Grund der Herrschaft, den du nach und nach dazukaufen kannst.`,'good'),3500);G.landN=s.landN||0;G.made=s.made||{bier:0,leinen:0};G.qb=s.qb||Object.assign({},G.made);
+    if(s.q==null||!Array.isArray(s.unl)){questCatchUp();G.legacyQ=true;}else{G.q=s.q;G.unl=s.unl;}G.wq=s.wq||null;G.chron=s.chron||null;G.anc=s.anc||[];G.hist=s.hist||[];G.ms=s.ms||[];G.msY=s.msY||{};G.tot=s.tot||{};G.hungY=s.hungY||0;G.wqOk=s.wqOk||0;G.rs=s.rs??0.6;G.ord=null;G.ords=Array.isArray(s.ords)?s.ords:(s.ord?[s.ord]:[]);G.rep=s.rep??50;G.lastOrd=s.lastOrd||0;G.favor=s.favor??60;G.lordY=s.lordY||0;G.floodT=0;G.wpool=s.wpool||[];G.unpaid=s.unpaid||0;G.pfWait=s.pfWait??null;G.gfoehl=s.gfoehl||0;G.lastWage=s.lastWage||0;G.lastPaid=s.lastPaid||0;G.foot=s.foot?dec(s.foot):new Uint8Array(N);G.mark=s.mark?dec(s.mark):new Uint8Array(N);G.hireN=s.hireN||0;G.hireY=s.hireY||null;G.scar=s.scar?dec(s.scar):calcScar();G.own=s.own&&s.own.length===PN?Uint8Array.from(s.own):coreOwn();if(s.grown)setTimeout(()=>toast(tr`Neu: Die Karte ist größer. Rundherum liegt Grund der Herrschaft, den du nach und nach dazukaufen kannst.`,'good'),3500);G.landN=s.landN||0;G.made=s.made||{bier:0,leinen:0};G.qb=s.qb||Object.assign({},G.made);
     for(const k of['speicher','wagenstand','brunnen','blumen','obstbaum','zaun','wegkreuz'].concat(G.q>4?['schmelze']:[]))if(!G.unl.includes(k))G.unl.push(k);
     if(!G.flags.v20){G.flags.v20=1;setTimeout(()=>toast(tr`Neu: Erz wird in der Schmelzhütte zu Eisen, Lebensmittel brauchen einen Speicher, und Wagen stehen am Wagenstand. Die Betriebe holen sie sich selbst.`,'good'),2500);}
     if(G.q>9)for(const k of['flachs','weberei'])if(!G.unl.includes(k))G.unl.push(k);
@@ -4851,7 +4904,7 @@ $('kaClose').addEventListener('click',()=>{$('kasse').hidden=true;});
 $('cMs').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
 // Die Bauleiste laesst sich wegklappen, damit man die Karte ganz sieht.
 $('navTog').addEventListener('click',()=>{const n=$('build'),zu=n.classList.toggle('zu');$('navTog').textContent=zu?'Bauen ▴':'Bauen ▾';});
-$('qBody').addEventListener('click',e=>{if(e.target.closest('#qDeliver')){deliverOrder();updateHUD();}});
+$('qBody').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){deliverOrder(Number(b.dataset.del));updateHUD();}});
 
 function updateHUD(){
   if(!G)return;

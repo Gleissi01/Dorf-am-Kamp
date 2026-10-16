@@ -1,5 +1,70 @@
 # Patch Notes
 
+## v56 — Der Bestellungs-Motor
+
+Das ist der Punkt 13 aus deiner Liste: „Nach dem Markt wird es monoton." Und
+gleichzeitig die Lösung für dein Geldproblem, weil Bestellungen das einzige
+sind, was Geld von außen ins Dorf bringt. Alles andere schiebt nur zwischen
+Gemeindekasse und Haushalten hin und her.
+
+### Mehrere Bestellungen gleichzeitig
+
+Bisher: eine offene Bestellung, Prüfung alle 10 Tage, 45 Tage Sperrfrist,
+dann 50 Prozent Chance. Macht rund zwei Bestellungen im Jahr — die halbe
+Spielzeit ohne Auftrag.
+
+Jetzt: bis zu drei offen (eine bis zum Dorf, zwei ab Dorf, drei ab Markt),
+Prüfung zweimal je zehn Tage, 15 Tage Sperrfrist. Gemessen im Testdorf:
+**vier Bestellungen in 70 Tagen** statt zwei im Jahr.
+
+### Jede Stadt bestellt, was sie braucht
+
+Die Preistabelle der drei Städte lag schon im Code, wurde aber nie benutzt —
+alle zahlten gleich viel. Jetzt bestellt jede Stadt bevorzugt das, wofür sie
+gut zahlt, und zahlt auch danach:
+
+- **Krems** an der Donau: Bauholz, Bretter, Stein, Leinen
+- **Zwettl** im Westen: Getreide, Nahrung, Bier
+- **Horn** im Norden: Stein, Werkzeug, Nägel
+
+Zwettl zahlt für Getreide das 1,4-fache, Horn für Stein das 1,6-fache. Es
+lohnt sich also zu schauen, wer gerade fragt.
+
+### Schwankende Preise
+
+Jeder Bote bringt einen anderen Preis mit, plus/minus rund 20 Prozent. Im Text
+steht, woran du bist: „Sie zahlen heuer gut dafür" oder „Der Preis ist mager,
+die Stadt hat selber genug." Damit ist Ablehnen eine echte Entscheidung und
+nicht nur Rufverlust.
+
+### Kürzere Fristen
+
+Vorher pauschal 60 Tage. Jetzt 25 bis 45 Tage, je nach Menge. Große
+Bestellungen geben mehr Zeit, kleine müssen flott gehen.
+
+### Ruf wirkt jetzt wirklich
+
+Ablehnen kostet 3 Ansehen (vorher 2), Frist verpassen 10, Liefern bringt 6.
+Der Ruf bestimmt nicht nur den Preis, sondern auch **wie oft** sich die Städte
+überhaupt melden. Wer verlässlich liefert, bekommt mehr und besser bezahlte
+Aufträge.
+
+### Anzeige
+
+Das Auftragsfenster zeigt alle offenen Bestellungen nach Frist sortiert, jede
+mit eigenem Liefern-Knopf, Lagerstand und Resttagen. Die Leiste oben zeigt die
+fertige zuerst, sonst die dringendste, und wie viele offen sind.
+
+**Dein Spielstand:** Die laufende Bestellung wandert beim Laden automatisch ins
+neue System, da geht nichts verloren.
+
+**Zum Testen — und da brauche ich dich:** Ich weiß nicht, ob die Bezahlung
+passt. Im Testdorf kamen über 70 Tage rund 1.400 Gulden herein, aber ich habe
+das Lager vorher vollgefüllt und musste nichts produzieren. Bei dir muss das
+Zeug erst hergestellt werden, das ist der eigentliche Bremsklotz. Sag mir nach
+ein paar Spieljahren, ob es zu leicht oder zu knapp ist — dann drehe ich an
+den Preisen, nicht vorher auf Verdacht.
+
 ## v55 — Geldbuch oben in der Leiste, und der Schuldschein
 
 ### Geldbuch beim Gulden-Feld
