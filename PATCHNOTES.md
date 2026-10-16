@@ -1,5 +1,51 @@
 # Patch Notes
 
+## v55 — Geldbuch oben in der Leiste, und der Schuldschein
+
+### Geldbuch beim Gulden-Feld
+
+Deine Idee, und die bessere Platzierung: Das Gulden-Feld in der oberen Leiste
+öffnet jetzt die Gemeindekasse, genau wie das Lager-Feld das Lagerfenster.
+Drin stehen Kassenstand, Lohnsumme je zehn Tage, die Einnahmen der letzten
+Abrechnung und das volle Geldbuch. Im Rathaus bleibt es zusätzlich stehen.
+
+Neu dabei: Liegt die Lohnsumme über den Einnahmen, steht es rot da. Und bei
+Streik steht dort auch, wie du wieder herauskommst.
+
+### Lohnwarnung, bevor es zu spät ist
+
+Bisher hast du erst gemerkt, dass die Kasse nicht reicht, als der erste
+Zahltag ausgefallen ist. Jetzt sagt es dir das Spiel eine Abrechnung vorher:
+„Die Lohnsumme liegt über den Einnahmen." Da ist noch Zeit, Betriebe zu
+leeren oder mehr Ware an den Stand zu bringen.
+
+### Schuldschein beim Grundherrn
+
+Das war eine Sackgasse, und zwar eine, in der du gerade steckst: Leere Kasse
+heißt kein voller Lohn, kein voller Lohn heißt Streik, Streik heißt weniger
+Produktion, weniger Produktion heißt noch weniger Einnahmen. Einmal drin,
+kommst du aus eigener Kraft kaum wieder heraus.
+
+Reicht die Kasse am Zahltag nicht, bietet der Grundherr jetzt einen
+Schuldschein an. Die Summe deckt etwa drei Zahltage. Zurück müssen 25 Prozent
+mehr, in acht Raten, fällig bei jeder Abrechnung — und zwar nach den Löhnen,
+nicht davor, sonst nimmt die Rate genau das Geld weg, das den Streik beenden
+soll.
+
+Kein Geschenk, sondern eine Entscheidung: Du kannst auch ablehnen und den
+Streik in Kauf nehmen. Wer eine Rate nicht in Gulden zahlen kann, bei dem
+holen sich die Leute des Grundherrn Vorräte aus dem Lager, und die Stimmung
+sinkt. Neuer Schuldschein erst 30 Tage nach der Tilgung.
+
+**Getestet:** Dorf mit leerer Kasse und 54 Gulden Lohn. Angebot kommt am
+Zahltag, nach Annahme werden die Löhne voll bezahlt (37 von 37, kein Streik),
+die 125 Gulden werden über acht Abrechnungen getilgt, die Einwohnerzahl bleibt
+stabil bei 41.
+
+**Zum Testen:** Oben auf Gulden tippen. Und schau, ob bei deinem Spielstand
+die Lohnwarnung kommt — bei 135 Lohn gegen 86 Einnahmen sollte sie sofort da
+sein.
+
 ## v54 — Das Geldbuch und zwei Sackgassen beim Wasser
 
 ### Geldbuch im Rathaus

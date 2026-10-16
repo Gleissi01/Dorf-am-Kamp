@@ -244,6 +244,10 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
       <div class="ih"><h2>Lager</h2><button class="xbtn" id="stClose" aria-label="Schließen">×</button></div>
       <div id="stBody"></div>
     </section>
+    <section class="sheet" id="kasse" hidden>
+      <div class="ih"><h2>Gemeindekasse</h2><button class="xbtn" id="kaClose" aria-label="Schließen">×</button></div>
+      <div id="kaBody"></div>
+    </section>
     <section class="sheet" id="land" hidden>
       <div class="ih"><h2>Grund kaufen</h2><button class="xbtn" id="lClose" aria-label="Schließen">×</button></div>
       <p id="lText"></p>
@@ -267,7 +271,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 54</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 55</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -1829,9 +1833,75 @@ function wageOf(c){
   if(b.type==='rathaus'&&mayor()===c)return 8;
   return 2+(c.edu||0);
 }
+// Einnahmen der letzten Abrechnung, um die Lohnsumme dagegen zu halten.
+function letzteEinnahmen(){
+  const kb=G.kbAlt;if(!kb)return 0;
+  let e=0;for(const k of KBSPALTEN){const v=kb[k]||0;if(v>0&&k!=='kredit')e+=v;}
+  return Math.round(e);
+}
+// Ein Schuldschein ist die Notbremse gegen die Streikspirale: leere Kasse ->
+// kein Lohn -> Haushalte kaufen nicht -> noch weniger Einnahmen. Kein Geschenk,
+// sondern geliehenes Geld mit Zins, das in Raten zurueckgeht.
+const KREDITZINS=1.25, KREDITRATEN=8;
+function kreditMoeglich(){
+  if(G.stage<1||G.kredit)return false;
+  if((G.kreditSperre||0)>G.t)return false;
+  const r=G.B.find(b=>b.type==='rathaus'&&b.done);
+  return !!(r&&workersOf(r).length);
+}
+function kreditNehmen(summe){
+  const rest=Math.round(summe*KREDITZINS);
+  G.kredit={rest,rate:Math.ceil(rest/KREDITRATEN),auf:summe,fehl:0};
+  kasse(summe,'kredit');
+  toast(tr`Der Grundherr hat ${summe} Gulden gegen Schuldschein gegeben. Zurück müssen ${rest}.`,'warn');
+  chronEv(tr`Schuldschein beim Grundherrn über ${summe} Gulden`);
+}
+// Rate wird NACH den Loehnen faellig, sonst nimmt sie genau das Geld weg,
+// das den Streik beenden soll.
+function kreditTick(){
+  const k=G.kredit;if(!k)return;
+  const rate=Math.min(k.rate,k.rest);
+  if(Math.floor(G.res.gulden)>=rate){
+    kasse(-rate,'tilgung');k.rest-=rate;k.fehl=0;
+    if(k.rest<=0){G.kredit=null;G.kreditSperre=G.t+DAYLEN*30;
+      toast(tr`Der Schuldschein beim Grundherrn ist getilgt.`,'good');chronEv(tr`Schuldschein getilgt`);}
+    return;}
+  // Kein Geld fuer die Rate: der Grundherr holt sich Ware statt Muenzen.
+  k.fehl=(k.fehl||0)+1;
+  let offen=rate;
+  for(const r of ['getreide','nahrung','holz','bretter','stein','wolle','leinen']){
+    if(offen<=0)break;
+    const wert={getreide:0.5,nahrung:0.5,holz:0.4,bretter:1,stein:0.6,wolle:1,leinen:2}[r];
+    const n=Math.min(G.res[r]||0,Math.ceil(offen/wert));
+    if(n>0){G.res[r]-=n;offen-=n*wert;}}
+  k.rest-=rate-Math.max(0,offen);
+  if(k.rest<=0){G.kredit=null;G.kreditSperre=G.t+DAYLEN*30;}
+  G.mood=Math.max(0,(G.mood||0)-3);
+  toast(tr`Die Rate an den Grundherrn konnte nicht in Gulden bezahlt werden. Seine Leute haben Vorräte mitgenommen.`,'bad');
+}
 function payWages(){
   if(G.stage<1){G.need.lohn=1;return;}
   let w=0;for(const c of G.C)w+=wageOf(c);w=Math.round(w);
+  G.lastWage=w;
+  // Vorwarnung, bevor der erste Zahltag ausfaellt
+  const ein=letzteEinnahmen();
+  G.lohnRisiko=(ein&&w>ein)?(G.lohnRisiko||0)+1:0;
+  if(G.lohnRisiko===1&&w<=Math.floor(G.res.gulden))
+    toast(tr`Die Lohnsumme ${w} liegt über den Einnahmen ${ein}. Besetze weniger Betriebe oder verkaufe mehr, sonst reicht die Kasse bald nicht.`,'warn');
+  // Reicht die Kasse nicht, bietet der Grundherr einen Schuldschein an
+  if(w>Math.floor(G.res.gulden)&&kreditMoeglich()&&$('event').hidden&&!G.over){
+    const fehlt=w-Math.floor(G.res.gulden);
+    const summe=Math.max(60,Math.min(500,Math.ceil(fehlt*3/10)*10));
+    const rest=Math.round(summe*KREDITZINS),rate=Math.ceil(rest/KREDITRATEN);
+    showEvent(tr`Der Grundherr`,tr`Ein Schuldschein`,
+      tr`Die Gemeindekasse reicht nicht für die Löhne. Wer nicht bezahlt wird, legt die Arbeit nieder, und dann nimmt die Gemeinde noch weniger ein. Der Grundherr bietet ${summe} Gulden gegen Schuldschein. Zurück müssen ${rest} Gulden in ${KREDITRATEN} Raten zu ${rate}, fällig bei jeder Abrechnung. Wer nicht zahlen kann, bei dem holen seine Leute Vorräte.`,
+      [{l:tr`Schuldschein nehmen`,fn:()=>{kreditNehmen(summe);zahleLohn(w);}},
+       {l:tr`Ablehnen`,fn:()=>{zahleLohn(w);}}]);
+    return;
+  }
+  zahleLohn(w);
+}
+function zahleLohn(w){
   const pay=Math.min(w,Math.max(0,Math.floor(G.res.gulden)));kasse(-pay,'lohn');G.lastWage=w;G.lastPaid=pay;
   const f=w?pay/w:1;for(const c of G.C){const x=wageOf(c);if(!x)continue;const h=homeOf(c);if(h)h.purse=(h.purse||0)+x*f;}
   G.need.lohn=w?pay/w:1;
@@ -1888,7 +1958,7 @@ const GEWERBE={saege:1,schmiede:1.4,schmelze:1.4,wagner:1.2,weberei:1.2,schneide
   bergwerk:1.3,muehle:1,dach:0.8,bader:0.6,schlacht:1};
 // Was ein Punkt Gewerbe je Steuersatz kostet.
 const ZUNFT=[0,1,2,3];
-const KBSPALTEN=['steuer','gewerbe','markt','auftrag','verkauf','lohn','bauern','einkauf','anwerb','land','sonst'];
+const KBSPALTEN=['steuer','gewerbe','markt','auftrag','verkauf','kredit','lohn','tilgung','bauern','einkauf','anwerb','land','sonst'];
 function kbNeu(){const o={};for(const k of KBSPALTEN)o[k]=0;return o;}
 // Alles Geld laeuft hierdurch: positiv ist Einnahme, negativ Ausgabe.
 function kasse(betrag,spalte){
@@ -2141,7 +2211,7 @@ function newDay(d){
     if(m===2){toast(tr`Frühling ${year()}. Zeit zur Aussaat.`,'good');G.need.warmth=1;G.bumper=false;springSwitch();}
     if(m===11)winterSwitch();
     if(m===10){const miss=G.C.filter(c=>canWork(c)&&seasonal(jobB(c))&&c.winterJob==null).length;if(miss)toast(tr`Bald Winter: ${miss} Saisonarbeiter haben noch keine Winterarbeit. Siehe Leute-Liste.`,'warn');}
-    kbTag();collectTax();payWages();
+    kbTag();collectTax();payWages();kreditTick();
     if(m===5)toast('Sommer. Das Korn reift.','good');
     if(m===8)toast('Herbst. Legt Vorräte, Brennholz und Viehfutter an.','good');
     if(m===9||m===10){const houses=G.B.filter(b=>HOUSE[b.type]&&b.done).length;
@@ -4313,7 +4383,7 @@ let mode=null,ghost=null,sel=null;
 // Steuersatz, beim Schlachthaus die Tierart.
 let sheetAuf=0;
 function setGhostFromTile(tx,ty){const d=DEF[mode];ghost={x:tx-Math.floor((d.w-1)/2),y:ty-Math.floor((d.h-1)/2)};updatePlacebar();}
-function closeSheets(){if($('land'))$('land').hidden=true;if($('person'))$('person').hidden=true;$('menu').hidden=true;$('people').hidden=true;$('village').hidden=true;$('quest').hidden=true;if($('store'))$('store').hidden=true;}
+function closeSheets(){if($('land'))$('land').hidden=true;if($('person'))$('person').hidden=true;$('menu').hidden=true;$('people').hidden=true;$('village').hidden=true;$('quest').hidden=true;if($('store'))$('store').hidden=true;if($('kasse'))$('kasse').hidden=true;}
 function tap(sx,sy,type){
   if(!G||G.over)return;
   if(markMode!==null){markPaint(sx,sy);markInfo();return;}
@@ -4567,27 +4637,8 @@ function updateInfo(){
   if(b.done&&d.cap)set('iPup',`${G.C.filter(c=>c.school===b.id).length} / ${d.cap}`);
   if(b.done&&b.type==='rathaus'){
     // Geldbuch der letzten zehn Tage: wo kam es her, wo ging es hin.
-    const kb=G.kbAlt;
     const kbEl=$('iKasse');
-    if(kbEl){
-      if(!kb)kbEl.innerHTML=tr`<p class="note">Das Geldbuch der letzten zehn Tage steht hier, sobald das erste Mal abgerechnet wurde.</p>`;
-      else{
-        const NAME={steuer:tr`Steuer`,gewerbe:tr`Zunftabgabe`,markt:tr`Marktstand`,auftrag:tr`Bestellungen`,
-          verkauf:tr`An Händler verkauft`,lohn:tr`Löhne`,bauern:tr`Von Bauern gekauft`,einkauf:tr`In der Stadt gekauft`,
-          anwerb:tr`Angeworben`,land:tr`Grund gekauft`,sonst:tr`Sonstiges`};
-        const ein=[],aus=[];let se=0,sa=0;
-        for(const k of KBSPALTEN){const v=Math.round(kb[k]||0);if(!v)continue;
-          if(v>0){ein.push([NAME[k],v]);se+=v;}else{aus.push([NAME[k],-v]);sa+=-v;}}
-        const zeile=(n,v,kl)=>`<div class="irow"><span class="k">${n}</span><span class="v ${kl||''}">${v} G</span></div>`;
-        let h2=tr`<h3>Geldbuch der letzten zehn Tage</h3>`;
-        h2+=ein.length?ein.map(([n,v])=>zeile(n,'+'+v)).join(''):tr`<p class="note">Nichts eingenommen.</p>`;
-        h2+=aus.length?aus.map(([n,v])=>zeile(n,'−'+v,'warn')).join(''):'';
-        const saldo=se-sa;
-        h2+=`<div class="bar"><span>${tr`Unterm Strich`}</span><span class="tr"></span><b class="${saldo<0?'warn':''}">${saldo>0?'+':''}${saldo} G</b></div>`;
-        h2+=saldo<0?tr`<p class="note warn">Es geht mehr hinaus als herein. Steuersatz erhöhen, Betriebe besetzen, Bestellungen liefern oder weniger zukaufen.</p>`
-                   :tr`<p class="note">Die Kasse wächst.</p>`;
-        kbEl.innerHTML=h2;}
-    }
+    if(kbEl)kbEl.innerHTML=geldbuchHTML();
     set('iTax',G.lastGew?tr`${G.lastTax} + ${G.lastGew} Gulden`:tr`${G.lastTax} Gulden`);set('iWage',G.stage>=1?tr`${G.lastPaid||0} von ${G.lastWage||0} Gulden`:tr`erst ab dem Dorf`);}
   if(b.done&&b.type==='huehner')set('iHen',`${b.hens} / 12 · ${viehStr(b)}`);
   if(b.done&&b.type==='schaf')set('iSheep',`${b.sheep} / 12 · ${Math.floor(b.fleece||0)} · ${viehStr(b)}${weideVon(b)?tr` · auf der Weide`:''}`);
@@ -4728,6 +4779,47 @@ $('vClose').addEventListener('click',()=>{$('village').hidden=true;});
 $('qbar').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
 $('qClose').addEventListener('click',()=>{$('quest').hidden=true;});
 // Lager auf Tipp: die Warenzeile klappt unter der Kopfleiste auf.
+// Das Geldbuch steht an zwei Stellen: im Rathaus und im Kassenfenster oben.
+// Eine Funktion, damit beide dasselbe zeigen.
+const KBNAME={steuer:tr`Steuer`,gewerbe:tr`Zunftabgabe`,markt:tr`Marktstand`,auftrag:tr`Bestellungen`,
+  verkauf:tr`An Händler verkauft`,kredit:tr`Schuldschein`,lohn:tr`Löhne`,tilgung:tr`Rate an den Grundherrn`,
+  bauern:tr`Von Bauern gekauft`,einkauf:tr`In der Stadt gekauft`,
+  anwerb:tr`Angeworben`,land:tr`Grund gekauft`,sonst:tr`Sonstiges`};
+function geldbuchHTML(){
+  const kb=G.kbAlt;
+  if(!kb)return tr`<p class="note">Das Geldbuch der letzten zehn Tage steht hier, sobald das erste Mal abgerechnet wurde.</p>`;
+  const ein=[],aus=[];let se=0,sa=0;
+  for(const k of KBSPALTEN){const v=Math.round(kb[k]||0);if(!v)continue;
+    if(v>0){ein.push([KBNAME[k],v]);se+=v;}else{aus.push([KBNAME[k],-v]);sa+=-v;}}
+  const zeile=(n,v,kl)=>`<div class="irow"><span class="k">${n}</span><span class="v ${kl||''}">${v} G</span></div>`;
+  let h=tr`<h3>Geldbuch der letzten zehn Tage</h3>`;
+  h+=ein.length?ein.map(([n,v])=>zeile(n,'+'+v)).join(''):tr`<p class="note">Nichts eingenommen.</p>`;
+  h+=aus.length?aus.map(([n,v])=>zeile(n,'−'+v,'warn')).join(''):'';
+  const saldo=se-sa;
+  h+=`<div class="bar"><span>${tr`Unterm Strich`}</span><span class="tr"></span><b class="${saldo<0?'warn':''}">${saldo>0?'+':''}${saldo} G</b></div>`;
+  h+=saldo<0?tr`<p class="note warn">Es geht mehr hinaus als herein. Steuersatz erhöhen, Betriebe besetzen, Bestellungen liefern oder weniger zukaufen.</p>`
+            :tr`<p class="note">Die Kasse wächst.</p>`;
+  return h;
+}
+// Das Kassenfenster haengt am Gulden-Feld oben, so wie das Lagerfenster am Lager.
+function renderKasse(){
+  if($('kasse').hidden)return;
+  let h=`<div class="irow"><span class="k">${tr`In der Kasse`}</span><span class="v">${Math.round(G.res.gulden)} G</span></div>`;
+  if(G.stage>=1){
+    let w=0;for(const c of G.C)w+=wageOf(c);w=Math.round(w);
+    const ein=letzteEinnahmen();
+    h+=`<div class="irow"><span class="k">${tr`Lohnsumme je zehn Tage`}</span><span class="v ${ein&&w>ein?'warn':''}">${w} G</span></div>`;
+    if(ein)h+=`<div class="irow"><span class="k">${tr`Einnahmen zuletzt`}</span><span class="v">${ein} G</span></div>`;
+    if(ein&&w>ein)h+=tr`<p class="note warn">Die Löhne sind höher als die Einnahmen. Besetze weniger Betriebe oder bring mehr Ware an den Marktstand.</p>`;
+    if((G.unpaid||0)>=2)h+=tr`<p class="note warn">Streik: Seit zwei Abrechnungen gibt es keinen vollen Lohn. Ein Drittel der Betriebe arbeitet nicht. Eine einzige volle Lohnzahlung beendet ihn.</p>`;
+    else if(G.unpaid)h+=tr`<p class="note warn">Beim letzten Zahltag hat die Kasse nicht gereicht. Noch eine Teilzahlung, dann wird gestreikt.</p>`;
+  }
+  const k=G.kredit;
+  if(k)h+=tr`<h3>Schuldschein beim Grundherrn</h3><div class="irow"><span class="k">Offen</span><span class="v warn">${Math.round(k.rest)} G</span></div><div class="irow"><span class="k">Rate je Abrechnung</span><span class="v">${k.rate} G</span></div>`;
+  h+=geldbuchHTML();
+  $('kaBody').innerHTML=h;
+}
+
 // Gruppen fuer das Lagerfenster: was zusammengehoert, steht beisammen.
 const LAGERGRUPPEN=[
   {t:tr`Nahrung und Futter`,k:['nahrung','getreide','heu','bier']},
@@ -4753,6 +4845,8 @@ function renderStore(){
 }
 $('cStore').addEventListener('click',()=>{const open=!$('store').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('store').hidden=false;renderStore();}});
 $('stClose').addEventListener('click',()=>{$('store').hidden=true;});
+$('cGulden').addEventListener('click',()=>{const open=!$('kasse').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('kasse').hidden=false;renderKasse();}});
+$('kaClose').addEventListener('click',()=>{$('kasse').hidden=true;});
 // Meilensteine fuehren in dieselbe Uebersicht wie der Auftrag.
 $('cMs').addEventListener('click',()=>{const open=!$('quest').hidden;setMode(null);closeInfo();closeSheets();if(!open){$('quest').hidden=false;renderQuest();}});
 // Die Bauleiste laesst sich wegklappen, damit man die Karte ganz sieht.
@@ -4792,7 +4886,7 @@ function updateHUD(){
   $('date').innerHTML=tr`${MONTHS[monthIdx()]} ${year()}<small>Tag ${day}</small>`;
   for(const b of nav.children){if(b===mkBtn)continue;const d=DEF[b.dataset.t];b.classList.toggle('poor',(d.st||0)<=G.stage&&unlocked(b.dataset.t)&&!!lacking(d.cost));}
   updateQuestBar();
-  renderStore();
+  renderStore();renderKasse();
   for(const b of document.querySelectorAll('.speed button'))b.classList.toggle('on',Number(b.dataset.s)===G.speed);
   if(mode&&ghost)updatePlacebar();
   updateInfo();
