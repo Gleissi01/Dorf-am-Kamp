@@ -1,5 +1,44 @@
 # Patch Notes
 
+## v57 — Maifest, Erntedank und die Säge mit Wahl
+
+### Maifest und Erntedankfest (Punkt 22)
+
+Die Bilder lagen seit v49 im Spiel und hatten nichts zu tun außer Dorfschönheit.
+Jetzt haben sie einen Zweck:
+
+- **Maifest** am 1. Mai, wenn ein **Maibaum** steht. Bis zu zehn Leute legen die
+  Arbeit nieder und tanzen einen Tag lang.
+- **Erntedank** am 1. Oktober, wenn eine **Erntekrone** steht. Bis zu zwölf
+  Leute. Ist das Lager voll, fällt das Fest größer aus; ist es mager, wird
+  trotzdem gefeiert, nur bescheidener.
+
+Gefeiert wird an der Festtafel, sonst am Dorfplatz, sonst beim Zierstück selbst.
+Jedes Fest gibt es einmal im Jahr und es steht in der Chronik.
+
+Gemessen: Maifest hebt die Stimmung von 53 auf 61, Erntedank bei vollem Lager
+von 61 auf 69.
+
+### Sägewerk mit Wahl (Punkt 18)
+
+Drei Einstellungen, wie beim Schlachthaus und der Schmiede:
+
+- **Immer sägen** — wie bisher, bis 80 Bretter auf Lager
+- **Nach Bedarf** — sägt nur, wenn eine Baustelle Bretter braucht oder der
+  Vorrat unter 20 fällt
+- **Holz schonen** — sägt gar nicht
+
+**Eine Anmerkung dazu, weil du „Brennholz" geschrieben hast:** Im Spiel ist
+Holz zugleich Bauholz und Brennholz, es gibt keine getrennte Ressource.
+„Brennholz machen" kann also nur heißen: nicht sägen, damit der Vorrat fürs
+Heizen bleibt. Genau das macht „Holz schonen" — im Winter der Unterschied
+zwischen warm und kalt. Wenn du wirklich zwei getrennte Waren willst
+(Scheitholz und Bauholz), sag Bescheid, das ist aber ein größerer Umbau an
+jeder Stelle, die Holz anfasst.
+
+**Zum Testen:** Sägewerk antippen, umstellen, im Statustext schauen was es
+sagt. Und bau einen Maibaum, wenn keiner steht — im Mai passiert dann was.
+
 ## v56 — Der Bestellungs-Motor
 
 Das ist der Punkt 13 aus deiner Liste: „Nach dem Markt wird es monoton." Und
