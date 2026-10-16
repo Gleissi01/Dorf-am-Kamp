@@ -1,5 +1,55 @@
 # Patch Notes
 
+## v58 — Scheitholz als eigene Ware, und ein richtiger Hilfe-Guide
+
+### Scheitholz
+
+Du wolltest Brennholz als eigene Sache, also ist es jetzt eine eigene Ware.
+Das Sägewerk ist der Umwandler: aus Rundholz wird **entweder Bauholz
+(Bretter) oder Brennholz (Scheitholz)**. Damit stimmt deine ursprüngliche
+Formulierung wieder — Bretter, Brennholz oder nach Bedarf.
+
+Drei Betriebsarten:
+
+- **Nach Bedarf** (neue Grundeinstellung) — sägt Bretter, solange eine
+  Baustelle wartet oder unter 20 Bretter im Lager liegen, und hackt sonst
+  Scheitholz für den Winter
+- **Bretter** — immer Bretter, bis 80 auf Lager
+- **Scheitholz** — immer Scheitholz, bis 140 auf Lager
+
+**Geheizt wird mit Scheitholz. Rundholz geht auch, aber schlecht: davon
+braucht ein Haus das Doppelte.** Das ist der eigentliche Unterschied und der
+Grund, die Säge im Herbst umzustellen. Gemessen: Mit Scheitholz verbraucht
+das Testdorf 44 Einheiten je Heiztag, mit Rundholz 88.
+
+Am Marktstand kaufen die Haushalte zuerst Scheitholz (⅞ Gulden), sonst
+Rundholz (⅖) — und davon dann eben doppelt so viel. Die Städte bestellen
+Scheitholz auch.
+
+**Dein Spielstand bleibt heil:** Beim Laden bekommst du 0 Scheitholz, und
+weil Rundholz weiter heizt, friert niemand. Du merkst es nur daran, dass
+mehr Holz draufgeht, bis du die Säge umstellst.
+
+### Hilfe-Guide (Punkt 26)
+
+Im Menü unter Hilfe stehen jetzt vier Abschnitte vorne, mit den echten
+Bedingungen aus dem Code statt vager Tipps:
+
+- **Woher kommen Leute?** Kinder brauchen Paar, eigenes Haus, freies Bett,
+  Stimmung ab 50 und Vorrat im Lager. Zuzug ab Stimmung 70 plus Polster, je
+  besser der Ruf desto öfter. Anwerben als Notlösung. Heiraten nur mit
+  Pfarrer.
+- **Woher kommen Rohstoffe?** Was aus der Landschaft kommt, was verarbeitet
+  wird, was nachwächst und was man zukaufen muss.
+- **Woher kommen Gulden?** Steuer, Zunftabgabe, Marktstand, Bestellungen —
+  und der Hinweis, dass Bestellungen das einzige Geld von außen sind. Dazu
+  die wichtigste Regel: Lohnsumme über Einnahmen führt zum Streik.
+- **Handel.** Wanderhändler, Handelshaus, was welche Stadt zahlt, wie
+  Bestellungen und Ruf zusammenhängen.
+
+**Zum Testen:** Menü → Hilfe. Und stell dein Sägewerk auf „Nach Bedarf", dann
+legt es im Herbst von selbst Scheitholz an.
+
 ## v57 — Maifest, Erntedank und die Säge mit Wahl
 
 ### Maifest und Erntedankfest (Punkt 22)
