@@ -1,5 +1,37 @@
 # Patch Notes
 
+## v59 — Hopfengarten, und die Brauerei braucht jetzt Hopfen
+
+### Hopfen
+
+Neues Gebäude **Hopfengarten** (Nahrung, ab Dorf, 4×4, 12 Holz, 2 Arbeiter).
+Der Hopfen rankt an Stangen, wird gesät und im Spätsommer geerntet; ein
+Garten liefert rund 40 Hopfen je Ernte.
+
+- **Brauerei:** 3 Getreide + 1 Hopfen = 4 Bier
+- **Ohne Hopfen:** nur Dünnbier, 2 Bier aus 3 Getreide. Die Brauerei steht
+  also nie still, alte Spielstände laufen weiter
+- **Handel:** Hopfen gibt es auch von den Händlern aus Böhmen und Bayern
+  (20 Stück für 18 Gulden)
+- Die Brauerei meldet im Status, ob sie Bier oder Dünnbier braut
+- Hilfe: neuer Absatz zum Bier unter „Woher kommen Rohstoffe?“
+
+### Gemessen
+
+Testdorf, 210 Tage: mit Hopfengarten 1,6 Bier je Tag, ohne 1,0. Hopfen
+wächst, wird geerntet und verbraucht, keine Konsolenfehler.
+
+### Noch offen
+
+Der Hopfengarten wird vorerst vom Code gezeichnet (Stange und Laub). Die
+gemalten Feldbilder `f_hopfen` und `f_hopfenreif` fehlen noch; sobald sie da
+sind, übernimmt das Spiel sie automatisch.
+
+### Behoben
+
+Die englischen Texte „Genug Scheitholz auf Lager“ und „Brennholz · Gewand“
+aus v57/v58 griffen nie, weil die Schlüssel falsch geschrieben waren.
+
 ## v58 — Scheitholz als eigene Ware, und ein richtiger Hilfe-Guide
 
 ### Scheitholz
