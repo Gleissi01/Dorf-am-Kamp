@@ -1,5 +1,29 @@
 # Patch Notes
 
+## v60 — Honig ist eine eigene Ware
+
+Die Imkerei lieferte bisher einfach „Nahrung“. Jetzt liefert sie **Honig**,
+eine eigene Ware im Lager (Gruppe Nahrung und Futter).
+
+- **Gegessen:** je acht Leute ein Glas im Monat. Jedes Glas sättigt wie
+  3 Nahrung, und Honig zählt als **eigene Nahrungsquelle** für die
+  Abwechslung (Stimmung, Auftrag „4 Nahrungsquellen“)
+- **Verkauf:** Überschuss kauft das Handelshaus (Grundpreis 3 Gulden, wie
+  Bier und Nahrung — bewusst nicht mehr, du hast ohnehin viel Geld)
+- Imkerei, Ertrag und Jahreszeiten sind unverändert; Honig gibt es nur im
+  Frühling und Sommer
+- Neues Honigglas als Tragebild, Hilfe-Absatz, englische Texte
+
+**Ehrlich dazu:** Eine Imkerei füllt dadurch die Vorratskammer weniger als
+vorher, weil Honig nur monatlich in kleinen Mengen gegessen wird. Wer sich
+auf sie verlassen hat, braucht ein Feld mehr. Dafür taugt sie jetzt als
+Handelsware und Abwechslung.
+
+### Gemessen
+
+Testdorf, 150 Tage: 45 Honig im Lager, der Verbrauch läuft alle 10 Tage,
+die Quelle „Imkerei“ bleibt als Abwechslung aktiv, keine Konsolenfehler.
+
 ## v59 — Hopfengarten, und die Brauerei braucht jetzt Hopfen
 
 ### Hopfen
@@ -18,8 +42,9 @@ Garten liefert rund 40 Hopfen je Ernte.
 
 ### Gemessen
 
-Testdorf, 210 Tage: mit Hopfengarten 1,6 Bier je Tag, ohne 1,0. Hopfen
-wächst, wird geerntet und verbraucht, keine Konsolenfehler.
+Testdorf, 210 Tage: im Lager lagen mit Hopfengarten 346 Bier, ohne 208
+(gebraut: 416 gegen 278). Hopfen wächst, wird geerntet und verbraucht, keine
+Konsolenfehler.
 
 ### Noch offen
 
