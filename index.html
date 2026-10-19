@@ -273,7 +273,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 62</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 63</p>
         <div id="slots"></div>
         <div class="actions" style="justify-content:center;margin-top:12px"><button class="btn" id="hCtrl">Steuerung</button><button class="btn" id="hHelp">Anleitung</button></div>
         <div class="seg langseg" role="group" aria-label="Sprache / Language" style="justify-content:center;margin-top:10px"><button data-lang="de">Deutsch</button><button data-lang="en">English</button></div>
@@ -3144,6 +3144,14 @@ function viehNot(){
   }
   return false;
 }
+// Haendler-Aufkauf: die Stadt, in der die Ware gerade den besten Preisfaktor hat
+// (am wenigsten gesaettigt, bei Gleichstand die mit dem hoeheren Grundpreis).
+function haendlerStadt(r){
+  let best=null,bf=-1,bm=-1;
+  for(const v in VIL){const f=sellF(v,r,0),m=VIL[v].mod[r]??1;
+    if(f>bf+1e-9||(Math.abs(f-bf)<=1e-9&&m>bm)){best=v;bf=f;bm=m;}}
+  return best;
+}
 function wanderHaendler(){
   if(VIS)return;
   const h=(viehNot()&&Math.random()<0.5)?HERKUNFT[1]:pick(HERKUNFT);
@@ -3182,9 +3190,13 @@ function haendlerPopup(h){
   const kauf=['holz','bretter','stein','getreide','nahrung','leinen','eisen','ziegel','wolle','schilf']
     .filter(r=>(G.res[r]||0)>=60).sort((a,b)=>G.res[b]-G.res[a])[0];
   if(kauf){
-    const menge=30,lohn=Math.max(4,Math.round(menge*({holz:.35,bretter:.7,stein:.5,getreide:.5,nahrung:.6,leinen:1.6,eisen:1.2,ziegel:.8,wolle:.9,schilf:.4}[kauf]||.5)*teuer));
-    wahl.push({l:tr`${menge} ${RN[kauf]} verkaufen für ${lohn} Gulden`,
-      fn:()=>{G.res[kauf]-=menge;kasse(lohn,'verkauf');toast(tr`${menge} ${RN[kauf]} verkauft.`,'good');}});
+    // Der Haendler traegt die Ware in die Stadt mit der besten Nachfrage. Dort ist der
+    // Markt derselbe wie am Handelshaus: Preisabschlag und Saettigung gelten auch hier.
+    const stadt=haendlerStadt(kauf),menge=30,sf=sellF(stadt,kauf,0);
+    const lohn=Math.max(2,Math.round(menge*({holz:.35,bretter:.7,stein:.5,getreide:.5,nahrung:.6,leinen:1.6,eisen:1.2,ziegel:.8,wolle:.9,schilf:.4}[kauf]||.5)*teuer*sf));
+    wahl.push({l:tr`${menge} ${RN[kauf]} verkaufen für ${lohn} Gulden`+satTxt(stadt,kauf,0),
+      fn:()=>{if((G.res[kauf]||0)<menge)return;G.res[kauf]-=menge;kasse(lohn,'verkauf');
+        G.sat=G.sat||{};G.sat[stadt+'.'+kauf]=satOf(stadt,kauf)+menge;toast(tr`${menge} ${RN[kauf]} verkauft.`,'good');}});
   }
   wahl.push({l:tr`Nichts handeln`,fn:()=>{}});
   showEvent(tr`Besuch`,tr`Händler aus ${h.n}`,h.t,wahl);

@@ -1,5 +1,25 @@
 # Patch Notes
 
+## v63 — Händler-Aufkauf folgt der Sättigung
+
+Seit v62 drückt man den Preis, wenn man immer dasselbe in dieselbe Stadt
+liefert. Wer die Ware stattdessen dem Wanderhändler gab, umging das. Das ist
+jetzt zu.
+
+- **Der Händler trägt die Ware in die Stadt mit der besten Nachfrage**
+  (Krems, Zwettl oder Horn, je nachdem, wo der Preis gerade am wenigsten
+  gedrückt ist). Sein Angebot wird um denselben Abschlag gekürzt und trägt
+  ihn am Knopf, z. B. „(−27 %)“
+- **Die verkaufte Menge zählt zur Sättigung** dieser Stadt. Wer dem Händler
+  dreimal Holz gibt, bekommt später auch am Handelshaus weniger dafür
+- Die Nachfrage erholt sich wie bisher (rund drei Wochen zur Hälfte)
+- Der Händler zahlt weiterhin nur einen Bruchteil des Handelshaus-Preises
+  und kauft nur, was im Lager reichlich da ist (ab 60). Er bleibt also
+  Notverkauf, kein Gewinnweg
+- **Marktstand unverändert:** Dort kaufen die Dorfbewohner, es fließt kein
+  Geld von außen herein. Eine Sättigung wäre dort unlogisch
+- Das Hauptmenü zeigt „Version 63“
+
 ## v62 — Handels-Sättigung: Wer immer dasselbe liefert, drückt den Preis
 
 Bisher brachte jede Fuhre denselben Preis, egal wie oft man dieselbe Ware in
