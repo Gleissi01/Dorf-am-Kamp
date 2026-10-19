@@ -1,5 +1,26 @@
 # Patch Notes
 
+## v64 — Spielstand als Datei sichern und laden
+
+Bisher lag der Spielstand nur im Speicher des Browsers. Wer die Browserdaten
+löscht, das Handy wechselt oder die App neu installiert, hat sein Dorf
+verloren. Jetzt gibt es eine Sicherung als Datei, auf Handy und PC.
+
+- **Hauptmenü, bei jedem Spielstand:** „Sichern (Datei)“ lädt eine Datei
+  `Dorf-am-Kamp_Spielstand1_2026-10-19.json` herunter (Dorf, Leute, Lager,
+  Gulden, Aufträge, Sättigung, alles)
+- **„Aus Datei laden“** liest so eine Datei in den gewählten Spielstand.
+  Ist der Platz belegt, fragt das Spiel vorher „Wirklich überschreiben?“.
+  Danach auf „Spielen“ tippen
+- Die Datei wird vorher geprüft. Ist es keine gültige Spielstand-Datei
+  (falsches Format, kaputt, zu groß), steht eine Meldung im Menü und der
+  Spielstand bleibt unangetastet
+- Wird in den Spielstand geladen, in dem man gerade spielt, ersetzt der
+  geladene Stand das laufende Dorf. Das alte Dorf überschreibt ihn nicht
+- Sichern und Laden gehen auch zwischen Handy und PC, zum Beispiel per
+  Cloud-Ordner oder Mail an dich selbst
+- Das Hauptmenü zeigt „Version 64“
+
 ## v63 — Händler-Aufkauf folgt der Sättigung
 
 Seit v62 drückt man den Preis, wenn man immer dasselbe in dieselbe Stadt
