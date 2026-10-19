@@ -42,7 +42,8 @@ BREITE_TRAGE = 48
 BREITE_NATUR = 96
 NATUR_NEU = {"schaf", "widder", "lamm", "schwein", "eber", "ferkel",
              "huhn", "hahn", "kueken", "stier", "kalb", "ziege", "gans",
-             "geruest", "bretterstapel", "steinhaufen", "strohbund", "moertel"}
+             "geruest", "bretterstapel", "steinhaufen", "strohbund", "moertel",
+             "soldat", "soldatfackel", "soldatbeute", "offizier", "bote", "haendler", "haendlerwagen"}
 QUALITAET = 88
 
 

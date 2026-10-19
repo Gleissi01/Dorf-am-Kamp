@@ -1,5 +1,47 @@
 # Patch Notes
 
+## v61 — Soldaten, Boten und Händler kommen sichtbar ins Dorf
+
+Bisher ploppte bei Pfleger, Händler und Bestellung einfach ein Fenster auf.
+Jetzt kommen die Leute zu Fuß oder mit Wagen von außerhalb ins Dorf, und das
+Fenster öffnet sich erst, wenn sie am Lager (Händler: Handelshaus/Markt)
+stehen.
+
+- **Pfleger im Oktober:** Offizier und zwei Soldaten marschieren ein.
+  Zehent, Robot und Ablöse laufen wie bisher. Wer **verweigert** und
+  dadurch unter 25 Gunst fällt, bekommt (70 %) die Soldaten ins Lager:
+  sie nehmen ein Viertel der Nahrung und des Getreides und ziehen mit dem
+  Sack ab. Unter 12 Gunst steckt zusätzlich ein Soldat mit der Fackel ein
+  Gebäude an (nie Wohnhäuser, Lager, Kapelle, Friedhof)
+- **Neu: Forderung des Grundherrn** (ab 1801, ab 10 Leuten, nicht bei sehr
+  hoher Gunst, höchstens etwa ein- bis zweimal im Jahr): Ein Bote bringt
+  eine Lieferung (Getreide, Holz oder Stein) mit 25 Tagen Frist. Zusagen,
+  mit Gulden ablösen oder verweigern. Nach Ablauf holen Soldaten die Ware
+  aus dem Lager, Erinnerung 10 und 3 Tage vorher. Fehlt etwas, nehmen sie,
+  was da ist, die Gunst sinkt stark, und bei Gunst unter 30 wird ein
+  Gebäude angezündet
+- **Händler** kommen mit Wagen und Pferd, ein Fußgänger mit Kraxe geht mit
+- **Boten** der Städte (Bestellungen) laufen schnell ins Dorf
+- Besucher kommen vom **Kartenrand** und gehen am selben Rand wieder ab. Lange Wege laufen sie schneller, damit die Ankunft nach etwa 20 Sekunden passiert
+- Es gibt immer nur einen Besuch gleichzeitig. Ist kein Weg zum Lager frei
+  oder läuft schon ein Besuch, kommt das Fenster sofort wie früher. Nichts
+  kann hängen bleiben (Zeitsicherung 2 Minuten)
+- Besucher werden nicht gespeichert. Lädt man mitten im Besuch, kommt das
+  Ereignis einfach am nächsten Tag wieder
+- Gunst und Forderung werden gespeichert. Das Oktober-Jahr des Pflegers
+  wurde bisher gespeichert und geladen, jetzt auch die Forderung
+- Sieben neue Figuren, englische Texte
+
+**Ehrlich dazu:** Die Soldaten sind keine Kampfeinheit. Man kann sie nicht
+aufhalten, nur mit Gunst vermeiden. Das Feuer löschen die Dorfleute wie jedes
+andere.
+
+### Gemessen
+
+Testdorf: Pfleger mit Plünderung und Brandstiftung, Forderung erfüllt und
+nicht erfüllt, Händler, Bote, 3 Jahre Dauerlauf mit Zufallsantworten:
+keine Konsolenfehler, jeder Besuch endet nach höchstens 26 Sekunden.
+
 ## v60 — Honig ist eine eigene Ware
 
 Die Imkerei lieferte bisher einfach „Nahrung“. Jetzt liefert sie **Honig**,
