@@ -1,5 +1,26 @@
 # Patch Notes
 
+## v62 — Handels-Sättigung: Wer immer dasselbe liefert, drückt den Preis
+
+Bisher brachte jede Fuhre denselben Preis, egal wie oft man dieselbe Ware in
+dieselbe Stadt schickte. Das machte Handel zum Dauerklick. Jetzt reagiert der
+Markt der Stadt.
+
+- **Preis fällt mit der gelieferten Menge**, je Stadt und je Ware
+  (Faktor 1/(1 + Sättigung/80), nie unter 30 % des Grundpreises)
+- **Erholung:** Die Sättigung baut sich um 3 % pro Tag ab, nach etwa
+  23 Tagen ist die Hälfte weg
+- **Am Knopf sichtbar:** Der Abschlag steht direkt dabei, z. B. „(−11 %)“.
+  Bereits eingeplante Fuhren zählen mit, die Zahlung wird beim Beladen
+  neu berechnet
+- Der Spielstand speichert die Sättigung mit
+- Bestellungen, Marktstand und Händlerbesuche sind unverändert (der
+  Händler-Aufkauf hat weiter feste Preise)
+- **Fix:** „tr is not a function“ beim Einplanen einer Fuhre (die Variable
+  `tr` verdeckte die Übersetzungsfunktion, jetzt `trb`)
+- **Fix:** Das Hauptmenü zeigt jetzt die richtige Versionsnummer (stand
+  noch auf 58)
+
 ## v61 — Soldaten, Boten und Händler kommen sichtbar ins Dorf
 
 Bisher ploppte bei Pfleger, Händler und Bestellung einfach ein Fenster auf.
