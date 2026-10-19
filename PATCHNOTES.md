@@ -1,5 +1,27 @@
 # Patch Notes
 
+## v65 — Winter-Heimarbeit
+
+Im Winter ruhen Felder, Sammler und Imker. Wer keine Winterstelle hat, stand
+bisher herum. Jetzt arbeitet er zu Hause.
+
+- **Dezember bis Februar:** Freie Erwachsene und Rentner gehen heim und
+  spinnen oder weben. Aus **2 Flachs wird 1 Leinen**, aus **2 Wolle 1
+  Wollstoff**. Dafür braucht es keine Weberei
+- **Langsam und mit schlechter Ausbeute:** Eine Fuhre dauert etwa drei
+  Spieltage, und die Weberei holt mehr heraus (4 Flachs ergeben dort
+  3 Leinen). Heimarbeit ersetzt die Weberei also nicht, sie nutzt die Winterzeit
+- **Die Weberei hat Vorrang:** Webt eine besetzte Weberei gerade Leinen,
+  lässt die Heimarbeit den Flachs liegen (bei Wolle genauso). Es wird nichts
+  schlechter verwertet als nötig
+- Gearbeitet wird nur, solange der Rohstoff im Lager liegt und noch nicht
+  40 Leinen oder 40 Wollstoff vorrätig sind
+- Auf der Personenkarte steht „Heimarbeit“. Die Leute verschwinden dabei im
+  Haus
+- Im März meldet das Spiel, was über den Winter entstanden ist
+- Kinder, Kranke und Leute mit Stelle sind nicht betroffen
+- Das Hauptmenü zeigt „Version 65“
+
 ## v64 — Spielstand als Datei sichern und laden
 
 Bisher lag der Spielstand nur im Speicher des Browsers. Wer die Browserdaten
