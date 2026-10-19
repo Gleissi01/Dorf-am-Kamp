@@ -1,5 +1,14 @@
 # Patch Notes
 
+## v66 — Namen und Eigenschaften
+
+Neue Dorfbewohner tragen Namen, wie sie um 1800 im Waldviertel üblich waren, und jeder hat eine Charaktereigenschaft.
+
+- Namenslisten erweitert (Jodok, Korbinian, Apollonia, Kunigunde …; Familiennamen wie Weinstabl, Zeilinger, Müllner). Bestehende Bewohner behalten ihren Namen.
+- Sechs Eigenschaften: fleißig (+10 % Tempo), gemächlich (−10 %), robust (selten krank), kränklich (öfter krank), gelehrig (Erfahrung +50 %), genügsam (weniger Hunger).
+- Sichtbar in der Leute-Liste und auf der Personenkarte. Kinder erben mit 50 % die Eigenschaft eines Elternteils.
+- Alte Spielstände: Bewohner bekommen beim Laden stabil eine Eigenschaft zugewiesen.
+
 ## v65 — Winter-Heimarbeit
 
 Im Winter ruhen Felder, Sammler und Imker. Wer keine Winterstelle hat, stand
