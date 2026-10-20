@@ -1,5 +1,15 @@
 # Patch Notes
 
+## v67 — Dorfgeschichten
+
+Ereignisse treffen jetzt einzelne Dorfbewohner und hängen von ihrer Eigenschaft ab. Jede Entscheidung erscheint als Fenster.
+
+- Takt: alle 10 Tage mit 60 % Chance, danach mindestens 10 Tage Pause. Erst ab Tag 110 und ab 8 Einwohnern. Jede Person erlebt höchstens eine Geschichte pro Jahr. Es gibt immer eine Option ohne Kosten.
+- Zwei neue Eigenschaften: trinkfest (etwas seltener krank) und streitsüchtig. Bestehende Bewohner behalten ihre Eigenschaft.
+- Vier Geschichten: Händel im Wirtshaus (trinkfest/streitsüchtig, braucht Wirtshaus), Der Kränkliche im Winter (Bader, Kräutertee oder nichts tun), Ein Fleißiger will mehr (Aufstieg oder vertrösten; wer vertröstet wird, zieht mit 30 % in 20 Tagen weg), Ein gelehriges Kind (Schulfortschritt gegen Gulden).
+- Weggang nur, wenn mindestens 6 Einwohner bleiben, die Person keine kleinen Kinder hat und nicht die einzige Kraft ihres Betriebs ist.
+- Lebenslauf: Die Personenkarte zeigt bis zu 6 Einträge pro Person.
+
 ## v66 — Namen und Eigenschaften
 
 Neue Dorfbewohner tragen Namen, wie sie um 1800 im Waldviertel üblich waren, und jeder hat eine Charaktereigenschaft.
