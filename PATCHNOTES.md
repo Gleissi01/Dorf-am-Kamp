@@ -1,5 +1,10 @@
 # Patch Notes
 
+## v71 — Franzosen nur zur Napoleonzeit
+
+- Die zufälligen Franzosen-Durchmärsche gibt es nur noch von 1803 bis 1810. Die festen Termine Oktober 1805 und 1809 bleiben. Vorher konnten sie bis ans Spielende jeden Herbst kommen, auch lange nach Napoleon.
+- Schlusstext nach dem letzten Auftrag ehrlicher: „Hochwasser, Seuchen, Feuer und harte Winter kommen trotzdem“ (statt „Kriege“). Deutsch und Englisch.
+
 ## v70 — Holz gibt es beim Händler
 
 Ohne Holz und ohne reifen Baum gab es keinen Ausweg mehr: Der Förster kostet selbst Holz, und kein Händler führte welches.
