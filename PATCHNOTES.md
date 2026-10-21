@@ -1,5 +1,14 @@
 # Patch Notes
 
+## v68 — Besucher melden sich mit einer Marke
+
+Händler, Boten und der Pfleger öffnen kein Fenster mehr mitten im Spiel. Stattdessen erscheint unten rechts eine kleine Marke.
+
+- Marke antippen öffnet das Angebot. „Später“ schließt es wieder, die Marke bleibt.
+- Händler und Boten der Städte: Marke bleibt 3 Spieltage, ein Balken zeigt die Restzeit. Danach zieht der Besucher ohne Folgen weiter.
+- Pfleger und Bote des Grundherrn (rote Marke): bleiben 5 Spieltage. Ohne Antwort gilt es als Verweigern (gleiche Folgen wie der Knopf „Verweigern“).
+- Solange eine Marke wartet, kommt kein weiterer Besucher.
+
 ## v67 — Dorfgeschichten
 
 Ereignisse treffen jetzt einzelne Dorfbewohner und hängen von ihrer Eigenschaft ab. Jede Entscheidung erscheint als Fenster.
