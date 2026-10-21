@@ -1,5 +1,16 @@
 # Patch Notes
 
+## v69 — Einstieg verständlicher
+
+Das Spiel bleibt hart, aber die Ursachen werden lesbar (nach dem Profi-Review zu v65).
+
+- Todesursachen: „verdurstet“ und die Krankheiten (Grippe, Wechselfieber, Wunde, Lungenentzündung, verdorbenes Wasser) stehen jetzt in der Jahreschronik und auf dem Grabstein statt unter „anders“. Verdurstete bekommen ein Grab.
+- Durst-Marke in der Kopfzeile: erscheint nur, wenn jemand Durst hat. Antippen erklärt es.
+- Auftrag 2 („Satt werden“) verlangt zusätzlich einen Brunnen. Der Text von Auftrag 2 und 3 nennt Wasser und die Bäckerei klar (Getreide allein macht nicht satt).
+- Ruinen ohne Arbeiter sagen jetzt, was zu tun ist (Dachdecker oder abreißen), statt „Steht still, bis du Arbeiter einteilst“.
+- Dorffenster (Stimmungs-Knopf): neuer Abschnitt „Wachstum“ nennt, was das Dorf gerade bremst (Stimmung, Nahrungsvorrat, Wohnraum, Winter).
+- Warnung beim Bauen, wenn danach weniger als 10 Bretter im Lager bleiben.
+
 ## v68 — Besucher melden sich mit einer Marke
 
 Händler, Boten und der Pfleger öffnen kein Fenster mehr mitten im Spiel. Stattdessen erscheint unten rechts eine kleine Marke.
