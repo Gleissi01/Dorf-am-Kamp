@@ -1,5 +1,13 @@
 # Patch Notes
 
+## v70 — Holz gibt es beim Händler
+
+Ohne Holz und ohne reifen Baum gab es keinen Ausweg mehr: Der Förster kostet selbst Holz, und kein Händler führte welches.
+
+- Neue Ware: 30 Holz für rund 24 Gulden. Böhmen, Bayern und Mähren führen sie.
+- Holznot (unter 10 Holz im Lager und kein reifer Baum auf der Karte): Der Händler kommt öfter (75 % statt 42 % je Tag-Wurf) und hat dann sicher Holz dabei.
+- Kein Gratis-Holz: Wer keine Gulden hat, muss etwas anderes verkaufen. Schlechte Planung bleibt spürbar.
+
 ## v69 — Einstieg verständlicher
 
 Das Spiel bleibt hart, aber die Ursachen werden lesbar (nach dem Profi-Review zu v65).

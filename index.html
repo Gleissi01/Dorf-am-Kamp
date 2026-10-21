@@ -282,7 +282,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 69</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 70</p>
         <div id="slots"></div>
         <p id="hMsg" class="sub" style="text-align:center;min-height:16px;margin:6px 0 0"></p>
         <input type="file" id="impFile" accept=".json,application/json" hidden>
@@ -2344,7 +2344,7 @@ function newDay(d){
       toast(lost?`Winter. ${lost} Beete mit Unreifem sind erfroren.`:'Winter. Die Häuser brauchen jetzt Brennholz.','warn');}
     consumeGoods();
     rollEvent();pevRoll();
-    if(dayNo()>=40&&Math.random()<(viehNot()?0.75:0.42))EVENTS.haendler();
+    if(dayNo()>=40&&Math.random()<(viehNot()||holzNot()?0.75:0.42))EVENTS.haendler();
   }
   if(d%5===0&&d>0){eat();trinken();if(sea===3){heat();feedCows();}}
   if(d%10===3)toolWear();
@@ -3146,10 +3146,10 @@ function renderQuest(){
 // Ungarn kommt, treibt Vieh vor sich her; der Schiffer von der Donau hat
 // Stein und Eisen geladen. Dazu kauft jeder Händler etwas ab.
 const HERKUNFT=[
-  {n:tr`Böhmen`,  t:tr`Ein Krämer aus Böhmen rastet mit seinem Karren beim Lager.`,            w:['werkzeug','naegel','eisen','kohle','wagen','hopfen']},
+  {n:tr`Böhmen`,  t:tr`Ein Krämer aus Böhmen rastet mit seinem Karren beim Lager.`,            w:['werkzeug','naegel','eisen','kohle','wagen','hopfen','holz']},
   {n:tr`Ungarn`,  t:tr`Ein Viehtreiber aus Ungarn macht auf dem Weg zum Markt halt. Er treibt alles vor sich her, was einen Stall braucht.`, vieh:1, w:['stier','kuh','widder','schaf','eber','schwein','hahn','huhn']},
-  {n:tr`Bayern`,  t:tr`Ein Fuhrmann aus Bayern hat die Achse gebrochen und will Ware los.`,    w:['werkzeug','bretter','ziegel','wagen','naegel','hopfen']},
-  {n:tr`Mähren`,  t:tr`Ein Händler aus Mähren bietet Saatgut und Leinenzeug an.`,              w:['flachs','getreide','leinen','huhn','hahn','schaf']},
+  {n:tr`Bayern`,  t:tr`Ein Fuhrmann aus Bayern hat die Achse gebrochen und will Ware los.`,    w:['werkzeug','bretter','ziegel','wagen','naegel','hopfen','holz']},
+  {n:tr`Mähren`,  t:tr`Ein Händler aus Mähren bietet Saatgut und Leinenzeug an.`,              w:['flachs','getreide','leinen','huhn','hahn','schaf','holz']},
   {n:tr`der Donau`,t:tr`Ein Schiffer von der Donau hat am Kamp angelegt.`,                     w:['stein','eisen','bier','getreide','leinen']},
 ];
 // Was ein Haendler fuehren kann. geb = was es kostet, nimm = was man bekommt.
@@ -3159,6 +3159,7 @@ const WARE={
   wagen:   {n:tr`1 Wagen`,       geb:{holz:30,stein:10},   nimm:{wagen:1}},
   eisen:   {n:tr`20 Erz`,        geb:{gulden:26},          nimm:{eisen:20}},
   kohle:   {n:tr`20 Holzkohle`,  geb:{holz:30},            nimm:{kohle:20}},
+  holz:    {n:tr`30 Holz`,       geb:{gulden:24},          nimm:{holz:30}},
   bretter: {n:tr`25 Bretter`,    geb:{gulden:18},          nimm:{bretter:25}},
   ziegel:  {n:tr`20 Ziegel`,     geb:{gulden:16},          nimm:{ziegel:20}},
   stein:   {n:tr`30 Stein`,      geb:{gulden:15},          nimm:{stein:30}},
@@ -3231,9 +3232,16 @@ function haendlerStadt(r){
     if(f>bf+1e-9||(Math.abs(f-bf)<=1e-9&&m>bm)){best=v;bf=f;bm=m;}}
   return best;
 }
+// Holznot: wenig Holz im Lager und kein reifer Baum mehr auf der Karte. Dann kommt der Händler öfter und hat sicher Holz dabei (gegen Gulden).
+function holzNot(){
+  if((G.res.holz||0)>=10)return false;
+  for(let i=0;i<N;i++)if(G.tree[i]>=100)return false;
+  return true;
+}
 function wanderHaendler(){
   if(VIS)return;
-  const h=(viehNot()&&Math.random()<0.5)?HERKUNFT[1]:pick(HERKUNFT);
+  const mitHolz=HERKUNFT.filter(x=>x.w.includes('holz'));
+  const h=(viehNot()&&Math.random()<0.5)?HERKUNFT[1]:(holzNot()&&Math.random()<0.7)?pick(mitHolz):pick(HERKUNFT);
   visiting(['haendlerwagen','haendler'],['handel','markt','lager'],()=>haendlerPopup(h),tr`Ein Händler aus ${h.n} fährt mit seinem Wagen ins Dorf.`,{label:tr`Händler aus ${h.n}`,gone:tr`Der Händler aus ${h.n} ist weitergezogen.`});
 }
 function haendlerPopup(h){
@@ -3248,6 +3256,7 @@ function haendlerPopup(h){
       const k=topf.splice(Math.random()*topf.length|0,1)[0];
       if(!auswahl.includes(k))auswahl.push(k);
     }
+    if(holzNot()&&h.w.includes('holz')&&!auswahl.includes('holz'))auswahl[auswahl.length-1]='holz';
   }
   const teuer=0.85+Math.random()*0.35;   // der eine feilscht besser als der andere
   const wahl=[];
