@@ -1,5 +1,14 @@
 # Patch Notes
 
+## v75 — Freikauf von Zehent und Robot
+
+- **Freikauf**: Nach dem Marktfest ist das große Ziel, Zehent und Robot abzulösen. Nicht an ein Jahr gebunden, sondern an den Zustand des Dorfes: Marktrecht, Gunst mindestens 60, mindestens 40 Einwohner.
+  - Kosten (Gulden): Einfach 1500, Normal 2500, Hart 4000. Dazu Waren für den Herrenspeicher: Getreide, Leinen, Holz (Einfach ×0,6, Hart ×1,5), nach und nach im Dorf-Fenster abzugeben. Die Gulden werden erst beim Besiegeln gezahlt.
+  - Danach: Pfleger und Forderungen des Grundherrn entfallen, Stimmung steigt, Steuern bringen ein Viertel mehr.
+  - Die Auftragsleiste zeigt den Fortschritt.
+- **Sandbox**: Wird auf Hart mit dem Freikauf freigeschaltet (pro Gerät). Der Spielmodus selbst fehlt noch.
+- Hinweis: v74 (historische Ereignisse nach 1815) wurde übersprungen und kommt später.
+
 ## v73 — Jahresziele
 
 - **Jahresziele** nach dem Marktfest: Jeden Jänner zieht das Dorf zwei Ziele aus einem Pool (Dorf wächst, Marktumsatz, Bestellungen, Hochzeiten, Zierwert, ein Jahr ohne Hunger). Größe richtet sich nach Dorfgröße und Schwierigkeit.
