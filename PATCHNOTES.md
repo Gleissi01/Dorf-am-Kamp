@@ -7,6 +7,7 @@
   - Niemand verhungert, erfriert, verdurstet oder erkrankt tödlich. Nur das Alter bleibt.
   - Startvorrat groß, Rücksprünge unbegrenzt.
 - Texte zur Freischaltung angepasst.
+- Die **Anleitung im Spiel** erklärt jetzt Schwierigkeit, Zurückspringen, Jahresziele, Freikauf, Geschichte und Sandbox (DE und EN).
 
 ## v76 — Geschichte nach 1815 (ehemals v74)
 
