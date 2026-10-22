@@ -1,5 +1,24 @@
 # Patch Notes
 
+## v73 — Jahresziele
+
+- **Jahresziele** nach dem Marktfest: Jeden Jänner zieht das Dorf zwei Ziele aus einem Pool (Dorf wächst, Marktumsatz, Bestellungen, Hochzeiten, Zierwert, ein Jahr ohne Hunger). Größe richtet sich nach Dorfgröße und Schwierigkeit.
+  - Belohnung je Ziel: Gulden (30 + 1,5 je Einwohner). Beide geschafft: zusätzlich bessere Stimmung.
+  - Bonus, kein Zwang: Wer ein Ziel verfehlt, verliert nichts.
+  - Anzeige in der Auftragsleiste (nach Bestellungen, vor den Meilensteinen) und im Aufträge-Fenster.
+- Alte Spielstände laden ohne Probleme; die ersten Ziele kommen im nächsten Jänner nach Auftrag 18.
+
+## v72 — Schwierigkeit, Autospeicher, aufgeräumte Bauleiste
+
+- **Schwierigkeit** beim neuen Dorf: Einfach, Normal, Hart. Gilt für dieses Dorf und lässt sich nicht ändern. Alte Spielstände laden als Normal (= Stand von v71).
+  - Einfach: 50 % mehr Startvorrat, Ereigniswurf 25 %, Feuer und Seuche ×0,7, Winter-Brennholz ×0,8.
+  - Hart: 25 % weniger Startvorrat, Ereigniswurf 45 %, Winter-Brennholz ×1,25.
+  - Alle Werte stehen in einer Tabelle (`DIFF`) und werden nach dem Testen angepasst.
+- **Autospeicher mit Rücksprung**: Speicherpunkt jeden Jänner (die letzten 3) und nach jedem Auftrag (der letzte). Menü → „Zurückspringen“, auch auf dem Verloren-Bildschirm. Der jetzige Stand wird vorher gesichert. Einfach unbegrenzt, Normal und Hart je 4 Rücksprünge. Eintrag in der Dorfchronik.
+- **Sandbox**: Freischaltung pro Gerät. Bedingung (Fabian, 22.10.): auf Hart den Freikauf samt Warenabgabe schaffen. Beides kommt erst mit v75, deshalb ist die Sandbox in v72 noch gesperrt und der Modus selbst fehlt.
+- **Bauleiste**: Noch nicht freigeschaltete Gebäude werden nicht mehr ausgegraut gezeigt, sondern erscheinen erst bei Freischaltung. Leere Reiter verschwinden.
+- Noch nicht umgesetzt: Pfleger-Strenge je Schwierigkeit.
+
 ## v71 — Franzosen nur zur Napoleonzeit
 
 - Die zufälligen Franzosen-Durchmärsche gibt es nur noch von 1803 bis 1810. Die festen Termine Oktober 1805 und 1809 bleiben. Vorher konnten sie bis ans Spielende jeden Herbst kommen, auch lange nach Napoleon.
