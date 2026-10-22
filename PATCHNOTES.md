@@ -1,5 +1,13 @@
 # Patch Notes
 
+## v77 — Sandbox-Modus
+
+- **Sandbox** als vierte Wahl beim neuen Dorf, sichtbar erst nach dem Freikauf auf Hart (pro Gerät).
+  - Alles freigeschaltet, Bauen kostet nichts, keine Aufträge, Ereignisse, Hochwasser, Pfleger und Geschichts-Ereignisse.
+  - Niemand verhungert, erfriert, verdurstet oder erkrankt tödlich. Nur das Alter bleibt.
+  - Startvorrat groß, Rücksprünge unbegrenzt.
+- Texte zur Freischaltung angepasst.
+
 ## v76 — Geschichte nach 1815 (ehemals v74)
 
 - **Historische Ereignisse**, einmal pro Spiel, nur Würze und immer mit Ausweg:
