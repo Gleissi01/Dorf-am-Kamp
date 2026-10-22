@@ -1,5 +1,15 @@
 # Patch Notes
 
+## v76 — Geschichte nach 1815 (ehemals v74)
+
+- **Historische Ereignisse**, einmal pro Spiel, nur Würze und immer mit Ausweg:
+  - 1815 Friede nach Waterloo: Stimmung und Gunst steigen.
+  - 1816 Jahr ohne Sommer: Wachstum auf den Feldern stark gebremst. Getreide kann zugekauft werden.
+  - 1817 Teuerung (Frühling), danach gute Ernte im Herbst.
+  - 1831 und 1832 Cholera: Kordon (kostet Gulden und Nahrung, 40 Tage kein Händler, weniger Kranke) oder offen bleiben.
+  - 1848 Ende der Untertänigkeit: Wer sich schon freigekauft hat, bekommt ein Lob. Alle anderen zahlen nur noch die halben Gulden beim Freikauf.
+- Die Nummer ist 76, weil 75 schon live war.
+
 ## v75 — Freikauf von Zehent und Robot
 
 - **Freikauf**: Nach dem Marktfest ist das große Ziel, Zehent und Robot abzulösen. Nicht an ein Jahr gebunden, sondern an den Zustand des Dorfes: Marktrecht, Gunst mindestens 60, mindestens 40 Einwohner.
