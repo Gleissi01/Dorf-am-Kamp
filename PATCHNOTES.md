@@ -1,5 +1,11 @@
 # Patch Notes
 
+## v81 — Schalter für Dorfgeschichten
+
+- Im Menü gibt es jetzt **Dorfgeschichten: an/aus**. Aus heißt: keine Personen-Ereignisse mehr (Streit, Wilderer, Hochzeit, Wanderbursche, Prozession, „Will weiter“, Tratsch und die älteren Geschichten). Alle anderen Ereignisse wie Feuer, Seuche oder Hagel bleiben.
+- Die Einstellung gilt pro Spielstand und wird gespeichert. Ein bereits angekündigter Weggang läuft auch bei „aus“ zu Ende.
+- Anleitung und Englisch ergänzt.
+
 ## v80 — Dorfgeschichten Stufe C
 
 - **Bittprozession**: Nach einem Hagel schlägt der Pfarrer eine Prozession vor. 6 Gulden Spende bringen Stimmung +4 für 15 Tage. Die Ernte rettet sie nicht. Einmal im Jahr, nur mit Pfarrer.
