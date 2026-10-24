@@ -1,5 +1,13 @@
 # Patch Notes
 
+## v80 — Dorfgeschichten Stufe C
+
+- **Bittprozession**: Nach einem Hagel schlägt der Pfarrer eine Prozession vor. 6 Gulden Spende bringen Stimmung +4 für 15 Tage. Die Ernte rettet sie nicht. Einmal im Jahr, nur mit Pfarrer.
+- **„Will weiter“**: Eine erfahrene Fachkraft (mindestens Geselle, Betrieb hat mehr als einen Arbeiter) will in die Stadt. Halten kostet 5 Gulden. Ziehen lassen ist gratis: Nach etwa 40 Tagen kommt ein Brief, ein Bekannter zieht ins Dorf (wenn Wohnraum frei ist) und das Ansehen steigt um 2. Höchstens einmal im Jahr, nur ab 9 Einwohnern. Es gelten die Schutzregeln: Wer Kinder hat oder die einzige Fachkraft ist, bleibt.
+- **Dorftratsch**: Ein Streitsüchtiger tratscht über eine Nachbarin. Reden lassen kostet 2 Stimmung für ein paar Tage. Der Pfarrer kann von der Kanzel mahnen (gratis, keine Folge).
+- Neu im Spielstand: Hagel-Jahr, Brief-Termin und Brief-Markierung der Person. Alte Spielstände laden unverändert.
+- Anleitung ergänzt (Deutsch und Englisch).
+
 ## v79 — Pfleger-Strenge und Dorfgeschichten Stufe B
 
 - **Pfleger-Strenge je Schwierigkeit**: Zehent, Robot und Gulden-Ablöse hängen jetzt vom Schwierigkeitsgrad ab. Einfach 30 % milder, Normal wie bisher, Hart 30 % strenger. War das Dorf säumig (Gunst unter 30), kommt der Aufschlag wie bisher oben drauf.
