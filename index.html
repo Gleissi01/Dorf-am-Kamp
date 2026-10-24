@@ -284,7 +284,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 77</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 78</p>
         <div id="slots"></div>
         <p id="hMsg" class="sub" style="text-align:center;min-height:16px;margin:6px 0 0"></p>
         <input type="file" id="impFile" accept=".json,application/json" hidden>
@@ -2251,6 +2251,8 @@ function hundNah(x,y,r){
   }
   return null;
 }
+// Wo Leute arbeiten oder gehen, traut sich der Fuchs nicht an den Stall.
+function leuteNah(x,y,r){for(const c of G.C)if(!c.hidden&&!(c.robot>0)&&Math.hypot(c.x-x,c.y-y)<=r)return true;return false;}
 function nearestWeide(a){let best=null,bd=1e9;for(const b of G.B){if(b.type!=='weide'||!b.done||!(b.cows>0)||bewacht(b))continue;const dx=b.x+2-a.x,dy=b.y+2-a.y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=b;}}return best;}
 function nearestDeer(a){let best=null,bd=1e9;for(const o of G.animals){if(!istWild(o))continue;const dx=o.x-a.x,dy=o.y-a.y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=o;}}return best;}
 function nearestHuehner(a){let best=null,bd=1e9;for(const b of G.B){if(b.type!=='huehner'||!b.done||!(b.hens>0))continue;const dx=b.x+1-a.x,dy=b.y+1-a.y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=b;}}return best;}
@@ -2265,7 +2267,7 @@ function updateAnimals(dt){
         a.scan=(a.scan||0)-dt;
         if(a.scan<=0){a.scan=1.2;a.stall=nearestHuehner(a);}
         const st=a.stall;
-        if(st&&st.done&&(st.hens>0)&&G.bmap.get(st.id)===st&&!hundNah(st.x+1,st.y+1,DEF.hund.r)){
+        if(st&&st.done&&(st.hens>0)&&G.bmap.get(st.id)===st&&!hundNah(st.x+1,st.y+1,DEF.hund.r)&&!leuteNah(st.x+1,st.y+1,3.5)){
           const r=aGo(a,st.x+1,st.y+1,1.1*dt,dt);
           if(r===1){a.eat=(a.eat||0)+dt;
             if(a.eat>7){a.eat=0;a.stall=null;a.flee=3;
@@ -3270,14 +3272,12 @@ function haendlerStadt(r){
 }
 // Holznot: wenig Holz im Lager und kein reifer Baum mehr auf der Karte. Dann kommt der Händler öfter und hat sicher Holz dabei (gegen Gulden).
 function holzNot(){
-  if((G.res.holz||0)>=10)return false;
-  for(let i=0;i<N;i++)if(G.tree[i]>=100)return false;
-  return true;
+  return (G.res.holz||0)<10;   // Holz leer: der Händler kommt öfter und führt Holz
 }
 function wanderHaendler(){
   if(VIS||(G.quar||0)>dayNo())return;
   const mitHolz=HERKUNFT.filter(x=>x.w.includes('holz'));
-  const h=(viehNot()&&Math.random()<0.5)?HERKUNFT[1]:(holzNot()&&Math.random()<0.7)?pick(mitHolz):pick(HERKUNFT);
+  const h=(viehNot()&&Math.random()<0.5)?HERKUNFT[1]:holzNot()?pick(mitHolz):pick(HERKUNFT);
   visiting(['haendlerwagen','haendler'],['handel','markt','lager'],()=>haendlerPopup(h),tr`Ein Händler aus ${h.n} fährt mit seinem Wagen ins Dorf.`,{label:tr`Händler aus ${h.n}`,gone:tr`Der Händler aus ${h.n} ist weitergezogen.`});
 }
 function haendlerPopup(h){

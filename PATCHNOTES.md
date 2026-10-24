@@ -1,5 +1,10 @@
 # Patch Notes
 
+## v78 — Holzhändler und Fuchs
+
+- **Holzhändler**: Ist das Holz fast leer (unter 10), kommt der Wanderhändler öfter und führt Holz, auch wenn irgendwo noch Bäume stehen. Vorher blockierte schon ein einziger ausgewachsener Baum im Dorf diese Hilfe.
+- **Fuchs**: Er geht nicht mehr an den Hühnerstall, solange Leute in der Nähe sind (Arbeiter im Gebäude oder Passanten bis 3,5 Felder). Der Hofhund schreckt ihn weiter ab.
+
 ## v77 — Sandbox-Modus
 
 - **Sandbox** als vierte Wahl beim neuen Dorf, sichtbar erst nach dem Freikauf auf Hart (pro Gerät).
