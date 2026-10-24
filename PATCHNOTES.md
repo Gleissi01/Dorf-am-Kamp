@@ -3,6 +3,7 @@
 ## v78 — Holzhändler und Fuchs
 
 - **Holzhändler**: Ist das Holz fast leer (unter 10), kommt der Wanderhändler öfter und führt Holz, auch wenn irgendwo noch Bäume stehen. Vorher blockierte schon ein einziger ausgewachsener Baum im Dorf diese Hilfe.
+- **Holzfäller**: Stand jemand auf einem Feld, auf dem ein Baum nachgewachsen war, fand er nie wieder Bäume ("Keine ausgewachsenen Bäume in Reichweite", obwohl Wälder stehen). Die Wegsuche startet jetzt vom nächsten freien Feld. Das betraf auch andere Arbeiter, die Ziele suchen.
 - **Fuchs**: Er geht nicht mehr an den Hühnerstall, solange Leute in der Nähe sind (Arbeiter im Gebäude oder Passanten bis 3,5 Felder). Der Hofhund schreckt ihn weiter ab.
 
 ## v77 — Sandbox-Modus

@@ -846,6 +846,11 @@ function nearReach(c,cands,k,lim){
   const ci=Math.floor(c.y)*W+Math.floor(c.x),co=G.occ[ci];
   if(walkC(ci)){dist[ci]=0;qq.push(ci);}
   else if(co>=0){const o=G.bmap.get(co);if(o){const od=DEF[o.type];for(const j of perim(o.x,o.y,od.w,od.h))if(walkC(j)){dist[j]=0;qq.push(j);}}}
+  // Steht jemand auf einem Feld, das nicht begehbar ist (z. B. ist unter ihm ein Baum nachgewachsen),
+  // sucht die Wegsuche vom nächsten freien Feld in der Nähe aus. Sonst findet er nie wieder etwas.
+  if(!qq.length){const cx=Math.floor(c.x),cy=Math.floor(c.y);
+    for(let r=1;r<=4&&!qq.length;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;
+      const nx=cx+dx,ny=cy+dy;if(!inb(nx,ny))continue;const j=ny*W+nx;if(walkC(j)&&dist[j]<0){dist[j]=0;qq.push(j);}}}
   for(let h=0;h<qq.length;h++){const i=qq[h],x=i%W,y=i/W|0;if(dist[i]>=lim)continue;
     for(let n=0;n<4;n++){const nx=x+DX[n],ny=y+DY[n];if(!inb(nx,ny))continue;const j=ny*W+nx;if(dist[j]>=0||!walkC(j))continue;dist[j]=dist[i]+1;qq.push(j);}}
   const sc=[];for(const j of cands){let best=walkC(j)?dist[j]:-1;const x=j%W,y=j/W|0;
