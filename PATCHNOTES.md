@@ -1,5 +1,16 @@
 # Patch Notes
 
+## v79 — Pfleger-Strenge und Dorfgeschichten Stufe B
+
+- **Pfleger-Strenge je Schwierigkeit**: Zehent, Robot und Gulden-Ablöse hängen jetzt vom Schwierigkeitsgrad ab. Einfach 30 % milder, Normal wie bisher, Hart 30 % strenger. War das Dorf säumig (Gunst unter 30), kommt der Aufschlag wie bisher oben drauf.
+- **Streit um den Zaun**: Ein gemächlicher und ein fleißiger Nachbar geraten aneinander. Pfarrer vermitteln lassen (Gunst +1, nur mit Pfarrer), den Grundherrn entscheiden lassen (6 Gulden, Gunst −2) oder aussitzen (12 Tage lang arbeiten beide 10 % langsamer). Höchstens einmal im Jahr.
+- **Wilderer im Herrenwald**: Ein Jäger oder Streitsüchtiger hat ein Stück Wild erlegt. Decken bringt 8 Nahrung, kostet 4 Gunst und mit 35 % Pech bis zu 15 Gulden Strafe. Melden bringt 3 Gunst, kostet den Jäger aber 40 Erfahrung. Höchstens einmal im Jahr.
+- **Hochzeitsfeier**: Nach einer Trauung durch den Pfarrer darf das Dorf feiern. Große Feier (20 Nahrung, 6 Bier): Stimmung +6 für 15 Tage. Kleine Feier (6 Nahrung): +2. Ohne Feier kostet nichts.
+- **Wanderbursche**: Im Frühjahr oder Herbst klopft ein Geselle an, der in einem freien Beruf schon Erfahrung hat. Aufnehmen kostet 60 Nahrung für 30 Tage, danach bleibt er mit 25 % Wahrscheinlichkeit. Er zieht nur weg, wenn das Dorf groß genug ist und er nicht die einzige Fachkraft ist. Einmal im Jahr.
+- Jede Entscheidung hat eine Variante ohne Kosten. Optionen mit Kosten sind gesperrt, wenn das Lager nicht reicht, nichts geht ins Minus.
+- Im Sandbox-Modus gibt es keine Dorfgeschichten mehr.
+- Anleitung ergänzt (Deutsch und Englisch). Alle neuen Werte werden im Spielstand gespeichert.
+
 ## v78 — Holzhändler und Fuchs
 
 - **Holzhändler**: Ist das Holz fast leer (unter 10), kommt der Wanderhändler öfter und führt Holz, auch wenn irgendwo noch Bäume stehen. Vorher blockierte schon ein einziger ausgewachsener Baum im Dorf diese Hilfe.
