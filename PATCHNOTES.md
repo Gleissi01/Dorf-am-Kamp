@@ -1,5 +1,14 @@
 # Patch Notes
 
+## v86 — Grundherr werden, Teil 2
+
+- **Bitten der Dörfer:** Zur Oktober-Abrechnung kommt eine Bitte eines Dorfes: Hofbrand (40 Gulden), schlechte Ernte (30 Getreide) oder Streit um die Weide (Schlichten für 10 Gulden). Helfen hebt die Zufriedenheit (+8 bzw. +6), Ablehnen ist gratis und senkt sie (−6 bzw. −3).
+- **Verweigerung:** Unter Zufriedenheit 30 zahlt ein Dorf nichts. Unter 25 schrumpft es um einen Einwohner im Jahr.
+- **Weglaufen:** Unter Zufriedenheit 15 zieht das Dorf bei der nächsten Abrechnung fort und verschwindet aus der Liste. Das Hauptdorf bleibt unberührt. Sind alle Dörfer weg, kannst du eine neue Herrschaft kaufen.
+- **Investieren:** Pro Dorf einmal im Jahr: Brunnen (60 Gulden, Zufriedenheit +10), Kapelle (150 Gulden, +20) oder Saatgut (30 Getreide, +5 und +2 Einwohner). Das Dorf-Fenster warnt bei Unzufriedenheit.
+- Keine neuen Spielstand-Felder außer `inv` je Dorf. Alte Stände laden unverändert. Anleitung und Englisch ergänzt.
+- Kommt in v87: Herrenhof, Verwalter, Rolle nach 1848.
+
 ## v85 — Grundherr werden, Teil 1
 
 - **Herrschaft kaufen:** Nach dem Freikauf erscheint im Dorf-Fenster „Grundherr werden“. Voraussetzungen: Freikauf, Marktrecht, Ruf bei den Städten ab 60. Der Kaufpreis richtet sich nach der Dorfgröße (3.000 Gulden plus 60 je Einwohner, mindestens 4.500, auf Einfach ×0,7, auf Hart ×1,3). Es fließen nur Gulden.
