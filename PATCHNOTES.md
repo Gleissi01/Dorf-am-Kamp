@@ -1,5 +1,15 @@
 # Patch Notes
 
+## v85 — Grundherr werden, Teil 1
+
+- **Herrschaft kaufen:** Nach dem Freikauf erscheint im Dorf-Fenster „Grundherr werden“. Voraussetzungen: Freikauf, Marktrecht, Ruf bei den Städten ab 60. Der Kaufpreis richtet sich nach der Dorfgröße (3.000 Gulden plus 60 je Einwohner, mindestens 4.500, auf Einfach ×0,7, auf Hart ×1,3). Es fließen nur Gulden.
+- **Dörfer als Liste:** Du bekommst drei kleine Dörfer (Tiefenbach, Wegscheid, Thurnberg) mit Einwohnern, Zufriedenheit und Abgabe pro Jahr. Keine Karte.
+- **Abrechnung jeden Oktober:** Jedes Dorf zahlt 12 Gulden je Einwohner (Milde ×0,6, Normal ×1, Hart ×1,5). Das Fenster hat eine Taste „Einstreichen“, nichts kostet etwas.
+- **Härte-Regler pro Dorf:** Milde hebt die Zufriedenheit um 3 im Jahr, Hart senkt sie um 4. Ab Zufriedenheit 40 wachsen die Dörfer langsam (bis 40 Einwohner).
+- Noch nicht drin (kommt in v86): Bitten der Dörfer, Verweigerung der Abgaben und Weglaufen bei Unzufriedenheit, Investieren. v87: Herrenhof, Verwalter, Rolle nach 1848.
+- Im Sandbox-Modus gibt es das nicht. Neu im Spielstand: `herr`. Alte Stände laden unverändert, ohne `herr` ist es nicht aktiv.
+- Alle Zahlen sind Startwerte und gehören getestet. Anleitung und Englisch ergänzt.
+
 ## v84 — Unbesetzte Gebäude
 
 - **Rauch nur bei Besetzung:** Wohnhäuser rauchen nur mit Bewohnern, Betriebe (auch Bader, Spital) nur mit eingeteiltem Arbeiter. Das Wirtshaus und die Öfen verhalten sich wie bisher.
