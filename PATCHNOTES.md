@@ -1,5 +1,10 @@
 # Patch Notes
 
+## v83 — Leere Häuser rauchen nicht
+
+- **Unbewohnte Wohnhäuser** (Haus, Bauernhaus, Ziegelhaus) zeigten im Herbst und Winter trotzdem Rauch aus dem Kamin. Jetzt raucht nur noch, wo jemand wohnt. Ein leeres Haus bleibt kalt, so sieht man von weitem, dass dort niemand ist.
+- Betriebe sind unverändert (rauchen nur bei Arbeit).
+
 ## v82 — Dorfgeschichten ausgeglichen
 
 - **„Ein Fleißiger will mehr“** kam im Dauerlauf viel häufiger als alle anderen Geschichten, weil er als einzige nicht auf einmal pro Jahr begrenzt war. Jetzt gilt auch für ihn: höchstens einmal im Jahr.

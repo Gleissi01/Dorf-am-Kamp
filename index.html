@@ -285,7 +285,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 82</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 83</p>
         <div id="slots"></div>
         <p id="hMsg" class="sub" style="text-align:center;min-height:16px;margin:6px 0 0"></p>
         <input type="file" id="impFile" accept=".json,application/json" hidden>
@@ -4607,7 +4607,7 @@ function drawSpr(b,px,py,pw,ph,winter,now){
     // ohne Arbeiter bleibt kalt, damit man von weitem sieht, dass dort
     // niemand mehr steht.
     const kalt=of&&b.type!=='koehler'&&!workersOf(b).some(canWork);
-    if(!farbe&&!kalt&&(winter||season()===2)){farbe='rgba(226,226,220,1)';kraft=1;}
+    if(!farbe&&!kalt&&(winter||season()===2)&&(!HOUSE[b.type]||residents(b).length)){farbe='rgba(226,226,220,1)';kraft=1;}
     if(farbe)drawSmoke(dx+dw*ch[0],dy+dh*ch[1],now,b.id,farbe,kraft);
   }
   if(b.wagon)drawCart(px-6,py+ph-6);
@@ -4811,7 +4811,7 @@ function drawBuilding(b,winter,now){
     if(b.type==='kapelle'){ctx.fillStyle='#f0ebe0';ctx.fillRect(px+3,py-6,9,eave-py+wallH+6);ctx.fillStyle='#2b3440';ctx.fillRect(px+6,py,3,4);
       ctx.fillStyle=winter?'#dfe4e6':'#3f3a38';ctx.beginPath();ctx.moveTo(px+2,py-6);ctx.lineTo(px+13,py-6);ctx.lineTo(px+7.5,py-15);ctx.closePath();ctx.fill();
       ctx.fillStyle='#d9a441';ctx.fillRect(px+7,py-19,1,4);ctx.fillRect(px+5.5,py-18,4,1);}
-    const smoke=(HOUSE[b.type]&&(winter||season()===2))||(['baecker','schmiede','brauerei'].includes(b.type)&&workersOf(b).some(c=>c.work&&c.hold));
+    const smoke=(HOUSE[b.type]&&(winter||season()===2)&&residents(b).length>0)||(['baecker','schmiede','brauerei'].includes(b.type)&&workersOf(b).some(c=>c.work&&c.hold));
     if(HOUSE[b.type]||['baecker','schmiede','brauerei','wirtshaus'].includes(b.type)){
       const chx=px+pw*0.68,chy=roofTop+2;ctx.fillStyle='#7b6a5a';ctx.fillRect(chx,chy,4,7);ctx.fillStyle='#4d4239';ctx.fillRect(chx-.5,chy,5,1.5);
       if(smoke){ctx.fillStyle='rgba(230,230,225,.45)';for(let k=0;k<3;k++){const p2=((now/1400)+k/3)%1;ctx.beginPath();ctx.arc(chx+2+p2*6,chy-2-p2*12,1.5+p2*3,0,6.283);ctx.fill();}}
