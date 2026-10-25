@@ -285,7 +285,7 @@ h3{margin:10px 0 2px;font-family:"Alegreya SC",Georgia,serif;font-size:15px;font
         <img class="appicon" id="homeIcon" alt="">
         <h1 style="text-align:center">Dorf am Kamp</h1>
         <p class="sub" style="text-align:center">Waldviertel, um 1800</p>
-        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 81</p>
+        <p id="gver" style="text-align:center;font-size:11px;opacity:.55;margin:2px 0 0">Version 82</p>
         <div id="slots"></div>
         <p id="hMsg" class="sub" style="text-align:center;min-height:16px;margin:6px 0 0"></p>
         <input type="file" id="impFile" accept=".json,application/json" hidden>
@@ -3456,8 +3456,9 @@ const PEV=[
       if(c.home!=null)for(const o of G.C)if(o!==c&&o.home===c.home&&!(o.sick>0)&&Math.random()<.25){o.sick=5;o.ill='grippe';resetTask(o);}}});
     showEvent(tr`Dorfgeschichte`,tr`Der Kränkliche im Winter`,tr`${fullName(c)} liegt mit Fieber und Husten im Bett. Die Stube ist kalt, der Atem rasselt.`,w);}},
   {id:'fleissig',find(){
+    if((G.pevY||{}).fleissig===year())return null;
     const c=pick(G.C.filter(c=>c.trait==='fleissig'&&isAdult(c)&&c.job!=null&&pevOk(c)&&((c.xp&&c.xp[(jobB(c)||{}).type])||0)>=150));return c?{c}:null;},
-   run(x){const c=x.c,jb=jobB(c);if(!jb)return;c.pev=year();
+   run(x){const c=x.c,jb=jobB(c);if(!jb)return;c.pev=year();(G.pevY=G.pevY||{}).fleissig=year();
     showEvent(tr`Dorfgeschichte`,tr`Ein Fleißiger will mehr`,tr`${fullName(c)} arbeitet seit Jahren im ${DEF[jb.type].n} und gilt als ${rank(c,jb.type)}. Der Wunsch nach einer besseren Stelle und mehr Lohn liegt in der Luft.`,[
       {l:tr`Aufstieg gewähren (12 Gulden)`,dis:G.res.gulden<12,fn:()=>{kasse(-12,'lohn');c.xp[jb.type]=(c.xp[jb.type]||0)+100;life(c,tr`zum Vorarbeiter ernannt`);G.penalty=Math.max(-20,G.penalty-2);toast(tr`${fullName(c)} freut sich über die bessere Stelle.`,'good');}},
       {l:tr`Vertrösten`,fn:()=>{if(Math.random()<.3)c.leave=dayNo()+20;toast(tr`${fullName(c)} nimmt es mit Murren hin.`);}}]);}},
@@ -3553,6 +3554,7 @@ function pevLeave(){
     if(G.C.length>=7&&!kids&&!(jb&&workersOf(jb).length<=1)){toast(tr`${fullName(c)} verlässt das Dorf und sucht anderswo sein Glück.`,'warn');if(c.brief)G.briefT=dayNo()+40;removeCitizen(c,null);}
     else life(c,tr`blieb dem Dorf treu`);}
 }
+let pevLastId='';
 function pevRoll(){
   if(G.over||SB()||!$('event').hidden)return;
   pevLeave();
@@ -3562,7 +3564,8 @@ function pevRoll(){
   if(Math.random()>0.6)return;
   const pool=[];for(const e of PEV){const x=e.find();if(x)pool.push([e,x]);}
   if(!pool.length)return;
-  const[e,x]=pick(pool);G.pevCool=1;e.run(x);
+  const fresh=pool.filter(p=>p[0].id!==pevLastId);
+  const[e,x]=pick(fresh.length?fresh:pool);pevLastId=e.id;G.pevCool=1;e.run(x);
 }
 function rollEvent(){
   if(SB())return;

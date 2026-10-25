@@ -1,5 +1,11 @@
 # Patch Notes
 
+## v82 — Dorfgeschichten ausgeglichen
+
+- **„Ein Fleißiger will mehr“** kam im Dauerlauf viel häufiger als alle anderen Geschichten, weil er als einzige nicht auf einmal pro Jahr begrenzt war. Jetzt gilt auch für ihn: höchstens einmal im Jahr.
+- **Keine Wiederholung hintereinander:** Gibt es mehrere mögliche Geschichten, wird nicht dieselbe wie zuletzt gewählt.
+- Keine neuen Spielstand-Felder, alte Spielstände laden unverändert. Die Anleitung bleibt gleich, weil sich nichts an der Bedienung ändert.
+
 ## v81 — Schalter für Dorfgeschichten
 
 - Im Menü gibt es jetzt **Dorfgeschichten: an/aus**. Aus heißt: keine Personen-Ereignisse mehr (Streit, Wilderer, Hochzeit, Wanderbursche, Prozession, „Will weiter“, Tratsch und die älteren Geschichten). Alle anderen Ereignisse wie Feuer, Seuche oder Hagel bleiben.
