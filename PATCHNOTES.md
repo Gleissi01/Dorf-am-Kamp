@@ -1,5 +1,13 @@
 # Patch Notes
 
+## v84 — Unbesetzte Gebäude
+
+- **Rauch nur bei Besetzung:** Wohnhäuser rauchen nur mit Bewohnern, Betriebe (auch Bader, Spital) nur mit eingeteiltem Arbeiter. Das Wirtshaus und die Öfen verhalten sich wie bisher.
+- **Leere Häuser verfallen doppelt so schnell.** Betriebe ohne Arbeiter taten das schon. Der Hinweis „steht leer und verfällt“ kommt jetzt auch für Häuser.
+- **Der Dachdecker steuert unbesetzte Gebäude nicht mehr an**, auch keine Ruinen. Zieht jemand ein oder wird ein Arbeiter eingeteilt, kommt er wieder.
+- Das Ziegeldach-Haus zählt wie die anderen Wohnhäuser.
+- Anleitung und Englisch ergänzt. Keine neuen Spielstand-Felder.
+
 ## v83 — Leere Häuser rauchen nicht
 
 - **Unbewohnte Wohnhäuser** (Haus, Bauernhaus, Ziegelhaus) zeigten im Herbst und Winter trotzdem Rauch aus dem Kamin. Jetzt raucht nur noch, wo jemand wohnt. Ein leeres Haus bleibt kalt, so sieht man von weitem, dass dort niemand ist.
