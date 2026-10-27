@@ -1,5 +1,13 @@
 # Patch Notes
 
+## v87 — Grundherr werden, Teil 3: Herrenhof und 1848
+
+- **Herrenhof:** Neues Gebäude unter „Gemeinde“, nur mit Herrschaft und nur einmal (20 Bretter, 30 Stein, 8 Nägel, 10 Dach). Ohne Herrschaft ist er unsichtbar.
+- **Verwalter:** Ist im Herrenhof jemand eingeteilt, bringen die Dörfer 15 % mehr Abgaben, und die Bitten kosten ein Viertel weniger. Das Dorf-Fenster weist auf den Herrenhof hin und warnt, wenn der Verwalter fehlt. Wie jedes besetzungspflichtige Gebäude verfällt er doppelt so schnell, solange niemand arbeitet.
+- **Nach 1848:** Ab 1849 zahlen die Dörfer nur noch Pacht (70 % der Abgaben). Sie verweigern nichts und ziehen nicht mehr fort, die Zufriedenheit fällt nie unter 30, und die Härte ist fest auf Normal. Beim ersten Mal erscheint ein Hinweis in der Abrechnung. Bitten und Stiftungen bleiben.
+- Das Gebäude hat noch kein gemaltes Bild und wird wie die anderen Gebäude ohne Bild gezeichnet.
+- Keine neuen Spielstand-Felder außer `gut` im Herrschafts-Block. Anleitung und Englisch ergänzt.
+
 ## v86 — Grundherr werden, Teil 2
 
 - **Bitten der Dörfer:** Zur Oktober-Abrechnung kommt eine Bitte eines Dorfes: Hofbrand (40 Gulden), schlechte Ernte (30 Getreide) oder Streit um die Weide (Schlichten für 10 Gulden). Helfen hebt die Zufriedenheit (+8 bzw. +6), Ablehnen ist gratis und senkt sie (−6 bzw. −3).
